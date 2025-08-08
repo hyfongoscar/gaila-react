@@ -40,7 +40,7 @@ function AuthProvider({ children }: Props) {
     initialAuth,
   );
   const [isInitialized, setIsInitialized] = useState(false);
-  const history = useHistory();
+  //   const history = useHistory();
 
   const queryClient = useQueryClient();
 
@@ -50,13 +50,13 @@ function AuthProvider({ children }: Props) {
     if (!isLoaded || !initAuth.current) return;
     initAuth.current = false;
     if (auth.isLoggedIn && auth.token) {
-      if (
-        [routes.launch(), routes.login()].indexOf(history.location.pathname) !==
-        -1
-      ) {
-        // Redirect users to dashboard home
-        history.push(routes.home());
-      }
+      //   if (
+      //     [routes.launch(), routes.login()].indexOf(history.location.pathname) !==
+      //     -1
+      //   ) {
+      //     // Redirect users to dashboard home
+      //     history.push(routes.home());
+      //   }
       // Do not redirect as the link is already valid
     } else {
       // No user
@@ -64,7 +64,7 @@ function AuthProvider({ children }: Props) {
     }
     // Mark as initialized
     setIsInitialized(true);
-  }, [auth.isLoggedIn, auth.token, history, isLoaded]);
+  }, [auth.isLoggedIn, auth.token, isLoaded]);
 
   const loginAction = useCallback(
     async (payload: LoginActionParams) => {
@@ -98,20 +98,20 @@ function AuthProvider({ children }: Props) {
 
   const logoutAction = useCallback(
     async (redirect?: string) => {
-      if (redirect) {
-        history.replace(redirect);
-      } else {
-        history.replace(routes.login());
-      }
-      await clearCache();
-      queryClient.removeQueries();
-      await setAuth(initialAuth);
+      //   if (redirect) {
+      //     history.replace(redirect);
+      //   } else {
+      //     history.replace(routes.login());
+      //   }
+      //   await clearCache();
+      //   queryClient.removeQueries();
+      //   await setAuth(initialAuth);
     },
-    [queryClient, setAuth, history],
+    [queryClient, setAuth],
   );
 
   useEffect(() => {
-    window.cbhCms.cbhInjectedLogout = logoutAction;
+    // window.cbhCms.cbhInjectedLogout = logoutAction;
   }, [logoutAction]);
 
   const authValue = useMemo(
