@@ -12,6 +12,7 @@
     "lint:css": "stylelint \"src/**/*.{css,scss,sass}\"",
     "typecheck": "react-router typegen && tsc",
     "test:ts": "tsc --project tsconfig.json",
+    "test:all": "pnpm lint && pnpm lint:css && pnpm test:ts",
     "prepare": "husky"
   },
   "dependencies": {
