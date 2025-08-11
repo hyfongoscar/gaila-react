@@ -8,7 +8,7 @@
     "start": "react-router-serve ./build/server/index.js",
     "eslint": "eslint --ext js,ts,tsx",
     "lint": "pnpm eslint src",
-    "lint:fix": "pnpm eslint --fix src && pnpm lint:css --fix && prettier --write",
+    "lint:fix": "pnpm eslint --fix src && pnpm lint:css --fix && prettier --write src",
     "lint:css": "stylelint \"src/**/*.{css,scss,sass}\"",
     "typecheck": "react-router typegen && tsc",
     "test:ts": "tsc --project tsconfig.json",
@@ -46,6 +46,9 @@
     "react-i18next": "^15.6.1",
     "react-query": "^3.39.3",
     "react-router": "^7.7.1",
+    "stylelint": "^16.23.1",
+    "stylelint-config-standard": "^39.0.0",
+    "stylelint-config-tailwindcss": "^1.0.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.39.0"
   },
