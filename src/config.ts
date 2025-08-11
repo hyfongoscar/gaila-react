@@ -1,18 +1,28 @@
 const DEV =
-  process.env.NODE_ENV !== 'production' &&
-  process.env.REACT_APP_ENV !== 'production';
+  import.meta.env.NODE_ENV !== 'production' &&
+  import.meta.env.REACT_APP_ENV !== 'production';
 
-export interface AppSetting {
-  apiDomain: string;
-  publicKeyEncrypt: string;
-  publicKeyVerify: string;
-}
-
-const appSetting: AppSetting = {
-  apiDomain: process.env.REACT_APP_API_DOMAIN as string,
-  publicKeyEncrypt: process.env.REACT_APP_PUBLIC_KEY_ENCRYPT as string,
-  publicKeyVerify: process.env.REACT_APP_PUBLIC_KEY_VERIFY as string,
+const appSetting = {
+  apiDomain: import.meta.env.REACT_APP_API_DOMAIN as string,
+  sysDomain: window.location.origin,
+  publicKeyEncrypt: import.meta.env.REACT_APP_PUBLIC_KEY_ENCRYPT as string,
+  publicKeyVerify: import.meta.env.REACT_APP_PUBLIC_KEY_VERIFY as string,
+  maxAge: parseInt(import.meta.env.REACT_APP_API_CACHE_AGE as string, 10),
+  disableCache: import.meta.env.REACT_APP_API_DISABLE_CACHE === '1',
+  version: import.meta.env.REACT_APP_VERSION,
+  versionNumber: parseInt(import.meta.env.REACT_APP_VERSION_NO ?? '0'),
+  configSw: import.meta.env.REACT_APP_CONFIG_SW === '1',
+  cacheNumber: import.meta.env.REACT_APP_CACHE_NUMBER,
+  fallbackLang: import.meta.env.REACT_APP_FALLBACK_LANGUAGE || 'en',
+  // Websocket
+  disableWs: import.meta.env.REACT_APP_API_DISABLE_WS === '1',
+  wsDomain: import.meta.env.REACT_APP_WS_DOMAIN as string,
+  wsPort: parseInt(import.meta.env.REACT_APP_WS_PORT || '6001'),
+  wssPort: parseInt(import.meta.env.REACT_APP_WSS_PORT || '6001'),
+  pusherId: import.meta.env.REACT_APP_PUSHER_ID as string,
 };
+
+export type AppSetting = typeof appSetting;
 
 const mobileAndTabletCheck = function () {
   let check = false;
@@ -32,7 +42,7 @@ const mobileAndTabletCheck = function () {
 };
 
 const Config = {
-  ...appSetting,
+  ...(appSetting as AppSetting),
   dev: DEV,
   i18nDebug: false,
   mobile: mobileAndTabletCheck(),

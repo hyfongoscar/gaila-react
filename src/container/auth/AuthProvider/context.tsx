@@ -3,11 +3,8 @@ import React from 'react';
 export type Role = 'admin' | 'editor' | 'teacher' | 'student';
 
 export interface AuthProviderPropsType {
-  token: string;
-  refreshToken: string;
-  expiresIn: number;
-  serverTime: number;
-  refreshTokenExpiresIn: number;
+  accessToken: string;
+  username: string;
   role: Role | null;
   isLoggedIn: boolean;
 }
@@ -21,13 +18,10 @@ export interface AuthProviderType extends AuthProviderPropsType {
 }
 
 const AuthProviderContext = React.createContext<AuthProviderType>({
-  token: '',
-  refreshToken: '',
-  expiresIn: 0,
-  serverTime: 0,
-  refreshTokenExpiresIn: 0,
-  isLoggedIn: false,
+  accessToken: '',
+  username: '',
   role: null,
+  isLoggedIn: false,
   isLoaded: false,
   isInitialized: false,
   loginAction: async () => {},
@@ -35,9 +29,5 @@ const AuthProviderContext = React.createContext<AuthProviderType>({
 });
 
 export const { Provider, Consumer } = AuthProviderContext;
-
-export const withAuth = (Component: any) => (props: any) => (
-  <Consumer>{value => <Component {...props} auth={value} />}</Consumer>
-);
 
 export default AuthProviderContext;

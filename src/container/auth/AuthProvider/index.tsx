@@ -9,11 +9,12 @@ import React, {
 } from 'react';
 
 import { useQueryClient } from 'react-query';
+import { useLocation, useNavigate } from 'react-router';
 
-import usePersistState from 'utils/usePersistState';
+import { clearCache } from 'api/_requestor';
+import usePersistState from 'utils/service/usePersistState';
 
-// import { clearCache } from 'api/_requestor';
-// import routes from 'config/routes';
+import { pathnames } from '../../../routes';
 import {
   type AuthProviderPropsType,
   type LoginActionParams,
@@ -25,11 +26,8 @@ interface Props {
 }
 
 const initialAuth = {
-  token: '',
-  refreshToken: '',
-  expiresIn: 0,
-  serverTime: 0,
-  refreshTokenExpiresIn: 0,
+  accessToken: '',
+  username: '',
   role: null,
   isLoggedIn: false,
 };
@@ -40,7 +38,8 @@ function AuthProvider({ children }: Props) {
     initialAuth,
   );
   const [isInitialized, setIsInitialized] = useState(false);
-  //   const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const queryClient = useQueryClient();
 
@@ -49,14 +48,16 @@ function AuthProvider({ children }: Props) {
   useEffect(() => {
     if (!isLoaded || !initAuth.current) return;
     initAuth.current = false;
-    if (auth.isLoggedIn && auth.token) {
-      //   if (
-      //     [routes.launch(), routes.login()].indexOf(history.location.pathname) !==
-      //     -1
-      //   ) {
-      //     // Redirect users to dashboard home
-      //     history.push(routes.home());
-      //   }
+    if (auth.isLoggedIn && auth.accessToken) {
+      if (
+        [
+          // routes.launch(),
+          pathnames.login(),
+        ].indexOf(location.pathname) !== -1
+      ) {
+        // Redirect users to dashboard home
+        navigate(pathnames.home());
+      }
       // Do not redirect as the link is already valid
     } else {
       // No user
@@ -64,32 +65,27 @@ function AuthProvider({ children }: Props) {
     }
     // Mark as initialized
     setIsInitialized(true);
-  }, [auth.isLoggedIn, auth.token, isLoaded]);
+  }, [
+    auth.isLoggedIn,
+    auth.accessToken,
+    isLoaded,
+    location.pathname,
+    navigate,
+  ]);
 
   const loginAction = useCallback(
     async (payload: LoginActionParams) => {
       // Check response have all data back
-      if (
-        payload.token &&
-        payload.refreshToken &&
-        payload.expiresIn &&
-        payload.serverTime &&
-        payload.refreshTokenExpiresIn &&
-        payload.role
-      ) {
+      if (payload.accessToken && payload.username && payload.role) {
         // Success login
         await setAuth({
           isLoggedIn: true,
-          token: payload.token,
-          refreshToken: payload.refreshToken,
-          expiresIn: payload.expiresIn,
-          serverTime: payload.serverTime,
-          refreshTokenExpiresIn: payload.refreshTokenExpiresIn,
+          accessToken: payload.accessToken,
+          username: payload.username,
           role: payload.role,
         });
       } else {
         // Failed login;
-
         console.error('Login failed. Invalid login action.');
       }
     },
@@ -98,16 +94,16 @@ function AuthProvider({ children }: Props) {
 
   const logoutAction = useCallback(
     async (redirect?: string) => {
-      //   if (redirect) {
-      //     history.replace(redirect);
-      //   } else {
-      //     history.replace(routes.login());
-      //   }
-      //   await clearCache();
-      //   queryClient.removeQueries();
-      //   await setAuth(initialAuth);
+      if (redirect) {
+        navigate(redirect, { replace: true });
+      } else {
+        navigate(pathnames.login(), { replace: true });
+      }
+      await clearCache();
+      queryClient.removeQueries();
+      await setAuth(initialAuth);
     },
-    [queryClient, setAuth],
+    [navigate, queryClient, setAuth],
   );
 
   useEffect(() => {

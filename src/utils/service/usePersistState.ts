@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { cloneDeep, defaultsDeep, isUndefined } from 'lodash-es';
 
-import persist from 'utils/localStorage';
+import persist from 'utils/service/localStorage';
 
 type PersistState<T> = [T, (newValue: T) => Promise<void>, boolean];
 
@@ -17,7 +17,7 @@ export default function usePersistState<T extends object>(
 
   useEffect(() => {
     // Get default value
-    persistInstance.getValue().then((storedValue: any) => {
+    persistInstance.getValue().then((storedValue: unknown) => {
       isPersisted.current = true;
       if (storedValue) {
         setPersistedValue(s => defaultsDeep(storedValue, s));

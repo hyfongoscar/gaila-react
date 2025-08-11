@@ -4,7 +4,7 @@ import Config from 'config';
 
 const storeConfig = {
   key: `${Config.apiDomain}|store|CBH-CORE`,
-  version: parseInt(process.env.REACT_APP_CACHE_NUMBER || '0', 10) + 2,
+  version: parseInt(import.meta.env.REACT_APP_CACHE_NUMBER || '0', 10) + 2,
 };
 
 localforage.config(storeConfig);
@@ -24,7 +24,7 @@ const store = {
       return undefined;
     }
   },
-  async setItem(key: string, value: any) {
+  async setItem(key: string, value: unknown) {
     try {
       await localforage.setItem(getLocalKey(key), value);
       return true;
@@ -58,7 +58,7 @@ const store = {
 
 export const getLocalItem = (key: string) => store.getItem(key);
 
-export const setLocalItem = (key: string, value: any) =>
+export const setLocalItem = (key: string, value: unknown) =>
   store.setItem(key, value);
 
 export const deleteLocalItem = (key: string) => store.deleteItem(key);
@@ -67,7 +67,7 @@ export const getLocalItemKeys = (prefix: string) => store.getKeys(prefix);
 
 export default function persist(key: string) {
   return {
-    setValue: (value: any) => setLocalItem(key, value),
+    setValue: (value: unknown) => setLocalItem(key, value),
     getValue: () => getLocalItem(key),
   };
 }

@@ -1,19 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
-import LoginForm from '../auth/LoginForm';
-import type { Route } from './+types/home';
+import { useNavigate } from 'react-router';
+import { pathnames } from 'routes';
 
-export function meta(_args: Route.MetaArgs) {
-  return [
-    { title: 'GAILA' },
-    { name: 'GAILA system', content: 'Learning English with AI' },
-  ];
-}
+import useAuth from '../container/auth/AuthProvider/useAuth';
 
-export default function Home() {
-  return (
-    <div>
-      <LoginForm />
-    </div>
-  );
-}
+const HomePage = () => {
+  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate(pathnames.login(), { replace: true });
+    }
+  }, [isLoggedIn, navigate]);
+
+  return <div>{isLoggedIn}</div>;
+};
+
+export default HomePage;
