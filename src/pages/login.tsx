@@ -1,6 +1,7 @@
 import React from 'react';
 
-import LoginForm from '../container/auth/LoginForm';
+import LoginForm from 'containers/auth/LoginForm';
+
 import type { Route } from './+types/login';
 
 export function meta(_args: Route.MetaArgs) {
@@ -12,7 +13,7 @@ export function meta(_args: Route.MetaArgs) {
 
 export default function LoginPage() {
   return (
-    <div>
+    <div className="w-full h-screen flex items-center justify-center">
       <LoginForm />
     </div>
   );

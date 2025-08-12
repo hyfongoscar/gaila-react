@@ -3,9 +3,7 @@ import React from 'react';
 export type Role = 'admin' | 'editor' | 'teacher' | 'student';
 
 export interface AuthProviderPropsType {
-  accessToken: string;
-  username: string;
-  role: Role | null;
+  token: string;
   isLoggedIn: boolean;
 }
 
@@ -18,9 +16,7 @@ export interface AuthProviderType extends AuthProviderPropsType {
 }
 
 const AuthProviderContext = React.createContext<AuthProviderType>({
-  accessToken: '',
-  username: '',
-  role: null,
+  token: '',
   isLoggedIn: false,
   isLoaded: false,
   isInitialized: false,

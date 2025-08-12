@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
-import useAuth from '../container/auth/AuthProvider/useAuth';
+import useAuth from 'containers/auth/AuthProvider/useAuth';
 
 const HomePage = () => {
   const { isLoggedIn } = useAuth();

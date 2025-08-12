@@ -4,7 +4,7 @@ import Config from 'config';
 
 const storeConfig = {
   key: `${Config.apiDomain}|store|CBH-CORE`,
-  version: parseInt(import.meta.env.REACT_APP_CACHE_NUMBER || '0', 10) + 2,
+  version: parseInt(import.meta.env.VITE_CACHE_NUMBER || '0', 10) + 2,
 };
 
 localforage.config(storeConfig);

@@ -1,25 +1,23 @@
-const DEV =
-  import.meta.env.NODE_ENV !== 'production' &&
-  import.meta.env.REACT_APP_ENV !== 'production';
+const DEV = import.meta.env.DEV;
 
 const appSetting = {
-  apiDomain: import.meta.env.REACT_APP_API_DOMAIN as string,
-  sysDomain: window.location.origin,
-  publicKeyEncrypt: import.meta.env.REACT_APP_PUBLIC_KEY_ENCRYPT as string,
-  publicKeyVerify: import.meta.env.REACT_APP_PUBLIC_KEY_VERIFY as string,
-  maxAge: parseInt(import.meta.env.REACT_APP_API_CACHE_AGE as string, 10),
-  disableCache: import.meta.env.REACT_APP_API_DISABLE_CACHE === '1',
-  version: import.meta.env.REACT_APP_VERSION,
-  versionNumber: parseInt(import.meta.env.REACT_APP_VERSION_NO ?? '0'),
-  configSw: import.meta.env.REACT_APP_CONFIG_SW === '1',
-  cacheNumber: import.meta.env.REACT_APP_CACHE_NUMBER,
-  fallbackLang: import.meta.env.REACT_APP_FALLBACK_LANGUAGE || 'en',
+  apiDomain: import.meta.env.VITE_API_DOMAIN as string,
+  sysDomain: typeof window !== 'undefined' ? window.location.origin : '',
+  publicKeyEncrypt: import.meta.env.VITE_PUBLIC_KEY_ENCRYPT as string,
+  publicKeyVerify: import.meta.env.VITE_PUBLIC_KEY_VERIFY as string,
+  maxAge: parseInt(import.meta.env.VITE_API_CACHE_AGE as string, 10),
+  disableCache: import.meta.env.VITE_API_DISABLE_CACHE === '1',
+  version: import.meta.env.VITE_VERSION,
+  versionNumber: parseInt(import.meta.env.VITE_VERSION_NO ?? '0'),
+  configSw: import.meta.env.VITE_CONFIG_SW === '1',
+  cacheNumber: import.meta.env.VITE_CACHE_NUMBER,
+  fallbackLang: import.meta.env.VITE_FALLBACK_LANGUAGE || 'en',
   // Websocket
-  disableWs: import.meta.env.REACT_APP_API_DISABLE_WS === '1',
-  wsDomain: import.meta.env.REACT_APP_WS_DOMAIN as string,
-  wsPort: parseInt(import.meta.env.REACT_APP_WS_PORT || '6001'),
-  wssPort: parseInt(import.meta.env.REACT_APP_WSS_PORT || '6001'),
-  pusherId: import.meta.env.REACT_APP_PUSHER_ID as string,
+  disableWs: import.meta.env.VITE_API_DISABLE_WS === '1',
+  wsDomain: import.meta.env.VITE_WS_DOMAIN as string,
+  wsPort: parseInt(import.meta.env.VITE_WS_PORT || '6001'),
+  wssPort: parseInt(import.meta.env.VITE_WSS_PORT || '6001'),
+  pusherId: import.meta.env.VITE_PUSHER_ID as string,
 };
 
 export type AppSetting = typeof appSetting;

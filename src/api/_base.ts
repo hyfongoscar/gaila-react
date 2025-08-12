@@ -1,7 +1,8 @@
 import { type AxiosResponseHeaders } from 'axios';
-import redirectToLoginPage from 'container/auth/AuthProvider/redirectToLoginPage';
 import { getCurrentLang } from 'locales/helper';
 import { isArray } from 'lodash-es';
+
+import redirectToLoginPage from 'containers/auth/AuthProvider/redirectToLoginPage';
 
 import Config from 'config';
 import { getLocalItem } from 'utils/service/localStorage';
@@ -53,7 +54,7 @@ const defaultConfig = {
   raw: false,
 };
 
-const noCacheApiEndpoints = import.meta.env.REACT_APP_NO_CACHE_API?.split(',');
+const noCacheApiEndpoints = import.meta.env.VITE_NO_CACHE_API?.split(',');
 
 function flattenParams(
   object: Record<string, any>,
@@ -94,7 +95,7 @@ export async function callAPIHandler<T>(
     let data: Record<string, any> = {
       ...inputData,
       lang: apiConfig.language || getCurrentLang(),
-      p6m: import.meta.env.REACT_APP_P6M || 'sys',
+      p6m: import.meta.env.VITE_P6M || 'sys',
     };
 
     const useCache =

@@ -1,4 +1,4 @@
-import redirectToLoginPage from 'container/auth/AuthProvider/redirectToLoginPage';
+import redirectToLoginPage from 'containers/auth/AuthProvider/redirectToLoginPage';
 
 import { getLocalItem, setLocalItem } from 'utils/service/localStorage';
 

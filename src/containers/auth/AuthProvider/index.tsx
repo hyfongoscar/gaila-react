@@ -10,11 +10,11 @@ import React, {
 
 import { useQueryClient } from 'react-query';
 import { useLocation, useNavigate } from 'react-router';
+import { pathnames } from 'routes';
 
 import { clearCache } from 'api/_requestor';
 import usePersistState from 'utils/service/usePersistState';
 
-import { pathnames } from '../../../routes';
 import {
   type AuthProviderPropsType,
   type LoginActionParams,
@@ -26,9 +26,7 @@ interface Props {
 }
 
 const initialAuth = {
-  accessToken: '',
-  username: '',
-  role: null,
+  token: '',
   isLoggedIn: false,
 };
 
@@ -48,12 +46,9 @@ function AuthProvider({ children }: Props) {
   useEffect(() => {
     if (!isLoaded || !initAuth.current) return;
     initAuth.current = false;
-    if (auth.isLoggedIn && auth.accessToken) {
+    if (auth.isLoggedIn && auth.token) {
       if (
-        [
-          // routes.launch(),
-          pathnames.login(),
-        ].indexOf(location.pathname) !== -1
+        [pathnames.home(), pathnames.login()].indexOf(location.pathname) !== -1
       ) {
         // Redirect users to dashboard home
         navigate(pathnames.home());
@@ -65,24 +60,16 @@ function AuthProvider({ children }: Props) {
     }
     // Mark as initialized
     setIsInitialized(true);
-  }, [
-    auth.isLoggedIn,
-    auth.accessToken,
-    isLoaded,
-    location.pathname,
-    navigate,
-  ]);
+  }, [auth.isLoggedIn, auth.token, isLoaded, location.pathname, navigate]);
 
   const loginAction = useCallback(
     async (payload: LoginActionParams) => {
       // Check response have all data back
-      if (payload.accessToken && payload.username && payload.role) {
+      if (payload.token) {
         // Success login
         await setAuth({
           isLoggedIn: true,
-          accessToken: payload.accessToken,
-          username: payload.username,
-          role: payload.role,
+          token: payload.token,
         });
       } else {
         // Failed login;
@@ -107,7 +94,7 @@ function AuthProvider({ children }: Props) {
   );
 
   useEffect(() => {
-    // window.cbhCms.cbhInjectedLogout = logoutAction;
+    window.gaila.injectedLogout = logoutAction;
   }, [logoutAction]);
 
   const authValue = useMemo(
