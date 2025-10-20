@@ -47,7 +47,7 @@
     "localforage": "^1.10.0",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.546.0",
-    "query-string": "^9.2.2",
+    "query-string": "^9.3.1",
     "radix-ui": "^1.4.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

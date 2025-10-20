@@ -36,10 +36,7 @@ function TokenLoginRedirect({ response, redirect: inputRedirect }: Props) {
         lang: response.lang,
       });
 
-      // Initialize websocket after token is initialized
-      // getEcho();
-
-      navigate(pathnames.home(), { replace: true });
+      navigate(inputRedirect || pathnames.home(), { replace: true });
     })();
   }, [loginAction, inputRedirect, response, navigate]);
 

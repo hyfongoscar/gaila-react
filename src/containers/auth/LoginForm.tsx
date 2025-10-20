@@ -61,10 +61,12 @@ const LoginForm = () => {
           Login
         </Button>
       </Card>
-      <TokenLoginRedirect
-        redirect={redirect ? decodeURIComponent(redirect) : undefined}
-        response={token}
-      />
+      {!!token && (
+        <TokenLoginRedirect
+          redirect={redirect ? decodeURIComponent(redirect) : undefined}
+          response={token}
+        />
+      )}
     </form>
   );
 };
