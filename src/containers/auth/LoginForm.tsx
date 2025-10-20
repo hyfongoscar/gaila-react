@@ -6,7 +6,7 @@ import { useMutation } from 'react-query';
 import { useLocation } from 'react-router';
 
 import Button from 'components/Button';
-import ShadowBox from 'components/ShadowBox';
+import Card from 'components/Card';
 import TextInput from 'components/TextInput';
 
 import { type ServerAuthToken, apiUserLogin } from 'api/auth';
@@ -41,8 +41,7 @@ const LoginForm = () => {
 
   return (
     <form onSubmit={onSubmit}>
-      <ShadowBox className="p-6 flex flex-col gap-4 w-md">
-        <h3>Login</h3>
+      <Card childrenClassName="flex flex-col gap-4 w-md" title="Login">
         <TextInput
           label="Username"
           onChange={e => setUsername(e.target.value)}
@@ -56,11 +55,12 @@ const LoginForm = () => {
         />
         <Button
           disabled={!username || !password}
-          label="Login"
           loading={isLoading}
           type="submit"
-        />
-      </ShadowBox>
+        >
+          Login
+        </Button>
+      </Card>
       <TokenLoginRedirect
         redirect={redirect ? decodeURIComponent(redirect) : undefined}
         response={token}

@@ -3,9 +3,8 @@ import React from 'react';
 import AuthPageWrapper from 'containers/auth/AuthPageWrapper';
 import useAuth from 'containers/auth/AuthProvider/useAuth';
 import StudentHeader from 'containers/student/StudentHeader';
-import StudentHome from 'containers/student/StudentHome';
 
-const HomePage = () => {
+const AnalyticsPage = () => {
   const { role } = useAuth();
 
   return (
@@ -15,11 +14,11 @@ const HomePage = () => {
       ) : (
         <>
           <StudentHeader />
-          <StudentHome />
+          Analytics Page
         </>
       )}
     </AuthPageWrapper>
   );
 };
 
-export default HomePage;
+export default AnalyticsPage;
