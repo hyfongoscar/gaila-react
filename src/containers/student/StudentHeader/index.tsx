@@ -35,13 +35,15 @@ const notifications = [
   },
 ];
 
+type StudentCurrentView = 'home' | 'analytics';
+
 export function StudentHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const { logoutAction } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
-  const [currentView, setCurrentView] = useState<'home' | 'analytics'>('home');
+  const [currentView, setCurrentView] = useState<StudentCurrentView>('home');
   useEffect(() => {
     if (location.pathname === pathnames.home()) {
       setCurrentView('home');
@@ -51,7 +53,7 @@ export function StudentHeader() {
   }, [location.pathname]);
 
   const onViewChange = useCallback(
-    (view: 'home' | 'analytics') => {
+    (view: StudentCurrentView) => {
       if (view === currentView) {
         return;
       }

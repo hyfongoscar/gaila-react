@@ -9,6 +9,7 @@ export const pathnames = {
       ...(clear ? { clear: '1' } : {}),
     }).toString()}`,
   analytics: () => '/analytics',
+  assignments: () => '/assignments',
   style: () => '/style',
 };
 
@@ -16,5 +17,6 @@ export default [
   index('pages/home.tsx'),
   route(pathnames.login(), 'pages/login.tsx'),
   route(pathnames.analytics(), 'pages/analytics.tsx'),
+  route(pathnames.assignments(), 'pages/assignments.tsx'),
   route(pathnames.style(), 'pages/style.tsx'),
 ] satisfies RouteConfig;
