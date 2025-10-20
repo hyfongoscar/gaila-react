@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
 import useAuth from 'containers/auth/AuthProvider/useAuth';
+import Header from 'containers/common/Header';
 
 const HomePage = () => {
   const { isLoggedIn } = useAuth();
@@ -15,7 +16,11 @@ const HomePage = () => {
     }
   }, [isLoggedIn, navigate]);
 
-  return <div>{isLoggedIn}</div>;
+  return (
+    <>
+      <Header title="Dashboard" />
+    </>
+  );
 };
 
 export default HomePage;

@@ -2,7 +2,7 @@ import Config from 'config';
 
 // TODO: change storage key
 export const storeConfig = {
-  key: `${Config.apiDomain}|store|CBH-CORE`,
+  key: `${Config.apiDomain}|store`,
   version: parseInt(Config.cacheNumber || '0', 10) + 2,
 };
 

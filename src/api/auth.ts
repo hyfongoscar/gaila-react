@@ -1,8 +1,14 @@
+import type { Role } from '../containers/auth/AuthProvider/context';
 import { callAPIHandler } from './_base';
 
 export interface ServerAuthToken {
   token: string;
-  privateToken: string | null;
+  expiresIn: number;
+  refreshToken: string;
+  refreshTokenExpiresIn: number;
+  serverTime: number;
+  role: Role;
+  lang: string;
 }
 
 export const apiUserLogin = ({
@@ -12,23 +18,12 @@ export const apiUserLogin = ({
   username: string;
   password: string;
 }): Promise<ServerAuthToken> =>
-  callAPIHandler(
-    'get',
-    '/moodle/login/token.php',
-    { username, password, service: 'moodle_mobile_app' },
-    false,
-  );
-apiUserLogin.queryKey = 'get,/moodle/login/token.php';
-
-export const apiUserLogout = async () =>
-  callAPIHandler('post', '/moodle/logout', {}, true, {
-    redirect: false,
-  });
+  callAPIHandler('post', '/api/auth/login', { username, password }, false);
 
 export const apiUserRefreshToken = (refreshToken): Promise<ServerAuthToken> =>
   callAPIHandler(
     'post',
-    '/api/refresh',
+    '/api/auth/refresh',
     {
       refresh_token: refreshToken,
     },

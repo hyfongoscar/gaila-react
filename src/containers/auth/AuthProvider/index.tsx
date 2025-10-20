@@ -26,8 +26,14 @@ interface Props {
 }
 
 const initialAuth = {
-  token: '',
   isLoggedIn: false,
+  token: '',
+  expiresIn: 0,
+  refreshToken: '',
+  refreshTokenExpiresIn: 0,
+  role: null,
+  lang: '',
+  serverTime: 0,
 };
 
 function AuthProvider({ children }: Props) {
@@ -70,6 +76,12 @@ function AuthProvider({ children }: Props) {
         await setAuth({
           isLoggedIn: true,
           token: payload.token,
+          expiresIn: payload.expiresIn,
+          refreshToken: payload.refreshToken,
+          refreshTokenExpiresIn: payload.refreshTokenExpiresIn,
+          role: payload.role,
+          lang: payload.lang,
+          serverTime: payload.serverTime,
         });
       } else {
         // Failed login;

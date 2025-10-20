@@ -11,7 +11,7 @@ import type { Method } from './_base';
 // Create `localforage` instance
 const forageStore = localforage.createInstance({
   driver: [localforage.INDEXEDDB, localforage.LOCALSTORAGE],
-  name: `${Config.apiDomain}|query|CBH-CORE`,
+  name: `${Config.apiDomain}|query`,
 });
 
 const storage = buildStorage({

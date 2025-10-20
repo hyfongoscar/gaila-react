@@ -61,7 +61,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <ThemeProvider theme={darkTheme}>
+              <CssBaseline />
+              {children}
+            </ThemeProvider>
+          </AuthProvider>
+        </QueryClientProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -70,16 +77,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ThemeProvider theme={darkTheme}>
-          <CssBaseline />
-          <Outlet />
-        </ThemeProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  );
+  return <Outlet />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

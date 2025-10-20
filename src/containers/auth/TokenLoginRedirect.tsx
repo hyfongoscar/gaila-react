@@ -28,6 +28,12 @@ function TokenLoginRedirect({ response, redirect: inputRedirect }: Props) {
       // Call login API
       await loginAction({
         token: response.token,
+        expiresIn: response.expiresIn,
+        refreshToken: response.refreshToken,
+        refreshTokenExpiresIn: response.refreshTokenExpiresIn,
+        serverTime: response.serverTime,
+        role: response.role,
+        lang: response.lang,
       });
 
       // Initialize websocket after token is initialized

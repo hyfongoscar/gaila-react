@@ -55,6 +55,7 @@ export const setTokenHeader = async (optional = false, apiPath?: string) => {
       }
       data = await promise.refresh;
     } catch (e) {
+      console.error(e);
       // Failed to get token
       await setLocalItem('auth', {});
       await redirectToLoginPage(optional, apiPath);

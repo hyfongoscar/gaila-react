@@ -3,7 +3,7 @@ import localforage from 'localforage';
 import Config from 'config';
 
 const storeConfig = {
-  key: `${Config.apiDomain}|store|CBH-CORE`,
+  key: `${Config.apiDomain}|store`,
   version: parseInt(import.meta.env.VITE_CACHE_NUMBER || '0', 10) + 2,
 };
 
