@@ -20,15 +20,10 @@ export const apiUserLogin = ({
 }): Promise<ServerAuthToken> =>
   callAPIHandler('post', '/api/auth/login', { username, password }, false);
 
-export const apiUserRefreshToken = (refreshToken): Promise<ServerAuthToken> =>
-  callAPIHandler(
-    'post',
-    '/api/auth/refresh',
-    {
-      refresh_token: refreshToken,
-    },
-    false,
-  );
+export const apiUserRefreshToken = (
+  refreshToken: string,
+): Promise<ServerAuthToken> =>
+  callAPIHandler('post', '/api/auth/refresh', { refreshToken }, false);
 
 // export interface CmsUserProfile {
 //   id: string;

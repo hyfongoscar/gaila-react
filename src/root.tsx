@@ -6,9 +6,12 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
+import 'dayjs/locale/zh-hk';
 
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import {
   isRouteErrorResponse,
@@ -33,9 +36,9 @@ const queryClient = new QueryClient({
 });
 
 const darkTheme = createTheme({
-  // palette: {
-  //   mode: 'dark',
-  // },
+  palette: {
+    mode: 'light',
+  },
 });
 
 export const links: Route.LinksFunction = () => [
@@ -64,8 +67,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <ThemeProvider theme={darkTheme}>
-              <CssBaseline />
-              {children}
+              <LocalizationProvider
+                adapterLocale="zh-hk"
+                dateAdapter={AdapterDayjs}
+              >
+                <CssBaseline />
+                {children}
+              </LocalizationProvider>
+              ;
             </ThemeProvider>
           </AuthProvider>
         </QueryClientProvider>

@@ -1,18 +1,21 @@
+import type { AuthProviderPropsType } from 'containers/auth/AuthProvider/context';
 import redirectToLoginPage from 'containers/auth/AuthProvider/redirectToLoginPage';
 
 import { getLocalItem, setLocalItem } from 'utils/service/localStorage';
 
-import { apiUserRefreshToken } from './auth';
+import { type ServerAuthToken, apiUserRefreshToken } from './auth';
 
 const promise: {
-  refresh: Promise<unknown> | null;
+  refresh: Promise<ServerAuthToken> | null;
 } = { refresh: null };
 
 // Set authentication token header to apisauce instance
 export const setTokenHeader = async (optional = false, apiPath?: string) => {
   // Already have token, skipping
   // TODO: get from window, better speed
-  const auth: any = await getLocalItem('auth');
+  const auth: AuthProviderPropsType | undefined = (await getLocalItem(
+    'auth',
+  )) as any;
 
   if (!auth) {
     await redirectToLoginPage(optional, apiPath);
@@ -48,7 +51,7 @@ export const setTokenHeader = async (optional = false, apiPath?: string) => {
   // Check if access token expired
   if (expiresIn < timeNow - serverTime) {
     // Refresh token
-    let data: any = {};
+    let data: Omit<AuthProviderPropsType, 'isLoggedIn'> | undefined;
     try {
       if (!promise.refresh) {
         promise.refresh = apiUserRefreshToken(refreshToken);
@@ -65,11 +68,11 @@ export const setTokenHeader = async (optional = false, apiPath?: string) => {
 
     // Check if new token is sufficient
     if (
-      !data?.access_token ||
-      !data?.refresh_token ||
-      !data?.expires_in ||
-      !data?.refresh_token_expires_in ||
-      !data?.server_time
+      !data?.token ||
+      !data?.refreshToken ||
+      !data?.expiresIn ||
+      !data?.refreshTokenExpiresIn ||
+      !data?.serverTime
     ) {
       await redirectToLoginPage(optional, apiPath);
       return false;
@@ -78,14 +81,17 @@ export const setTokenHeader = async (optional = false, apiPath?: string) => {
     // Pass new token to store
     await setLocalItem('auth', {
       ...auth,
-      token: data.access_token,
-      refreshToken: data.refresh_token,
-      expiresIn: data.expires_in,
-      refreshTokenExpiresIn: data.refresh_token_expires_in,
-      serverTime: data.server_time,
+      isLoggedIn: true,
+      token: data.token,
+      refreshToken: data.refreshToken,
+      expiresIn: data.expiresIn,
+      refreshTokenExpiresIn: data.refreshTokenExpiresIn,
+      serverTime: data.serverTime,
+      role: data.role,
+      lang: data.lang,
     });
 
-    return data.access_token;
+    return data.token;
   }
 
   return token;

@@ -7,26 +7,28 @@ import Badge, { badgeClasses } from '../Badge';
 type Props = {
   className?: string;
   title?: React.ReactNode;
+  titleClass?: string;
   description?: React.ReactNode;
   badgeText?: React.ReactNode;
   badgeVariant?: keyof typeof badgeClasses;
   status?: React.ReactNode;
   statusClass?: string;
   children: React.ReactNode;
-  childrenClassName?: string;
+  childrenClass?: string;
   footer?: React.ReactNode;
 };
 
 function Card({
   className,
   title,
+  titleClass,
   description,
   badgeText,
   badgeVariant = 'secondary',
   status,
   statusClass,
   children,
-  childrenClassName,
+  childrenClass,
   footer,
 }: Props) {
   const hasHeader = !!title || !!badgeText || !!status || !!description;
@@ -55,7 +57,10 @@ function Card({
             </div>
           )}
           {!!title && (
-            <h4 className="leading-none" data-slot="card-title">
+            <h4
+              className={clsx(['leading-none', titleClass])}
+              data-slot="card-title"
+            >
               {title}
             </h4>
           )}
@@ -68,7 +73,7 @@ function Card({
       )}
 
       <div
-        className={clsx(['px-6 [&:last-child]:pb-6', childrenClassName])}
+        className={clsx(['px-6 [&:last-child]:pb-6', childrenClass])}
         data-slot="card-content"
       >
         {children}

@@ -41,15 +41,17 @@ const LoginForm = () => {
 
   return (
     <form onSubmit={onSubmit}>
-      <Card childrenClassName="flex flex-col gap-4 w-md" title="Login">
+      <Card childrenClass="flex flex-col gap-4 w-md" title="Login">
         <TextInput
           label="Username"
           onChange={e => setUsername(e.target.value)}
+          size="medium"
           value={username}
         />
         <TextInput
           label="Password"
           onChange={e => setPassword(e.target.value)}
+          size="medium"
           type="password"
           value={password}
         />

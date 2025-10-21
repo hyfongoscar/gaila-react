@@ -137,7 +137,7 @@ export async function callAPIHandler<T>(
     // Get Auth Token into header
     const optionalAuth = apiConfig.redirect === false;
     const token = withToken
-      ? (await setTokenHeader(optionalAuth, apiPath))?.token
+      ? await setTokenHeader(optionalAuth, apiPath)
       : undefined;
 
     if (withToken && !optionalAuth && !token) {
@@ -184,14 +184,13 @@ export async function callAPIHandler<T>(
 
     // Not ok
     if (res.status < 200 || res.status >= 300) {
-      // Normal Error
-      if (res.data?.error) {
-        // Error response
-        throw res.data;
+      if (res.status === 429) {
+        throw new Error('Too many requests. Please retry in a moment.');
       }
 
-      if (res.data?.async_action_response) {
-        throw res.data.async_action_response;
+      if (res.data?.message) {
+        // Error response
+        throw res.data;
       }
 
       // Blob error
@@ -204,10 +203,6 @@ export async function callAPIHandler<T>(
         if (blobRes.error) {
           throw blobRes;
         }
-      }
-
-      if (res.status === 429) {
-        throw new Error('Too many requests. Please retry in a moment.');
       }
 
       console.error(res);

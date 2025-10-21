@@ -5,16 +5,10 @@ import { Clock, Edit, FileText, Filter, Search, SortAsc } from 'lucide-react';
 import Badge from 'components/Badge';
 import Button from 'components/Button';
 import Card from 'components/Card';
-import {
-  SelectContent,
-  SelectInput,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from 'components/SelectInput';
+import SelectInput from 'components/SelectInput';
 import TextInput from 'components/TextInput';
 
-import type { Essay } from 'types/essay';
+import type { Assignment, StudentAssignment } from 'types/assignment';
 
 const getStatusClass = (status: string) => {
   switch (status) {
@@ -47,7 +41,7 @@ const getStatusText = (status: string) => {
 };
 
 // FIXME: Mock data for essays
-const essays: Essay[] = [
+const essays: StudentAssignment[] = [
   {
     id: '1',
     title: 'ABC College - Climate Change Impact Essay',
@@ -56,7 +50,7 @@ const essays: Essay[] = [
     wordCount: 850,
     lastModified: '2 hours ago',
     status: 'in-progress',
-    subject: 'Social Issues',
+    dueDate: '2025-10-20',
   },
   {
     id: '2',
@@ -65,7 +59,7 @@ const essays: Essay[] = [
     wordCount: 1200,
     lastModified: '1 day ago',
     status: 'graded',
-    subject: 'Story',
+    dueDate: '2025-10-20',
   },
   {
     id: '3',
@@ -73,8 +67,8 @@ const essays: Essay[] = [
     description: 'Causes and consequences of the Second World War',
     wordCount: 450,
     lastModified: '3 days ago',
-    status: 'draft',
-    subject: 'History',
+    status: 'in-progress',
+    dueDate: '2025-10-20',
   },
   {
     id: '4',
@@ -83,8 +77,8 @@ const essays: Essay[] = [
       'Analysis of urbanization patterns and their environmental impact',
     wordCount: 920,
     lastModified: '5 days ago',
-    status: 'completed',
-    subject: 'Geography',
+    status: 'in-progress',
+    dueDate: '2025-10-20',
   },
   {
     id: '5',
@@ -92,8 +86,8 @@ const essays: Essay[] = [
     description: 'Examining democratic principles and their implementation',
     wordCount: 300,
     lastModified: '1 week ago',
-    status: 'draft',
-    subject: 'Politics',
+    status: 'in-progress',
+    dueDate: '2025-10-20',
   },
   {
     id: '6',
@@ -102,13 +96,9 @@ const essays: Essay[] = [
     wordCount: 1100,
     lastModified: '2 weeks ago',
     status: 'in-progress',
-    subject: 'Philosophy',
+    dueDate: '2025-10-20',
   },
 ];
-
-const subjects = essays
-  .map(essay => essay.subject)
-  .filter((v, i, a) => a.indexOf(v) === i);
 
 export function StudentHome() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -163,46 +153,56 @@ export function StudentHome() {
         />
 
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <SelectInput onValueChange={setSubjectFilter} value={subjectFilter}>
-            <SelectTrigger>
-              <SelectValue placeholder="All Subjects" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Subjects</SelectItem>
-              {subjects.map(subject => (
-                <SelectItem key={subject} value={subject}>
-                  {subject}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </SelectInput>
-
-          <SelectInput onValueChange={setStatusFilter} value={statusFilter}>
-            <SelectTrigger>
-              <SelectValue placeholder="All Statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
-              <SelectItem value="in-progress">In Progress</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="graded">Graded</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-            </SelectContent>
-          </SelectInput>
-
-          <SelectInput onValueChange={setSortBy} value={sortBy}>
-            <SelectTrigger>
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="modified">Last Modified</SelectItem>
-              <SelectItem value="title">Title</SelectItem>
-              <SelectItem value="subject">Subject</SelectItem>
-              <SelectItem value="wordCount">Word Count</SelectItem>
-              <SelectItem value="status">Status</SelectItem>
-            </SelectContent>
-          </SelectInput>
+          <SelectInput
+            emptyOption="All Statuses"
+            onChange={setStatusFilter}
+            options={[
+              {
+                label: 'Draft',
+                value: 'draft',
+              },
+              {
+                label: 'In Progress',
+                value: 'in-progress',
+              },
+              {
+                label: 'Completed',
+                value: 'completed',
+              },
+              {
+                label: 'Graded',
+                value: 'graded',
+              },
+            ]}
+            value={statusFilter}
+          />
+          <SelectInput
+            emptyOption="Sort by"
+            onChange={setSortBy}
+            options={[
+              {
+                label: 'Last Modified',
+                value: 'modified',
+              },
+              {
+                label: 'Title',
+                value: 'title',
+              },
+              {
+                label: 'Subject',
+                value: 'subject',
+              },
+              {
+                label: 'Word Count',
+                value: 'wordCount',
+              },
+              {
+                label: 'Status',
+                value: 'status',
+              },
+            ]}
+            value={sortBy}
+          />
 
           <Button
             className="gap-2 w-full"
@@ -251,7 +251,6 @@ export function StudentHome() {
       <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {essays.map(essay => (
           <Card
-            badgeText={essay.subject}
             className="hover:shadow-md transition-shadow"
             description={essay.description}
             footer={

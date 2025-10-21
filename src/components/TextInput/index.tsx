@@ -10,7 +10,9 @@ type Props = { icon?: React.ReactNode } & React.ComponentProps<
 
 const TextInput = ({
   className,
-  size = 'small',
+  label,
+  multiline,
+  size = multiline ? 'medium' : 'small',
   variant = 'filled',
   type,
   icon,
@@ -19,9 +21,12 @@ const TextInput = ({
   return (
     <TextField
       className={clsx(['w-full', className])}
+      label={label}
+      multiline={multiline}
       size={size}
       slotProps={{
         input: {
+          disableUnderline: true,
           ...(icon
             ? {
                 startAdornment: (
@@ -31,6 +36,18 @@ const TextInput = ({
             : {}),
         },
       }}
+      sx={
+        label
+          ? {}
+          : {
+              '& .MuiInputBase-root': {
+                paddingTop: 1,
+              },
+              '& .MuiInputBase-input': {
+                paddingTop: 0,
+              },
+            }
+      }
       type={type}
       variant={variant}
       {...props}
