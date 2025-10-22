@@ -13,3 +13,14 @@ export interface User {
   deleted?: boolean;
   lang?: string;
 }
+
+export interface UserOption {
+  id: number;
+  username: string;
+  firstName?: string;
+  lastName?: string;
+  classId?: number;
+  className?: string;
+}
+
+export type StudentOptionResponse = UserOption[];

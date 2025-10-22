@@ -50,7 +50,7 @@ const essays: StudentAssignment[] = [
     wordCount: 850,
     lastModified: '2 hours ago',
     status: 'in-progress',
-    dueDate: '2025-10-20',
+    dueDate: 0,
   },
   {
     id: '2',
@@ -59,7 +59,7 @@ const essays: StudentAssignment[] = [
     wordCount: 1200,
     lastModified: '1 day ago',
     status: 'graded',
-    dueDate: '2025-10-20',
+    dueDate: 0,
   },
   {
     id: '3',
@@ -68,7 +68,7 @@ const essays: StudentAssignment[] = [
     wordCount: 450,
     lastModified: '3 days ago',
     status: 'in-progress',
-    dueDate: '2025-10-20',
+    dueDate: 0,
   },
   {
     id: '4',
@@ -78,7 +78,7 @@ const essays: StudentAssignment[] = [
     wordCount: 920,
     lastModified: '5 days ago',
     status: 'in-progress',
-    dueDate: '2025-10-20',
+    dueDate: 0,
   },
   {
     id: '5',
@@ -87,7 +87,7 @@ const essays: StudentAssignment[] = [
     wordCount: 300,
     lastModified: '1 week ago',
     status: 'in-progress',
-    dueDate: '2025-10-20',
+    dueDate: 0,
   },
   {
     id: '6',
@@ -96,7 +96,7 @@ const essays: StudentAssignment[] = [
     wordCount: 1100,
     lastModified: '2 weeks ago',
     status: 'in-progress',
-    dueDate: '2025-10-20',
+    dueDate: 0,
   },
 ];
 

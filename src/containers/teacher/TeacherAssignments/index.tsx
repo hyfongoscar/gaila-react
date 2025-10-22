@@ -23,7 +23,7 @@ export function TeacherAssignments() {
       title: 'Climate Change Impact Essay',
       description:
         'Write an argumentative essay analyzing the impact of climate change on global ecosystems.',
-      dueDate: '2025-10-20',
+      dueDate: 0,
       totalStudents: 32,
       submitted: 28,
       graded: 24,
@@ -35,7 +35,7 @@ export function TeacherAssignments() {
       title: 'Shakespeare Analysis',
       description:
         'Analyze the themes and character development in Romeo and Juliet.',
-      dueDate: '2025-10-25',
+      dueDate: 0,
       totalStudents: 32,
       submitted: 15,
       graded: 15,
@@ -47,7 +47,7 @@ export function TeacherAssignments() {
       title: 'Historical Event Research',
       description:
         'Research and write about a significant historical event from the 20th century.',
-      dueDate: '2025-11-05',
+      dueDate: 0,
       totalStudents: 32,
       submitted: 0,
       graded: 0,
@@ -59,7 +59,7 @@ export function TeacherAssignments() {
       title: 'Personal Narrative Essay',
       description:
         'Write a personal narrative about a transformative experience.',
-      dueDate: '2025-09-30',
+      dueDate: 0,
       totalStudents: 32,
       submitted: 32,
       graded: 32,
@@ -71,7 +71,7 @@ export function TeacherAssignments() {
       title: 'Scientific Method Report',
       description:
         'Document your experiment using proper scientific methodology.',
-      dueDate: '2025-10-15',
+      dueDate: 0,
       totalStudents: 32,
       submitted: 30,
       graded: 28,
@@ -83,7 +83,7 @@ export function TeacherAssignments() {
   const filteredAssignments = assignments.filter(
     a =>
       a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.description.toLowerCase().includes(searchQuery.toLowerCase()),
+      a.description?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const onCreateAssignment = useCallback(() => {

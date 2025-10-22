@@ -23,3 +23,11 @@ export interface ClassStudent {
   classId: number;
   studentId: number;
 }
+
+export interface ClassOption {
+  id: number;
+  name: string;
+  numStudents: number;
+}
+
+export type ClassOptionResponse = ClassOption[];

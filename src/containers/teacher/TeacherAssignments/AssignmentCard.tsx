@@ -1,12 +1,13 @@
 import React, { useCallback } from 'react';
 
+import { isNumber } from 'lodash-es';
 import { Calendar, Edit, FileText } from 'lucide-react';
 
 import Badge from 'components/Badge';
 import Button from 'components/Button';
 import Card from 'components/Card';
 
-import type { Assignment, TeacherAssignment } from 'types/assignment';
+import type { TeacherAssignment } from 'types/assignment';
 
 type Props = {
   assignment: TeacherAssignment;
@@ -42,10 +43,14 @@ const AssignmentCard = ({ assignment }: Props) => {
       }
       title={assignment.title}
     >
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Calendar className="h-4 w-4" />
-        <span>Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
-      </div>
+      {isNumber(assignment.dueDate) ? (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Calendar className="h-4 w-4" />
+          <span>Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
+        </div>
+      ) : (
+        <></>
+      )}
 
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">

@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router';
 import Button from 'components/Button';
 
 import AuthPageWrapper from 'containers/auth/AuthPageWrapper';
-import AssignmentCreator from 'containers/teacher/TeacherAssignments/AssignmentCreator';
+import AssignmentEditor from 'containers/teacher/AssignmentCreator';
 import TeacherHeader from 'containers/teacher/TeacherHeader';
 
 const CreateAssignmentPage = () => {
@@ -25,7 +25,7 @@ const CreateAssignmentPage = () => {
           Back to Assignments
         </Button>
 
-        <AssignmentCreator onBack={onBack} />
+        <AssignmentEditor onBack={onBack} />
       </div>
     </AuthPageWrapper>
   );

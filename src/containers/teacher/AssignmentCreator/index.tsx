@@ -1,7 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { Plus, Save, X } from 'lucide-react';
+import { Plus, Save, Users, X } from 'lucide-react';
+import { useMutation } from 'react-query';
 
+import Badge from 'components/Badge';
 import Button from 'components/Button';
 import Card from 'components/Card';
 import DateTimeInput from 'components/DateTimeInput';
@@ -10,62 +12,95 @@ import SelectInput from 'components/SelectInput';
 import Separator from 'components/Separator';
 import TextInput from 'components/TextInput';
 
+import StudentEnrollPopover from 'containers/teacher/AssignmentCreator/StudentEnrollPopover';
+
+import { apiCreateAssignment } from 'api/assignment';
+import type { RubricItem } from 'types/assignment';
+
 interface AssignmentCreatorProps {
   assignmentId?: string;
   onBack: () => void;
 }
 
-interface RubricItem {
-  criteria: string;
-  description: string;
-  points: number;
-}
+function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
+  const { mutate: createAssignment, isLoading: createAssignmentLoading } =
+    useMutation(apiCreateAssignment);
 
-function AssignmentCreator({ assignmentId, onBack }: AssignmentCreatorProps) {
   const isEditing = !!assignmentId;
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [essayType, setEssayType] = useState('argumentative');
   const [instructions, setInsturctions] = useState('');
-  const [minWords, setMinWords] = useState(500);
-  const [maxWords, setMaxWords] = useState(1000);
+  const [minWordCount, setMinWordCount] = useState(500);
+  const [maxWordCount, setMaxWordCount] = useState(1000);
   const [dueDate, setDueDate] = useState<number | null>(null);
-  const [rubric, setRubric] = useState<RubricItem[]>([
+  const [rubrics, setRubrics] = useState<RubricItem[]>([
     { criteria: 'Content', description: '', points: 7 },
     { criteria: 'Grammar', description: '', points: 7 },
     { criteria: 'Organization', description: '', points: 7 },
   ]);
+  const [enrolledClassIds, setEnrolledClassIds] = useState<number[]>([]);
+  const [enrolledStudentIds, setEnrolledStudentIds] = useState<number[]>([]);
 
   const handleAddRubricItem = useCallback(() => {
-    setRubric([...rubric, { criteria: '', description: '', points: 0 }]);
-  }, [rubric]);
+    setRubrics([...rubrics, { criteria: '', description: '', points: 0 }]);
+  }, [rubrics]);
 
   const handleRemoveRubricItem = useCallback(
     (index: number) => {
-      setRubric(rubric.filter((_, i) => i !== index));
+      setRubrics(rubrics.filter((_, i) => i !== index));
     },
-    [rubric],
+    [rubrics],
   );
 
   const handleRubricChange = useCallback(
     (index: number, field: keyof RubricItem, value: string | number) => {
-      const newRubric = [...rubric];
+      const newRubric = [...rubrics];
       let newValue = value;
       if (field === 'points') {
         newValue = parseInt(value as string) || 0;
       }
       newRubric[index] = { ...newRubric[index], [field]: newValue };
-      setRubric(newRubric);
+      setRubrics(newRubric);
     },
-    [rubric],
+    [rubrics],
   );
 
   const totalPoints = useMemo(() => {
-    return rubric.reduce((sum, item) => sum + (item.points || 0), 0);
-  }, [rubric]);
+    return rubrics.reduce((sum, item) => sum + (item.points || 0), 0);
+  }, [rubrics]);
 
-  const handleSave = useCallback(() => {}, []);
+  const handleSave = useCallback(() => {
+    if (isEditing) {
+      return;
+    }
+    createAssignment({
+      title,
+      description,
+      type: essayType,
+      instructions,
+      minWordCount,
+      maxWordCount,
+      dueDate: dueDate || undefined,
+      rubrics,
+      enrolledClassIds,
+      enrolledStudentIds,
+    });
+  }, [
+    createAssignment,
+    description,
+    dueDate,
+    enrolledClassIds,
+    enrolledStudentIds,
+    essayType,
+    instructions,
+    isEditing,
+    maxWordCount,
+    minWordCount,
+    rubrics,
+    title,
+  ]);
 
   return (
     <div className="space-y-6">
@@ -158,10 +193,10 @@ function AssignmentCreator({ assignmentId, onBack }: AssignmentCreatorProps) {
               <TextInput
                 id="minWords"
                 onChange={e => {
-                  setMinWords(parseInt(e.target.value) || 0);
+                  setMinWordCount(parseInt(e.target.value) || 0);
                 }}
                 type="number"
-                value={String(minWords)}
+                value={String(minWordCount)}
               />
             </div>
 
@@ -169,9 +204,9 @@ function AssignmentCreator({ assignmentId, onBack }: AssignmentCreatorProps) {
               <Label htmlFor="maxWords">Maximum Words</Label>
               <TextInput
                 id="maxWords"
-                onChange={e => setMaxWords(parseInt(e.target.value) || 0)}
+                onChange={e => setMaxWordCount(parseInt(e.target.value) || 0)}
                 type="number"
-                value={String(maxWords)}
+                value={String(maxWordCount)}
               />
             </div>
           </div>
@@ -195,7 +230,7 @@ function AssignmentCreator({ assignmentId, onBack }: AssignmentCreatorProps) {
           </div>
 
           <div className="space-y-4">
-            {rubric.map((item, index) => (
+            {rubrics.map((item, index) => (
               <div className="flex gap-2 items-start" key={index}>
                 <div className="flex-1 space-y-2">
                   <div className="flex gap-2 items-start">
@@ -230,7 +265,7 @@ function AssignmentCreator({ assignmentId, onBack }: AssignmentCreatorProps) {
                   />
                 </div>
                 <Button
-                  disabled={rubric.length === 1}
+                  disabled={rubrics.length === 1}
                   onClick={() => handleRemoveRubricItem(index)}
                   size="icon"
                   variant="ghost"
@@ -251,11 +286,41 @@ function AssignmentCreator({ assignmentId, onBack }: AssignmentCreatorProps) {
 
         <Separator />
 
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium after:text-destructive after:content-['*']">
+                Student Enrollment
+              </h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Assign this essay to classes or individual students
+              </p>
+            </div>
+            <Badge className="gap-1" variant="secondary">
+              <Users className="h-3 w-3" />
+              total students
+            </Badge>
+          </div>
+          <StudentEnrollPopover
+            enrolledClassIds={enrolledClassIds}
+            enrolledStudentIds={enrolledStudentIds}
+            isEditing={isEditing}
+            setEnrolledClassIds={setEnrolledClassIds}
+            setEnrolledStudentIds={setEnrolledStudentIds}
+          />
+        </div>
+
+        <Separator />
+
         <div className="flex justify-between">
           <Button onClick={onBack} variant="outline">
             Cancel
           </Button>
-          <Button className="gap-2" onClick={handleSave}>
+          <Button
+            className="gap-2"
+            loading={createAssignmentLoading}
+            onClick={handleSave}
+          >
             <Save className="h-4 w-4" />
             {isEditing ? 'Update Assignment' : 'Create Assignment'}
           </Button>
@@ -264,4 +329,4 @@ function AssignmentCreator({ assignmentId, onBack }: AssignmentCreatorProps) {
     </div>
   );
 }
-export default AssignmentCreator;
+export default AssignmentEditor;

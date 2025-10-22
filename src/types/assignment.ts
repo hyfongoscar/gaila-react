@@ -1,9 +1,20 @@
 export interface Assignment {
   id: string;
   title: string;
-  description: string;
-  dueDate: string;
+  description?: string;
+  dueDate?: number;
+  type?: string;
+  instructions?: string;
+  minWordCount?: number;
+  maxWordCount?: number;
+  rubrics?: RubricItem[];
   status: 'upcoming' | 'in-progress' | 'submitted' | 'graded' | 'past-due';
+}
+
+export interface RubricItem {
+  criteria: string;
+  description: string;
+  points: number;
 }
 
 export interface StudentAssignment extends Assignment {
