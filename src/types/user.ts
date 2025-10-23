@@ -4,12 +4,12 @@ export interface User {
   password: string;
   email: string;
   role: 'admin' | 'teacher' | 'student';
-  lastAccess?: number;
-  lastLogin?: number;
-  timeCreated?: number;
-  timeModified?: number;
-  firstName?: string;
-  lastName?: string;
+  last_access?: number;
+  last_login?: number;
+  time_created?: number;
+  time_modified?: number;
+  first_name?: string;
+  last_name?: string;
   deleted?: boolean;
   lang?: string;
 }
@@ -17,10 +17,10 @@ export interface User {
 export interface UserOption {
   id: number;
   username: string;
-  firstName?: string;
-  lastName?: string;
-  classId?: number;
-  className?: string;
+  first_name?: string;
+  last_name?: string;
+  class_id?: number;
+  class_name?: string;
 }
 
 export type StudentOptionResponse = UserOption[];

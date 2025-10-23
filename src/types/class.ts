@@ -3,9 +3,10 @@ import type { ListingResponse } from 'types/response';
 export interface Class {
   id: number;
   name: string;
+  num_students: number;
   description?: string;
-  startAt?: number;
-  endAt?: number;
+  start_at?: number;
+  end_at?: number;
 }
 
 export interface ClassListingResponse extends ListingResponse {
@@ -14,20 +15,20 @@ export interface ClassListingResponse extends ListingResponse {
 
 export interface ClassTeacher {
   id: number;
-  classId: number;
-  teacherId: number;
+  class_id: number;
+  teacher_id: number;
 }
 
 export interface ClassStudent {
   id: number;
-  classId: number;
-  studentId: number;
+  class_id: number;
+  student_id: number;
 }
 
 export interface ClassOption {
   id: number;
   name: string;
-  numStudents: number;
+  num_students: number;
 }
 
 export type ClassOptionResponse = ClassOption[];

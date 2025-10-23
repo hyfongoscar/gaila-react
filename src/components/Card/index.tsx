@@ -65,9 +65,9 @@ function Card({
             </h4>
           )}
           {!!description && (
-            <p className="text-muted-foreground" data-slot="card-description">
+            <div className="text-muted-foreground" data-slot="card-description">
               {description}
-            </p>
+            </div>
           )}
         </div>
       )}

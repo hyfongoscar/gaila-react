@@ -1,7 +1,8 @@
 import React, { useCallback } from 'react';
 
+import { isNumber, isString, parseInt } from 'lodash-es';
 import { ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { pathnames } from 'routes';
 
 import Button from 'components/Button';
@@ -10,8 +11,13 @@ import AuthPageWrapper from 'containers/auth/AuthPageWrapper';
 import AssignmentEditor from 'containers/teacher/AssignmentEditor';
 import TeacherHeader from 'containers/teacher/TeacherHeader';
 
-const AssignmentCreatePage = () => {
+const AssignmentEditPage = () => {
   const navigate = useNavigate();
+
+  const { id } = useParams();
+
+  const assignmentId =
+    isString(id) && isNumber(parseInt(id, 10)) ? parseInt(id, 10) : undefined;
 
   const onBack = useCallback(() => {
     navigate(pathnames.assignments());
@@ -26,10 +32,10 @@ const AssignmentCreatePage = () => {
           Back to Assignments
         </Button>
 
-        <AssignmentEditor onBack={onBack} />
+        <AssignmentEditor assignmentId={assignmentId} onBack={onBack} />
       </div>
     </AuthPageWrapper>
   );
 };
 
-export default AssignmentCreatePage;
+export default AssignmentEditPage;

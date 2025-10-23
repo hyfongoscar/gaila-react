@@ -47,56 +47,68 @@ const essays: StudentAssignment[] = [
     title: 'ABC College - Climate Change Impact Essay',
     description:
       'An argumentative essay about environmental issues and their global effects',
-    wordCount: 850,
-    lastModified: '2 hours ago',
+    word_count: 850,
+    last_modified: '2 hours ago',
     status: 'in-progress',
-    dueDate: 0,
+    due_date: 0,
+    enrolled_classes: [],
+    enrolled_students: [],
   },
   {
     id: '2',
     title: 'Story Writing',
     description: 'Character analysis and themes in the classic tragedy',
-    wordCount: 1200,
-    lastModified: '1 day ago',
+    word_count: 1200,
+    last_modified: '1 day ago',
     status: 'graded',
-    dueDate: 0,
+    due_date: 0,
+    enrolled_classes: [],
+    enrolled_students: [],
   },
   {
     id: '3',
     title: 'World War II Historical Essay',
     description: 'Causes and consequences of the Second World War',
-    wordCount: 450,
-    lastModified: '3 days ago',
+    word_count: 450,
+    last_modified: '3 days ago',
     status: 'in-progress',
-    dueDate: 0,
+    due_date: 0,
+    enrolled_classes: [],
+    enrolled_students: [],
   },
   {
     id: '4',
     title: 'The Geography of Urban Development',
     description:
       'Analysis of urbanization patterns and their environmental impact',
-    wordCount: 920,
-    lastModified: '5 days ago',
+    word_count: 920,
+    last_modified: '5 days ago',
     status: 'in-progress',
-    dueDate: 0,
+    due_date: 0,
+    enrolled_classes: [],
+    enrolled_students: [],
   },
   {
     id: '5',
     title: 'Political Philosophy in Modern Democracy',
     description: 'Examining democratic principles and their implementation',
-    wordCount: 300,
-    lastModified: '1 week ago',
+    word_count: 300,
+    last_modified: '1 week ago',
     status: 'in-progress',
-    dueDate: 0,
+    due_date: 0,
+    enrolled_classes: [],
+    enrolled_students: [],
   },
   {
     id: '6',
     title: 'The Ethics of Artificial Intelligence',
     description: 'Moral implications of AI development and deployment',
-    wordCount: 1100,
-    lastModified: '2 weeks ago',
+    word_count: 1100,
+    last_modified: '2 weeks ago',
     status: 'in-progress',
-    dueDate: 0,
+    due_date: 0,
+    enrolled_classes: [],
+    enrolled_students: [],
   },
 ];
 
@@ -271,11 +283,11 @@ export function StudentHome() {
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
-                {essay.wordCount} words
+                {essay.word_count} words
               </div>
               <div className="flex items-center gap-1">
                 <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-                {essay.lastModified}
+                {essay.last_modified}
               </div>
             </div>
           </Card>

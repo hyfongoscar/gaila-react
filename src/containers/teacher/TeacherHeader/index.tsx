@@ -30,7 +30,9 @@ export function TeacherHeader() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [currentView, setCurrentView] = useState<TeacherCurrentView>('home');
+  const [currentView, setCurrentView] = useState<TeacherCurrentView | null>(
+    null,
+  );
   useEffect(() => {
     if (location.pathname === pathnames.home()) {
       setCurrentView('home');

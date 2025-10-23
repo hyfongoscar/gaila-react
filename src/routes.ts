@@ -11,6 +11,7 @@ export const pathnames = {
   analytics: () => '/analytics',
   assignments: () => '/assignments',
   assignmentCreate: () => '/assignments/create',
+  assignmentEdit: (id: string) => `/assignments/edit/${id}`,
   style: () => '/style',
 };
 
@@ -20,5 +21,6 @@ export default [
   route(pathnames.analytics(), 'pages/analytics.tsx'),
   route(pathnames.assignments(), 'pages/assignments.tsx'),
   route(pathnames.assignmentCreate(), 'pages/assignments.create.tsx'),
+  route(pathnames.assignmentEdit(':id'), 'pages/assignments.edit.tsx'),
   route(pathnames.style(), 'pages/style.tsx'),
 ] satisfies RouteConfig;

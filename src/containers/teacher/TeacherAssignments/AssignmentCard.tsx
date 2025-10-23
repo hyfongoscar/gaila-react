@@ -2,6 +2,8 @@ import React, { useCallback } from 'react';
 
 import { isNumber } from 'lodash-es';
 import { Calendar, Edit, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { pathnames } from 'routes';
 
 import Badge from 'components/Badge';
 import Button from 'components/Button';
@@ -14,6 +16,8 @@ type Props = {
 };
 
 const AssignmentCard = ({ assignment }: Props) => {
+  const navigate = useNavigate();
+
   const getStatusBadge = (status: TeacherAssignment['status']) => {
     if (status === 'in-progress')
       return <Badge variant="primary">In Progress</Badge>;
@@ -27,7 +31,12 @@ const AssignmentCard = ({ assignment }: Props) => {
   };
 
   const onViewAssignment = useCallback((id: string) => {}, []);
-  const onEditAssignment = useCallback((id: string) => {}, []);
+  const onEditAssignment = useCallback(
+    (id: string) => {
+      navigate(pathnames.assignmentEdit('1'));
+    },
+    [navigate],
+  );
 
   return (
     <Card
@@ -43,10 +52,10 @@ const AssignmentCard = ({ assignment }: Props) => {
       }
       title={assignment.title}
     >
-      {isNumber(assignment.dueDate) ? (
+      {isNumber(assignment.due_date) ? (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Calendar className="h-4 w-4" />
-          <span>Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
+          <span>Due: {new Date(assignment.due_date).toLocaleDateString()}</span>
         </div>
       ) : (
         <></>
@@ -56,10 +65,10 @@ const AssignmentCard = ({ assignment }: Props) => {
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">Submissions</span>
           <span className="font-medium">
-            {assignment.submitted}/{assignment.totalStudents} (
+            {assignment.submitted}/{assignment.total_students} (
             {getProgressPercentage(
               assignment.submitted,
-              assignment.totalStudents,
+              assignment.total_students,
             )}
             %)
           </span>
@@ -68,7 +77,7 @@ const AssignmentCard = ({ assignment }: Props) => {
           <div
             className="bg-primary h-2 rounded-full transition-all"
             style={{
-              width: `${getProgressPercentage(assignment.submitted, assignment.totalStudents)}%`,
+              width: `${getProgressPercentage(assignment.submitted, assignment.total_students)}%`,
             }}
           />
         </div>

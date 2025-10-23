@@ -8,3 +8,9 @@ export interface ListingResponse {
 export interface ViewResponse {
   id: number;
 }
+
+export interface ResponseError {
+  error: boolean;
+  errorCode: string;
+  errorMessage: string;
+}

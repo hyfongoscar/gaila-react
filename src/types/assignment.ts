@@ -1,14 +1,19 @@
+import type { ClassOption } from 'types/class';
+import type { UserOption } from 'types/user';
+
 export interface Assignment {
   id: string;
   title: string;
   description?: string;
-  dueDate?: number;
+  due_date?: number;
   type?: string;
   instructions?: string;
-  minWordCount?: number;
-  maxWordCount?: number;
+  min_word_count?: number;
+  max_word_count?: number;
   rubrics?: RubricItem[];
   status: 'upcoming' | 'in-progress' | 'submitted' | 'graded' | 'past-due';
+  enrolled_classes: ClassOption[];
+  enrolled_students: UserOption[];
 }
 
 export interface RubricItem {
@@ -18,12 +23,12 @@ export interface RubricItem {
 }
 
 export interface StudentAssignment extends Assignment {
-  wordCount: number;
-  lastModified: string;
+  word_count: number;
+  last_modified: string;
 }
 
 export interface TeacherAssignment extends Assignment {
-  totalStudents: number;
+  total_students: number;
   submitted: number;
   graded: number;
   avgScore: number | null;

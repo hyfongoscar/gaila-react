@@ -22,6 +22,8 @@ import {
   ScrollRestoration,
 } from 'react-router';
 
+import AlertProvider from 'containers/common/AlertProvider';
+
 import type { Route } from './+types/root';
 import AuthProvider from './containers/auth/AuthProvider';
 
@@ -71,8 +73,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 adapterLocale="zh-hk"
                 dateAdapter={AdapterDayjs}
               >
-                <CssBaseline />
-                {children}
+                <AlertProvider>
+                  <CssBaseline />
+                  {children}
+                </AlertProvider>
               </LocalizationProvider>
               ;
             </ThemeProvider>
