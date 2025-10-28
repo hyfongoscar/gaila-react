@@ -1,5 +1,10 @@
-import { createBrowserHistory } from 'history';
+import { type BrowserHistory, createBrowserHistory } from 'history';
 
-const history = createBrowserHistory();
+let history: BrowserHistory | null = null;
+
+// Only create browser history when window is defined (client-side)
+if (typeof window !== 'undefined') {
+  history = createBrowserHistory();
+}
 
 export default history;

@@ -8,10 +8,11 @@ const redirectToLoginPage = async (optional = false, apiPath?: string) => {
     if (optional) return;
     console.warn('401', apiPath);
 
-    let url: string | undefined =
-      history.location.pathname +
-      history.location.search +
-      history.location.hash;
+    let url: string | undefined = history
+      ? history.location.pathname +
+        history.location.search +
+        history.location.hash
+      : undefined;
     url = url === '/' ? undefined : url;
 
     // Clear all auth related cache
