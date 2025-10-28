@@ -10,6 +10,10 @@ import TeacherHome from 'containers/teacher/TeacherHome';
 const HomePage = () => {
   const { role } = useAuth();
 
+  if (!role) {
+    return <></>;
+  }
+
   return (
     <AuthPageWrapper>
       {role === 'student' ? (

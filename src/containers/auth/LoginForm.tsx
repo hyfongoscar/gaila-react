@@ -6,6 +6,7 @@ import { useMutation } from 'react-query';
 import { useLocation } from 'react-router';
 
 import Card from 'components/display/Card';
+import ErrorMessage from 'components/display/ErrorMessage';
 import Button from 'components/input/Button';
 import TextInput from 'components/input/TextInput';
 
@@ -22,7 +23,11 @@ const LoginForm = () => {
   const { r } = qs.parse(search);
   const redirect = isString(r) ? r : undefined;
 
-  const { mutate: loginRequest, isLoading } = useMutation(apiUserLogin, {
+  const {
+    mutate: loginRequest,
+    isLoading,
+    error,
+  } = useMutation(apiUserLogin, {
     onSuccess: res => {
       setToken(res);
     },
@@ -55,6 +60,7 @@ const LoginForm = () => {
           type="password"
           value={password}
         />
+        {!!error && <ErrorMessage error={error} />}
         <Button
           disabled={!username || !password}
           loading={isLoading}

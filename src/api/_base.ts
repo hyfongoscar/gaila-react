@@ -179,7 +179,7 @@ export async function callAPIHandler<T>(
     if (res.status === 401) {
       console.log('redirecting', apiPath, apiConfig);
       redirectToLoginPage(apiConfig.redirect === false, apiPath);
-      throw new Error('Unauthorized');
+      throw new Error(res.data?.message || 'Unauthorized');
     }
 
     // Not ok
@@ -188,7 +188,7 @@ export async function callAPIHandler<T>(
         throw new Error('Too many requests. Please retry in a moment.');
       }
 
-      if (res.data?.message) {
+      if (res.data?.error_message) {
         // Error response
         throw res.data;
       }
