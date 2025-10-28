@@ -1,6 +1,7 @@
 import { callAPIHandler } from 'api/_base';
 import type {
   Assignment,
+  AssignmentDetails,
   AssignmentListingResponse,
   RubricItem,
 } from 'types/assignment';
@@ -25,9 +26,9 @@ export const apiViewAssignment = async ({
   queryKey,
 }: {
   queryKey: [string, number];
-}): Promise<Assignment> => {
+}): Promise<AssignmentDetails> => {
   const [, assignmentId] = queryKey;
-  const res = await callAPIHandler<Assignment>(
+  const res = await callAPIHandler<AssignmentDetails>(
     'get',
     `/api/assignment/view/${assignmentId}`,
     {},

@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
 import Button from 'components/input/Button';
-import { Pagination } from 'components/input/Pagination';
 import TextInput from 'components/input/TextInput';
+import { Pagination } from 'components/navigation/Pagination';
 
 import AssignmentCard from 'containers/teacher/TeacherAssignments/AssignmentCard';
 

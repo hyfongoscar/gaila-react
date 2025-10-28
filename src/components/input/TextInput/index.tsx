@@ -41,8 +41,8 @@ const TextInput = <T extends React.HTMLInputTypeAttribute>({
             : {}),
         },
       }}
-      sx={
-        label
+      sx={{
+        ...(label
           ? {}
           : {
               '& .MuiInputBase-root': {
@@ -51,8 +51,9 @@ const TextInput = <T extends React.HTMLInputTypeAttribute>({
               '& .MuiInputBase-input': {
                 paddingTop: 0,
               },
-            }
-      }
+            }),
+        ...props.sx,
+      }}
       type={type}
       variant={variant}
       {...props}

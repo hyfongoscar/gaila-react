@@ -13,8 +13,8 @@ import {
 import { useLocation, useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
-import DropdownMenu from 'components/display/DropdownMenu';
 import Button from 'components/input/Button';
+import DropdownMenu from 'components/navigation/DropdownMenu';
 
 import useAuth from 'containers/auth/AuthProvider/useAuth';
 
@@ -99,7 +99,7 @@ export function StudentHeader() {
               variant={currentView === 'home' ? 'default' : 'ghost'}
             >
               <FileText className="h-4 w-4" />
-              My Essays
+              My Assignments
             </Button>
             <Button
               className="gap-2 w-full sm:w-auto justify-start"

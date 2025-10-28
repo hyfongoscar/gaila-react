@@ -11,8 +11,8 @@ import {
 import { useLocation, useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
-import DropdownMenu from 'components/display/DropdownMenu';
 import Button from 'components/input/Button';
+import DropdownMenu from 'components/navigation/DropdownMenu';
 
 import useAuth from 'containers/auth/AuthProvider/useAuth';
 

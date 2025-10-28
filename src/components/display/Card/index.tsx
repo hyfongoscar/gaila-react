@@ -5,39 +5,47 @@ import clsx from 'clsx';
 import Badge, { badgeClasses } from '../Badge';
 
 type Props = {
-  className?: string;
   title?: React.ReactNode;
-  titleClass?: string;
   description?: React.ReactNode;
   badgeText?: React.ReactNode;
   badgeVariant?: keyof typeof badgeClasses;
   status?: React.ReactNode;
-  statusClass?: string;
+  action?: React.ReactNode;
   children: React.ReactNode;
-  childrenClass?: string;
+  classes?: {
+    root?: string;
+    title?: string;
+    description?: string;
+    badge?: string;
+    status?: string;
+    children?: string;
+    footer?: string;
+  };
+  className?: string;
   footer?: React.ReactNode;
 };
 
 function Card({
-  className,
   title,
-  titleClass,
   description,
   badgeText,
   badgeVariant = 'secondary',
   status,
-  statusClass,
+  action,
   children,
-  childrenClass,
   footer,
+  classes,
+  className,
 }: Props) {
-  const hasHeader = !!title || !!badgeText || !!status || !!description;
+  const hasHeader =
+    !!title || !!badgeText || !!status || !!description || !!action;
 
   return (
     <div
       className={clsx(
-        'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border',
+        'bg-card text-card-foreground rounded-xl border',
         className,
+        classes?.root,
       )}
       data-slot="card"
     >
@@ -47,25 +55,37 @@ function Card({
           data-slot="card-header"
         >
           {(!!badgeText || !!status) && (
-            <div className="flex items-start justify-between gap-2">
-              <Badge className="mb-2 text-xs" variant={badgeVariant}>
+            <div>
+              <Badge
+                className={clsx(classes?.badge, 'mb-2 text-xs float-left')}
+                variant={badgeVariant}
+              >
                 {badgeText}
               </Badge>
-              <Badge className={clsx([statusClass, 'text-xs'])} variant="plain">
+              <Badge
+                className={clsx([classes?.status, 'text-xs float-right'])}
+                variant="plain"
+              >
                 {status}
               </Badge>
             </div>
           )}
-          {!!title && (
-            <h3
-              className={clsx(['leading-none', titleClass])}
-              data-slot="card-title"
-            >
-              {title}
-            </h3>
+          {(!!title || !!action) && (
+            <div className="flex gap-4 items-center mb-2">
+              <h3
+                className={clsx(['flex-1 leading-none', classes?.title])}
+                data-slot="card-title"
+              >
+                {title}
+              </h3>
+              <div>{action}</div>
+            </div>
           )}
           {!!description && (
-            <div className="text-muted-foreground" data-slot="card-description">
+            <div
+              className={clsx(classes?.description, 'text-muted-foreground')}
+              data-slot="card-description"
+            >
               {description}
             </div>
           )}
@@ -73,7 +93,7 @@ function Card({
       )}
 
       <div
-        className={clsx(['px-6 [&:last-child]:pb-6', childrenClass])}
+        className={clsx(['px-6 [&:last-child]:pb-6', classes?.children])}
         data-slot="card-content"
       >
         {children}
@@ -81,7 +101,10 @@ function Card({
 
       {!!footer && (
         <div
-          className="flex items-center px-6 pb-6 [.border-t]:pt-6"
+          className={clsx(
+            classes?.footer,
+            'flex items-center px-6 pb-6 [.border-t]:pt-6',
+          )}
           data-slot="card-footer"
         >
           {footer}

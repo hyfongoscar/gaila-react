@@ -12,12 +12,11 @@ export interface Assignment {
   due_date?: number;
   type?: string;
   instructions?: string;
+  tips?: string[];
   min_word_count?: number;
   max_word_count?: number;
   rubrics?: RubricItem[];
   status: 'upcoming' | 'in-progress' | 'submitted' | 'graded' | 'past-due';
-  enrolled_classes: ClassOption[];
-  enrolled_students: UserOption[];
 }
 
 export interface AssignmentListingResponse extends ListingResponse {
@@ -27,6 +26,11 @@ export interface AssignmentListingResponse extends ListingResponse {
 export interface StudentAssignmentListingItem extends Assignment {
   word_count: number;
   last_modified: string;
+}
+
+export interface AssignmentDetails extends Assignment {
+  enrolled_classes: ClassOption[];
+  enrolled_students: UserOption[];
 }
 
 // TODO: total students
@@ -51,4 +55,18 @@ export interface AssignmentSubmission {
   word_count: number;
   last_modified: string;
   assignment_id: number;
+}
+
+export interface TeacherGrade {
+  overallScore: number;
+  totalPoints: number;
+  criteriaScores: {
+    criteria: string;
+    score: number;
+    maxPoints: number;
+    feedback: string;
+  }[];
+  overallFeedback: string;
+  gradedBy: string;
+  gradedDate: string;
 }

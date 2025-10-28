@@ -33,15 +33,17 @@ const AssignmentCard = ({ assignment }: Props) => {
   const onViewAssignment = useCallback((id: number) => {}, []);
   const onEditAssignment = useCallback(
     (id: number) => {
-      navigate(pathnames.assignmentEdit(String(id)));
+      navigate(pathnames.assignmentEditDetails(String(id)));
     },
     [navigate],
   );
 
   return (
     <Card
-      childrenClass="space-y-4"
-      className="hover:shadow-md transition-shadow"
+      classes={{
+        root: 'hover:shadow-md transition-shadow',
+        children: 'space-y-4',
+      }}
       description={
         <>
           {getStatusBadge(assignment.status)}

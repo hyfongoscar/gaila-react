@@ -46,7 +46,7 @@ const LoginForm = () => {
 
   return (
     <form onSubmit={onSubmit}>
-      <Card childrenClass="flex flex-col gap-4 w-md" title="Login">
+      <Card classes={{ children: 'flex flex-col gap-4 w-md' }} title="Login">
         <TextInput
           label="Username"
           onChange={e => setUsername(e.target.value)}

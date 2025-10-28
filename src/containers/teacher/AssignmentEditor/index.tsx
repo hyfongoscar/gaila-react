@@ -52,7 +52,7 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
     useMutation(apiCreateAssignment, {
       onSuccess: res => {
         successMsg('Assignment created successfully');
-        navigate(pathnames.assignmentEdit(String(res.id)));
+        navigate(pathnames.assignmentEditDetails(String(res.id)));
       },
       onError: error => {
         errorMsg(error);
@@ -200,7 +200,7 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
       onSubmit={e => e.preventDefault()}
     >
       <Card
-        childrenClass="space-y-6"
+        classes={{ children: 'space-y-6' }}
         title={isEditing ? 'Edit Assignment' : 'Create New Assignment'}
       >
         {/* Basic Information */}

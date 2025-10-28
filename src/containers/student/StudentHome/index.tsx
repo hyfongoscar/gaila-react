@@ -139,9 +139,9 @@ export function StudentHome() {
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-bold">My Essays</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold">My Assignments</h2>
           <p className="text-muted-foreground mt-1 sm:mt-2 text-sm sm:text-base">
-            Manage your essays and track your writing progress
+            Manage your assignments and track your progress
           </p>
         </div>
       </div>
@@ -263,7 +263,10 @@ export function StudentHome() {
       <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {essays.map(essay => (
           <Card
-            className="hover:shadow-md transition-shadow"
+            classes={{
+              root: 'hover:shadow-md transition-shadow',
+              status: getStatusClass(essay.status),
+            }}
             description={essay.description}
             footer={
               <Button
@@ -277,7 +280,6 @@ export function StudentHome() {
             }
             key={essay.id}
             status={getStatusText(essay.status)}
-            statusClass={getStatusClass(essay.status)}
             title={essay.title}
           >
             {/* <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">

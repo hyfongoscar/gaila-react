@@ -11,6 +11,7 @@ interface Props {
   children?: React.ReactNode;
   label?: string;
   onClick?(e: React.MouseEvent<HTMLElement, MouseEvent>): void;
+  onMouseDown?(e: React.MouseEvent<HTMLElement, MouseEvent>): void;
   onKeyDown?(e: React.KeyboardEvent<HTMLElement>): void;
   loading?: boolean;
   disabled?: boolean;
@@ -24,6 +25,7 @@ function Clickable(
     children,
     label,
     onClick,
+    onMouseDown,
     onKeyDown,
     loading = false,
     disabled = false,
@@ -59,6 +61,7 @@ function Clickable(
       ])}
       onClick={onClickHandler}
       onKeyDown={onKeyDownHandler}
+      onMouseDown={onMouseDown}
       ref={ref}
       role="button"
       style={style}
