@@ -298,6 +298,7 @@ const EssayEditorTools = ({ essayContent }: Props) => {
         classes={{
           title: 'flex items-center gap-2 text-base',
           children: 'space-y-3',
+          root: '!p-4',
         }}
         title={
           <>
@@ -369,6 +370,7 @@ const EssayEditorTools = ({ essayContent }: Props) => {
         classes={{
           title: 'flex items-center gap-2 text-base',
           children: 'space-y-3',
+          root: '!p-4',
         }}
         title={
           <>
@@ -477,6 +479,7 @@ const EssayEditorTools = ({ essayContent }: Props) => {
         classes={{
           title: 'flex items-center gap-2 text-base',
           children: 'space-y-3',
+          root: '!p-4',
         }}
         title={
           <>

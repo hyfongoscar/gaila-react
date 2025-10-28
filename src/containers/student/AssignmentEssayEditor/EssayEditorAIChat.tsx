@@ -146,7 +146,7 @@ const EssayEditorAIChat = () => {
     <div className="space-y-4">
       <Card
         classes={{
-          root: 'flex flex-col h-[calc(100vh-200px)] ',
+          root: 'flex flex-col h-[calc(100vh-200px)] !p-4',
           title: 'flex items-center gap-2 text-base',
           children: 'flex flex-col flex-1 p-0 overflow-hidden',
         }}
@@ -214,7 +214,7 @@ const EssayEditorAIChat = () => {
           )}
         </div>
 
-        <div className="px-4 py-2 border-t">
+        <div className="py-2 border-t">
           <p className="text-xs text-muted-foreground mb-2">Suggested:</p>
           <div className="grid grid-cols-2 gap-2">
             {suggestedPrompts.map((prompt, index) => (
@@ -232,7 +232,7 @@ const EssayEditorAIChat = () => {
           </div>
         </div>
 
-        <div className="px-4 py-3 border-t">
+        <div className="py-3 border-t">
           <div className="flex gap-2">
             <TextInput
               className="text-sm"

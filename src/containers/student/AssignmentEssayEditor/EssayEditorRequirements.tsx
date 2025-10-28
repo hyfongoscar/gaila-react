@@ -27,7 +27,7 @@ const EssayEditorRequirements = ({ teacherGrade, assignment }: Props) => {
       {!!teacherGrade && (
         <Card
           classes={{
-            root: 'border-purple-200 bg-gradient-to-br from-purple-50 to-white',
+            root: 'border-purple-200 bg-gradient-to-br from-purple-50 to-white !p-4',
             title: 'flex items-center gap-2 text-base',
             children: 'space-y-4',
           }}
@@ -101,6 +101,7 @@ const EssayEditorRequirements = ({ teacherGrade, assignment }: Props) => {
         classes={{
           children: 'space-y-3',
           title: 'flex items-center gap-2 text-base',
+          root: '!p-4',
         }}
         title={
           <>
@@ -118,6 +119,7 @@ const EssayEditorRequirements = ({ teacherGrade, assignment }: Props) => {
         classes={{
           children: 'space-y-3',
           title: 'flex items-center gap-2 text-base',
+          root: '!p-4',
         }}
         title={
           <>
@@ -140,6 +142,7 @@ const EssayEditorRequirements = ({ teacherGrade, assignment }: Props) => {
           classes={{
             children: 'space-y-2',
             title: 'flex items-center gap-2 text-base',
+            root: '!p-4',
           }}
           title={
             <>
@@ -178,6 +181,7 @@ const EssayEditorRequirements = ({ teacherGrade, assignment }: Props) => {
           classes={{
             children: 'space-y-2',
             title: 'flex items-center gap-2 text-base',
+            root: '!p-4',
           }}
           title={
             <>

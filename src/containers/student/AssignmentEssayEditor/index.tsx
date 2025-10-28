@@ -170,7 +170,7 @@ The transition to a sustainable future requires collective action from governmen
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, []);
+  }, [handleMouseMove, handleMouseUp]);
 
   return (
     <div className="space-y-6">
