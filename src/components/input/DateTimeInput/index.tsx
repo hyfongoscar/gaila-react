@@ -22,7 +22,10 @@ const DateTimeInput = ({
   onChange: inputOnChange,
   size = 'small',
 }: Props) => {
-  const value = useMemo(() => dayjs(inputValue), [inputValue]);
+  const value = useMemo(
+    () => (inputValue ? dayjs(inputValue) : null),
+    [inputValue],
+  );
 
   const onChange = useCallback(
     (value: Dayjs | null) => {

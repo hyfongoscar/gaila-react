@@ -2,7 +2,7 @@ import React from 'react';
 
 import { CheckCircle, Clock, FileText } from 'lucide-react';
 
-import Card from 'components/Card';
+import Card from 'components/display/Card';
 
 const ClassStatistics = () => {
   return (

@@ -11,15 +11,8 @@ import {
 import { useLocation, useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
-import Button from 'components/Button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from 'components/DropdownMenu';
+import DropdownMenu from 'components/display/DropdownMenu';
+import Button from 'components/input/Button';
 
 import useAuth from 'containers/auth/AuthProvider/useAuth';
 
@@ -61,13 +54,17 @@ export function TeacherHeader() {
     [currentView, navigate],
   );
 
-  const handleProfileEdit = () => {
-    window.alert('Profile editing coming soon!');
-  };
-
-  const handleLogout = useCallback(() => {
-    logoutAction();
-  }, [logoutAction]);
+  // TODO: profile edit, profile details in menu
+  const handleMenuClick = useCallback(
+    (key: string) => {
+      if (key === 'profile') {
+        window.alert('Profile editing coming soon!');
+      } else if (key === 'logout') {
+        logoutAction();
+      }
+    },
+    [logoutAction],
+  );
 
   return (
     <header className="border-b bg-card sticky top-0 z-50">
@@ -115,35 +112,34 @@ export function TeacherHeader() {
 
           {/* User Menu */}
           <div className="flex-shrink-0 w-[250px] flex justify-end">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <User className="h-4 w-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p>Teacher Name</p>
-                    <p className="text-xs text-muted-foreground">
-                      teacher@school.edu
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={handleProfileEdit}
-                >
-                  <User className="h-4 w-4" />
-                  <span>Edit Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={handleLogout}
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Logout</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
+            <DropdownMenu
+              items={[
+                {
+                  type: 'text',
+                  label: (
+                    <div className="flex flex-col space-y-1">
+                      <p>Teacher Name</p>
+                      <p className="text-xs text-muted-foreground">
+                        teacher@school.edu
+                      </p>
+                    </div>
+                  ),
+                },
+                { type: 'divider' },
+                {
+                  key: 'profile',
+                  icon: <User className="h-4 w-4" />,
+                  label: <span>Edit Profile</span>,
+                },
+                {
+                  key: 'logout',
+                  icon: <LogOut className="h-4 w-4" />,
+                  label: <span>Logout</span>,
+                },
+              ]}
+              onClick={handleMenuClick}
+            >
+              <User className="h-4 w-4" />
             </DropdownMenu>
           </div>
         </div>

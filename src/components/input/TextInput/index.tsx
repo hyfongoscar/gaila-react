@@ -4,11 +4,16 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import clsx from 'clsx';
 
-type Props = { icon?: React.ReactNode } & React.ComponentProps<
-  typeof TextField
->;
+type DeprecatedInputTypes = 'number' | 'search' | 'tel' | 'url';
 
-const TextInput = ({
+type Props<T extends React.HTMLInputTypeAttribute> = React.ComponentProps<
+  typeof TextField
+> & {
+  icon?: React.ReactNode;
+  type?: T extends DeprecatedInputTypes ? never : T;
+};
+
+const TextInput = <T extends React.HTMLInputTypeAttribute>({
   className,
   label,
   multiline,
@@ -17,7 +22,7 @@ const TextInput = ({
   type,
   icon,
   ...props
-}: Props) => {
+}: Props<T>) => {
   return (
     <TextField
       className={clsx(['w-full', className])}

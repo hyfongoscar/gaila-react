@@ -1,6 +1,9 @@
 import { callAPIHandler } from 'api/_base';
-import type { Assignment, RubricItem } from 'types/assignment';
-import { type ClassListingResponse } from 'types/class';
+import type {
+  Assignment,
+  AssignmentListingResponse,
+  RubricItem,
+} from 'types/assignment';
 
 export const apiGetAssignments = async ({
   queryKey,
@@ -8,7 +11,7 @@ export const apiGetAssignments = async ({
   queryKey: [string, { page: number; limit: number; filter: string }];
 }) => {
   const [, { page, limit, filter }] = queryKey;
-  const res = await callAPIHandler<ClassListingResponse>(
+  const res = await callAPIHandler<AssignmentListingResponse>(
     'get',
     '/api/assignment/listing',
     { page, limit, filter },

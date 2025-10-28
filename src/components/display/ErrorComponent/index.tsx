@@ -5,7 +5,7 @@ import { TriangleAlert } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
-import Button from 'components/Button';
+import Button from 'components/input/Button';
 
 import getErrorMessage from 'utils/response/error';
 

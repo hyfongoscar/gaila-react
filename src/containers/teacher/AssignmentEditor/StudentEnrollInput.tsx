@@ -4,11 +4,11 @@ import { isNumber } from 'lodash-es';
 import { Check, UserPlus, Users, X } from 'lucide-react';
 import { useQuery } from 'react-query';
 
-import Badge from 'components/Badge';
-import Button from 'components/Button';
-import Label from 'components/Label';
-import Popover from 'components/Popover';
-import Command, { CommandItem } from 'components/Popover/Command';
+import Badge from 'components/display/Badge';
+import Label from 'components/display/Label';
+import Popover from 'components/display/Popover';
+import Command, { CommandItem } from 'components/display/Popover/Command';
+import Button from 'components/input/Button';
 
 import { apiGetClassOptions, apiGetStudentOptions } from 'api/user';
 import type { ClassOption } from 'types/class';

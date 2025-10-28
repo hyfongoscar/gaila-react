@@ -5,9 +5,9 @@ import qs from 'query-string';
 import { useMutation } from 'react-query';
 import { useLocation } from 'react-router';
 
-import Button from 'components/Button';
-import Card from 'components/Card';
-import TextInput from 'components/TextInput';
+import Card from 'components/display/Card';
+import Button from 'components/input/Button';
+import TextInput from 'components/input/TextInput';
 
 import { type ServerAuthToken, apiUserLogin } from 'api/auth';
 

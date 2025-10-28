@@ -3,7 +3,7 @@ import React, { type ComponentProps } from 'react';
 import MuiPopover from '@mui/material/Popover';
 import clsx from 'clsx';
 
-import Button from 'components/Button';
+import Button from 'components/input/Button';
 
 type Props = {
   buttonText: React.ReactNode;

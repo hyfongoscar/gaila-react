@@ -5,14 +5,15 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
-import Button from 'components/Button';
-import Card from 'components/Card';
-import DateTimeInput from 'components/DateTimeInput';
-import ErrorComponent from 'components/ErrorComponent';
-import Label from 'components/Label';
-import SelectInput from 'components/SelectInput';
-import Separator from 'components/Separator';
-import TextInput from 'components/TextInput';
+import Card from 'components/display/Card';
+import Divider from 'components/display/Divider';
+import ErrorComponent from 'components/display/ErrorComponent';
+import Label from 'components/display/Label';
+import Button from 'components/input/Button';
+import DateTimeInput from 'components/input/DateTimeInput';
+import NumberInput from 'components/input/NumberInput';
+import SelectInput from 'components/input/SelectInput';
+import TextInput from 'components/input/TextInput';
 
 import useAlert from 'containers/common/AlertProvider/useAlert';
 import StudentEnrollInput from 'containers/teacher/AssignmentEditor/StudentEnrollInput';
@@ -51,7 +52,7 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
     useMutation(apiCreateAssignment, {
       onSuccess: res => {
         successMsg('Assignment created successfully');
-        navigate(pathnames.assignmentEdit(res.id));
+        navigate(pathnames.assignmentEdit(String(res.id)));
       },
       onError: error => {
         errorMsg(error);
@@ -121,11 +122,11 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
   );
 
   const handleRubricChange = useCallback(
-    (index: number, field: keyof RubricItem, value: string | number) => {
+    (index: number, field: keyof RubricItem, value: string | number | null) => {
       const newRubric = [...rubrics];
       let newValue = value;
-      if (field === 'points') {
-        newValue = parseInt(value as string) || 0;
+      if (field === 'points' && newValue === null) {
+        newValue = 1;
       }
       newRubric[index] = { ...newRubric[index], [field]: newValue };
       setRubrics(newRubric);
@@ -260,7 +261,7 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
           </div>
         </div>
 
-        <Separator />
+        <Divider />
 
         {/* Essay Prompt */}
         <div className="space-y-2">
@@ -275,7 +276,7 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
           />
         </div>
 
-        <Separator />
+        <Divider />
 
         {/* Requirements */}
         <div className="space-y-4">
@@ -284,31 +285,27 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="minWords">Minimum Words</Label>
-              <TextInput
+              <NumberInput
                 id="minWords"
-                onChange={e => {
-                  setMinWordCount(parseInt(e.target.value) || 0);
-                }}
-                type="number"
-                value={String(minWordCount)}
+                onChange={setMinWordCount}
+                value={minWordCount}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="maxWords">Maximum Words</Label>
-              <TextInput
+              <NumberInput
                 id="maxWords"
-                onChange={e => setMaxWordCount(parseInt(e.target.value) || 0)}
-                type="number"
-                value={String(maxWordCount)}
+                onChange={setMaxWordCount}
+                value={maxWordCount}
               />
             </div>
           </div>
         </div>
 
-        <Separator />
+        <Divider />
 
-        {/* Rubric */}
+        {/* Rubrics */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-medium">Grading Rubric</h3>
@@ -337,16 +334,15 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
                         value={item.criteria}
                       />
                     </div>
-                    <div className="w-24">
-                      <TextInput
-                        onChange={e =>
-                          handleRubricChange(index, 'points', e.target.value)
-                        }
-                        placeholder="Points"
-                        type="number"
-                        value={item.points}
-                      />
-                    </div>
+                    <NumberInput
+                      inputClass="!w-24"
+                      min={1}
+                      onChange={value =>
+                        handleRubricChange(index, 'points', value)
+                      }
+                      size="sm"
+                      value={item.points}
+                    />
                   </div>
                   <TextInput
                     minRows={2}
@@ -378,7 +374,7 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
           </div>
         </div>
 
-        <Separator />
+        <Divider />
 
         <StudentEnrollInput
           enrolledClasses={enrolledClasses}
@@ -387,7 +383,7 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
           setEnrolledStudents={setEnrolledStudents}
         />
 
-        <Separator />
+        <Divider />
 
         <div className="flex justify-between">
           <Button onClick={onBack} variant="outline">

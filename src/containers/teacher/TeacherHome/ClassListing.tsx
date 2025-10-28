@@ -3,9 +3,9 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Eye, Search } from 'lucide-react';
 import { useQuery } from 'react-query';
 
-import Button from 'components/Button';
-import Table from 'components/Table';
-import TextInput from 'components/TextInput';
+import Table from 'components/display/Table';
+import Button from 'components/input/Button';
+import TextInput from 'components/input/TextInput';
 
 import { apiGetClasses } from 'api/class';
 import tuple from 'utils/types/tuple';

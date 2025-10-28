@@ -1,99 +1,31 @@
 import React, { useCallback, useState } from 'react';
 
 import { Plus, Search } from 'lucide-react';
+import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
-import Button from 'components/Button';
-import TextInput from 'components/TextInput';
+import Button from 'components/input/Button';
+import { Pagination } from 'components/input/Pagination';
+import TextInput from 'components/input/TextInput';
 
 import AssignmentCard from 'containers/teacher/TeacherAssignments/AssignmentCard';
 
-import type { TeacherAssignment } from 'types/assignment';
+import { apiGetAssignments } from 'api/assignment';
+import type { TeacherAssignmentListingItem } from 'types/assignment';
+import tuple from 'utils/types/tuple';
 
 export function TeacherAssignments() {
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Mock assignments data
-  const assignments: TeacherAssignment[] = [
-    {
-      id: '1',
-      title: 'Climate Change Impact Essay',
-      description:
-        'Write an argumentative essay analyzing the impact of climate change on global ecosystems.',
-      due_date: 0,
-      total_students: 32,
-      submitted: 28,
-      graded: 24,
-      avgScore: 86,
-      status: 'in-progress',
-      enrolled_classes: [],
-      enrolled_students: [],
-    },
-    {
-      id: '2',
-      title: 'Shakespeare Analysis',
-      description:
-        'Analyze the themes and character development in Romeo and Juliet.',
-      due_date: 0,
-      total_students: 32,
-      submitted: 15,
-      graded: 15,
-      avgScore: 88,
-      status: 'in-progress',
-      enrolled_classes: [],
-      enrolled_students: [],
-    },
-    {
-      id: '3',
-      title: 'Historical Event Research',
-      description:
-        'Research and write about a significant historical event from the 20th century.',
-      due_date: 0,
-      total_students: 32,
-      submitted: 0,
-      graded: 0,
-      avgScore: null,
-      status: 'upcoming',
-      enrolled_classes: [],
-      enrolled_students: [],
-    },
-    {
-      id: '4',
-      title: 'Personal Narrative Essay',
-      description:
-        'Write a personal narrative about a transformative experience.',
-      due_date: 0,
-      total_students: 32,
-      submitted: 32,
-      graded: 32,
-      avgScore: 84,
-      status: 'past-due',
-      enrolled_classes: [],
-      enrolled_students: [],
-    },
-    {
-      id: '5',
-      title: 'Scientific Method Report',
-      description:
-        'Document your experiment using proper scientific methodology.',
-      due_date: 0,
-      total_students: 32,
-      submitted: 30,
-      graded: 28,
-      avgScore: 82,
-      status: 'in-progress',
-      enrolled_classes: [],
-      enrolled_students: [],
-    },
-  ];
-
-  const filteredAssignments = assignments.filter(
-    a =>
-      a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+  const { data } = useQuery(
+    tuple([
+      apiGetAssignments.queryKey,
+      { page: 1, limit: 10, filter: searchQuery },
+    ]),
+    apiGetAssignments,
   );
 
   const onCreateAssignment = useCallback(() => {
@@ -126,10 +58,14 @@ export function TeacherAssignments() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredAssignments.map(assignment => (
-          <AssignmentCard assignment={assignment} key={assignment.id} />
+        {data?.value.map(assignment => (
+          <AssignmentCard
+            assignment={assignment as TeacherAssignmentListingItem}
+            key={assignment.id}
+          />
         ))}
       </div>
+      <Pagination />
     </div>
   );
 }

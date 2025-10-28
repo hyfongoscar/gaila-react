@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
-import Button from 'components/Button';
+import Button from 'components/input/Button';
 
 import AuthPageWrapper from 'containers/auth/AuthPageWrapper';
 import AssignmentEditor from 'containers/teacher/AssignmentEditor';

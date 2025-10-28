@@ -5,20 +5,20 @@ import { Calendar, Edit, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
-import Badge from 'components/Badge';
-import Button from 'components/Button';
-import Card from 'components/Card';
+import Badge from 'components/display/Badge';
+import Card from 'components/display/Card';
+import Button from 'components/input/Button';
 
-import type { TeacherAssignment } from 'types/assignment';
+import type { TeacherAssignmentListingItem } from 'types/assignment';
 
 type Props = {
-  assignment: TeacherAssignment;
+  assignment: TeacherAssignmentListingItem;
 };
 
 const AssignmentCard = ({ assignment }: Props) => {
   const navigate = useNavigate();
 
-  const getStatusBadge = (status: TeacherAssignment['status']) => {
+  const getStatusBadge = (status: TeacherAssignmentListingItem['status']) => {
     if (status === 'in-progress')
       return <Badge variant="primary">In Progress</Badge>;
     if (status === 'upcoming')
@@ -30,10 +30,10 @@ const AssignmentCard = ({ assignment }: Props) => {
     return Math.round((submitted / total) * 100);
   };
 
-  const onViewAssignment = useCallback((id: string) => {}, []);
+  const onViewAssignment = useCallback((id: number) => {}, []);
   const onEditAssignment = useCallback(
-    (id: string) => {
-      navigate(pathnames.assignmentEdit('1'));
+    (id: number) => {
+      navigate(pathnames.assignmentEdit(String(id)));
     },
     [navigate],
   );

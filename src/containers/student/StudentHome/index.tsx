@@ -2,13 +2,13 @@ import React, { useCallback, useState } from 'react';
 
 import { Clock, Edit, FileText, Filter, Search, SortAsc } from 'lucide-react';
 
-import Badge from 'components/Badge';
-import Button from 'components/Button';
-import Card from 'components/Card';
-import SelectInput from 'components/SelectInput';
-import TextInput from 'components/TextInput';
+import Badge from 'components/display/Badge';
+import Card from 'components/display/Card';
+import Button from 'components/input/Button';
+import SelectInput from 'components/input/SelectInput';
+import TextInput from 'components/input/TextInput';
 
-import type { Assignment, StudentAssignment } from 'types/assignment';
+import type { Assignment } from 'types/assignment';
 
 const getStatusClass = (status: string) => {
   switch (status) {
@@ -41,75 +41,75 @@ const getStatusText = (status: string) => {
 };
 
 // FIXME: Mock data for essays
-const essays: StudentAssignment[] = [
-  {
-    id: '1',
-    title: 'ABC College - Climate Change Impact Essay',
-    description:
-      'An argumentative essay about environmental issues and their global effects',
-    word_count: 850,
-    last_modified: '2 hours ago',
-    status: 'in-progress',
-    due_date: 0,
-    enrolled_classes: [],
-    enrolled_students: [],
-  },
-  {
-    id: '2',
-    title: 'Story Writing',
-    description: 'Character analysis and themes in the classic tragedy',
-    word_count: 1200,
-    last_modified: '1 day ago',
-    status: 'graded',
-    due_date: 0,
-    enrolled_classes: [],
-    enrolled_students: [],
-  },
-  {
-    id: '3',
-    title: 'World War II Historical Essay',
-    description: 'Causes and consequences of the Second World War',
-    word_count: 450,
-    last_modified: '3 days ago',
-    status: 'in-progress',
-    due_date: 0,
-    enrolled_classes: [],
-    enrolled_students: [],
-  },
-  {
-    id: '4',
-    title: 'The Geography of Urban Development',
-    description:
-      'Analysis of urbanization patterns and their environmental impact',
-    word_count: 920,
-    last_modified: '5 days ago',
-    status: 'in-progress',
-    due_date: 0,
-    enrolled_classes: [],
-    enrolled_students: [],
-  },
-  {
-    id: '5',
-    title: 'Political Philosophy in Modern Democracy',
-    description: 'Examining democratic principles and their implementation',
-    word_count: 300,
-    last_modified: '1 week ago',
-    status: 'in-progress',
-    due_date: 0,
-    enrolled_classes: [],
-    enrolled_students: [],
-  },
-  {
-    id: '6',
-    title: 'The Ethics of Artificial Intelligence',
-    description: 'Moral implications of AI development and deployment',
-    word_count: 1100,
-    last_modified: '2 weeks ago',
-    status: 'in-progress',
-    due_date: 0,
-    enrolled_classes: [],
-    enrolled_students: [],
-  },
+const essays: Assignment[] = [
+  // {
+  //   id: 1,
+  //   title: 'ABC College - Climate Change Impact Essay',
+  //   description:
+  //     'An argumentative essay about environmental issues and their global effects',
+  //   word_count: 850,
+  //   last_modified: '2 hours ago',
+  //   status: 'in-progress',
+  //   due_date: 0,
+  //   enrolled_classes: [],
+  //   enrolled_students: [],
+  // },
+  // {
+  //   id: 2,
+  //   title: 'Story Writing',
+  //   description: 'Character analysis and themes in the classic tragedy',
+  //   word_count: 1200,
+  //   last_modified: '1 day ago',
+  //   status: 'graded',
+  //   due_date: 0,
+  //   enrolled_classes: [],
+  //   enrolled_students: [],
+  // },
+  // {
+  //   id: 3,
+  //   title: 'World War II Historical Essay',
+  //   description: 'Causes and consequences of the Second World War',
+  //   word_count: 450,
+  //   last_modified: '3 days ago',
+  //   status: 'in-progress',
+  //   due_date: 0,
+  //   enrolled_classes: [],
+  //   enrolled_students: [],
+  // },
+  // {
+  //   id: 4,
+  //   title: 'The Geography of Urban Development',
+  //   description:
+  //     'Analysis of urbanization patterns and their environmental impact',
+  //   word_count: 920,
+  //   last_modified: '5 days ago',
+  //   status: 'in-progress',
+  //   due_date: 0,
+  //   enrolled_classes: [],
+  //   enrolled_students: [],
+  // },
+  // {
+  //   id: 5,
+  //   title: 'Political Philosophy in Modern Democracy',
+  //   description: 'Examining democratic principles and their implementation',
+  //   word_count: 300,
+  //   last_modified: '1 week ago',
+  //   status: 'in-progress',
+  //   due_date: 0,
+  //   enrolled_classes: [],
+  //   enrolled_students: [],
+  // },
+  // {
+  //   id: 6,
+  //   title: 'The Ethics of Artificial Intelligence',
+  //   description: 'Moral implications of AI development and deployment',
+  //   word_count: 1100,
+  //   last_modified: '2 weeks ago',
+  //   status: 'in-progress',
+  //   due_date: 0,
+  //   enrolled_classes: [],
+  //   enrolled_students: [],
+  // },
 ];
 
 export function StudentHome() {
@@ -124,7 +124,7 @@ export function StudentHome() {
     statusFilter !== 'all' ||
     sortBy !== 'modified';
 
-  const onEditEssay = useCallback((id: string, status: string) => {
+  const onEditEssay = useCallback((id: number, status: string) => {
     console.log(id, status);
   }, []);
 
@@ -280,7 +280,7 @@ export function StudentHome() {
             statusClass={getStatusClass(essay.status)}
             title={essay.title}
           >
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+            {/* <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
                 {essay.word_count} words
@@ -289,7 +289,8 @@ export function StudentHome() {
                 <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
                 {essay.last_modified}
               </div>
-            </div>
+            </div> */}
+            Test
           </Card>
         ))}
       </div>

@@ -3,11 +3,11 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Eye, Search } from 'lucide-react';
 import { useQuery } from 'react-query';
 
-import Badge from 'components/Badge';
-import Button from 'components/Button';
-import Card from 'components/Card';
-import Table from 'components/Table';
-import TextInput from 'components/TextInput';
+import Badge from 'components/display/Badge';
+import Card from 'components/display/Card';
+import Table from 'components/display/Table';
+import Button from 'components/input/Button';
+import TextInput from 'components/input/TextInput';
 
 import { apiGetClasses } from 'api/class';
 import tuple from 'utils/types/tuple';
