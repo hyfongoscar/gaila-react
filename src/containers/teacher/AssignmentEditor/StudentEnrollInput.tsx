@@ -102,9 +102,9 @@ const StudentEnrollInput = ({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-medium after:text-destructive after:content-['*']">
+          <h4 className="font-medium after:text-destructive after:content-['*']">
             Student Enrollment
-          </h3>
+          </h4>
           <p className="text-sm text-muted-foreground mt-1">
             Assign this essay to classes or individual students
           </p>
@@ -253,25 +253,23 @@ const StudentEnrollInput = ({
             </Label>
             <div className="space-y-2">
               {enrolledClasses.map(cls => {
-                const classInfo = availableClasses?.find(c => c.id === cls.id);
-                if (!classInfo) return null;
                 return (
                   <div
                     className="flex items-center justify-between p-2 bg-muted rounded-md"
-                    key={classInfo.id}
+                    key={cls.id}
                   >
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-muted-foreground" />
                       <div>
-                        <p className="text-sm font-medium">{classInfo.name}</p>
+                        <p className="text-sm font-medium">{cls.name}</p>
                         <p className="text-xs text-muted-foreground">
-                          {classInfo.num_students} students
+                          {cls.num_students} students
                         </p>
                       </div>
                     </div>
                     {!viewOnly && (
                       <Button
-                        onClick={() => handleRemoveClass(classInfo.id)}
+                        onClick={() => handleRemoveClass(cls.id)}
                         size="icon"
                         variant="ghost"
                       >
@@ -293,23 +291,19 @@ const StudentEnrollInput = ({
             </Label>
             <div className="space-y-2">
               {enrolledStudents.map(student => {
-                const studentInfo = availableStudents?.find(
-                  s => s.id === student.id,
-                );
-                if (!studentInfo) return null;
                 return (
                   <div
                     className="flex items-center justify-between p-2 bg-muted rounded-md"
-                    key={studentInfo.id}
+                    key={student.id}
                   >
                     <div>
                       <p className="text-sm font-medium">
-                        {getStudentName(studentInfo)}
+                        {getStudentName(student)}
                       </p>
                     </div>
                     {!viewOnly && (
                       <Button
-                        onClick={() => handleRemoveStudent(studentInfo.id)}
+                        onClick={() => handleRemoveStudent(student.id)}
                         size="icon"
                         variant="ghost"
                       >

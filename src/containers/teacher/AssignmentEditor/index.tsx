@@ -280,7 +280,7 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
 
         {/* Requirements */}
         <div className="space-y-4">
-          <h3 className="font-medium">Requirements</h3>
+          <h4 className="font-medium">Requirements</h4>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -308,7 +308,7 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
         {/* Rubrics */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-medium">Grading Rubric</h3>
+            <h4 className="font-medium">Grading Rubric</h4>
             <Button
               className="gap-2"
               onClick={handleAddRubricItem}

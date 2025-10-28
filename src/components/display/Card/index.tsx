@@ -57,12 +57,12 @@ function Card({
             </div>
           )}
           {!!title && (
-            <h4
+            <h3
               className={clsx(['leading-none', titleClass])}
               data-slot="card-title"
             >
               {title}
-            </h4>
+            </h3>
           )}
           {!!description && (
             <div className="text-muted-foreground" data-slot="card-description">
