@@ -44,9 +44,12 @@ export interface AssignmentCreatePayload {
   due_date?: number;
   type?: string;
   instructions?: string;
-  min_word_count?: number | null;
-  max_word_count?: number | null;
+  requirements?: {
+    min_word_count?: number | null;
+    max_word_count?: number | null;
+  };
   rubrics?: RubricItem[];
+  tips?: string[];
   enrolled_class_ids?: number[];
   enrolled_student_ids?: number[];
 }

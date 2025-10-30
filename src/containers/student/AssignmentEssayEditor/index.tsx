@@ -46,8 +46,10 @@ The transition to a sustainable future requires collective action from governmen
     due_date: 1761668316000,
     description:
       'Write an argumentative essay analyzing the impact of climate change on global ecosystems and human society.',
-    min_word_count: 800,
-    max_word_count: 1200,
+    requirements: {
+      min_word_count: 800,
+      max_word_count: 1200,
+    },
     rubrics: [
       { criteria: 'Thesis and Argument', description: '', points: 25 },
       { criteria: 'Evidence and Sources', description: '', points: 25 },
@@ -119,8 +121,8 @@ The transition to a sustainable future requires collective action from governmen
     : null;
 
   const getWordCountStatus = () => {
-    const min = assignment.min_word_count || 0;
-    const max = assignment.max_word_count || 0;
+    const min = assignment.requirements?.min_word_count || 0;
+    const max = assignment.requirements?.max_word_count || 0;
 
     if (wordCount < min) {
       return {

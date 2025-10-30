@@ -12,18 +12,21 @@ type Props = {
 };
 
 const AuthPageWrapper = ({ allowRoles, children }: Props) => {
-  const { isLoggedIn, role } = useAuth();
+  const { isLoaded, isLoggedIn, role } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
+    if (!isLoaded) {
+      return;
+    }
     if (!isLoggedIn) {
       navigate(pathnames.login(location.pathname), { replace: true });
     }
     if (allowRoles && role && !allowRoles.includes(role)) {
       navigate(pathnames.home(), { replace: true });
     }
-  }, [allowRoles, isLoggedIn, location.pathname, navigate, role]);
+  }, [allowRoles, isLoaded, isLoggedIn, location.pathname, navigate, role]);
 
   if (!isLoggedIn || !role) {
     return null;

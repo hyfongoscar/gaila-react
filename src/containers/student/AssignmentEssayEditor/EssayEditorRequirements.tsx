@@ -131,7 +131,8 @@ const EssayEditorRequirements = ({ teacherGrade, assignment }: Props) => {
           <div className="flex justify-between">
             <span className="text-muted-foreground">Word Count:</span>
             <span>
-              {assignment.min_word_count}-{assignment.max_word_count}
+              {assignment.requirements?.min_word_count}-
+              {assignment.requirements?.max_word_count}
             </span>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Plus, Save, X } from 'lucide-react';
+import { CircleCheckBig, Plus, Save, X } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router';
 import { pathnames } from 'routes';
@@ -19,6 +19,7 @@ import useAlert from 'containers/common/AlertProvider/useAlert';
 import StudentEnrollInput from 'containers/teacher/AssignmentEditor/StudentEnrollInput';
 
 import {
+  type AssignmentCreatePayload,
   apiCreateAssignment,
   apiUpdateAssignment,
   apiViewAssignment,
@@ -26,6 +27,7 @@ import {
 import type { RubricItem } from 'types/assignment';
 import type { ClassOption } from 'types/class';
 import type { UserOption } from 'types/user';
+import isObjEmpty from 'utils/helper/isObjEmpty';
 import tuple from 'utils/types/tuple';
 
 interface AssignmentCreatorProps {
@@ -88,6 +90,7 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
     { criteria: 'Grammar', description: '', points: 7 },
     { criteria: 'Organization', description: '', points: 7 },
   ]);
+  const [tips, setTips] = useState<string[]>(['']);
   const [enrolledClasses, setEnrolledClasses] = useState<ClassOption[]>([]);
   const [enrolledStudents, setEnrolledStudents] = useState<UserOption[]>([]);
 
@@ -102,13 +105,33 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
     setDescription(assignmentData.description || '');
     setEssayType(assignmentData.type || '');
     setInsturctions(assignmentData.instructions || '');
-    setMinWordCount(assignmentData.min_word_count || null);
-    setMaxWordCount(assignmentData.max_word_count || null);
+    setMinWordCount(assignmentData.requirements?.min_word_count || null);
+    setMaxWordCount(assignmentData.requirements?.max_word_count || null);
     setDueDate(assignmentData.due_date || null);
     setRubrics(assignmentData.rubrics || []);
     setEnrolledClasses(assignmentData.enrolled_classes);
     setEnrolledStudents(assignmentData.enrolled_students);
   }, [assignmentData]);
+
+  const handleAddTipsItem = useCallback(() => {
+    setTips([...tips, '']);
+  }, [tips]);
+
+  const handleRemoveTipsItem = useCallback(
+    (index: number) => {
+      setTips(tips.filter((_, i) => i !== index));
+    },
+    [tips],
+  );
+
+  const handleTipsChange = useCallback(
+    (index: number, value: string) => {
+      const newTips = [...tips];
+      newTips[index] = value;
+      setTips(newTips);
+    },
+    [tips],
+  );
 
   const handleAddRubricItem = useCallback(() => {
     setRubrics([...rubrics, { criteria: '', description: '', points: 0 }]);
@@ -144,34 +167,30 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
   }, []);
 
   const handleSave = useCallback(() => {
-    if (isEditing) {
-      updateAssignment({
-        id: assignmentId as number,
-        title,
-        description,
-        type: essayType,
-        instructions,
-        min_word_count: minWordCount,
-        max_word_count: maxWordCount,
-        due_date: dueDate || undefined,
-        rubrics,
-        enrolled_class_ids: enrolledClasses.map(c => c.id),
-        enrolled_student_ids: enrolledStudents.map(c => c.id),
-      });
-      return;
-    }
-    createAssignment({
+    const assignmentPayload: AssignmentCreatePayload = {
       title,
       description,
       type: essayType,
       instructions,
-      min_word_count: minWordCount,
-      max_word_count: maxWordCount,
+      requirements: {
+        min_word_count: minWordCount,
+        max_word_count: maxWordCount,
+      },
       due_date: dueDate || undefined,
-      rubrics,
+      rubrics: isObjEmpty(rubrics) ? undefined : rubrics,
+      tips: isObjEmpty(tips) ? undefined : tips,
       enrolled_class_ids: enrolledClasses.map(c => c.id),
       enrolled_student_ids: enrolledStudents.map(c => c.id),
-    });
+    };
+
+    if (isEditing) {
+      updateAssignment({
+        id: assignmentId as number,
+        ...assignmentPayload,
+      });
+      return;
+    }
+    createAssignment(assignmentPayload);
   }, [
     assignmentId,
     createAssignment,
@@ -185,6 +204,7 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
     maxWordCount,
     minWordCount,
     rubrics,
+    tips,
     title,
     updateAssignment,
   ]);
@@ -274,6 +294,54 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
             rows={6}
             value={instructions}
           />
+        </div>
+
+        <Divider />
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h4 className="font-medium">Writing tips for students</h4>
+            <Button
+              className="gap-2"
+              onClick={handleAddTipsItem}
+              size="sm"
+              variant="outline"
+            >
+              <Plus className="h-4 w-4" />
+              Add Tips
+            </Button>
+          </div>
+
+          <div className="space-y-4">
+            {tips.map((tip, index) => (
+              <div className="flex gap-2 items-start" key={index}>
+                <div className="flex-1 space-y-2 flex gap-2 items-center">
+                  <CircleCheckBig className="mb-0" color="green" />
+                  <TextInput
+                    className="flex-1"
+                    onChange={e => handleTipsChange(index, e.target.value)}
+                    placeholder="e.g. Use active voice in a speech / Start with a compelling hook / Refer to textbook P. 124"
+                    value={tip}
+                  />
+                </div>
+                <Button
+                  disabled={tips.length === 1}
+                  onClick={() => handleRemoveTipsItem(index)}
+                  size="icon"
+                  variant="ghost"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-end">
+            <p className="text-sm text-muted-foreground">
+              Total Points:{' '}
+              <span className="font-medium text-foreground">{totalPoints}</span>
+            </p>
+          </div>
         </div>
 
         <Divider />

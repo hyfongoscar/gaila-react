@@ -13,8 +13,10 @@ export interface Assignment {
   type?: string;
   instructions?: string;
   tips?: string[];
-  min_word_count?: number;
-  max_word_count?: number;
+  requirements?: {
+    min_word_count?: number;
+    max_word_count?: number;
+  };
   rubrics?: RubricItem[];
   status: 'upcoming' | 'in-progress' | 'submitted' | 'graded' | 'past-due';
 }
