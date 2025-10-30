@@ -3,6 +3,7 @@ import type {
   Assignment,
   AssignmentDetails,
   AssignmentListingResponse,
+  AssignmentProgress,
   RubricItem,
 } from 'types/assignment';
 
@@ -63,3 +64,19 @@ export const apiUpdateAssignment = (
   assignment: { id: number } & Partial<AssignmentCreatePayload>,
 ): Promise<Assignment> =>
   callAPIHandler('post', '/api/assignment/update', { assignment }, true);
+
+export const apiViewAssignmenProgress = async ({
+  queryKey,
+}: {
+  queryKey: [string, number];
+}): Promise<AssignmentProgress> => {
+  const [, assignmentId] = queryKey;
+  const res = await callAPIHandler<AssignmentProgress>(
+    'get',
+    `/api/assignment/view-progress/${assignmentId}`,
+    {},
+    true,
+  );
+  return res;
+};
+apiViewAssignmenProgress.queryKey = '/api/assignment/view-progress/id';

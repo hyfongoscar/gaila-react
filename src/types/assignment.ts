@@ -2,9 +2,6 @@ import type { ClassOption } from 'types/class';
 import type { ListingResponse } from 'types/response';
 import type { UserOption } from 'types/user';
 
-// TODO: status
-// TODO: submissions
-// TODO: grades
 export interface Assignment {
   id: number;
   title: string;
@@ -35,6 +32,47 @@ export interface AssignmentDetails extends Assignment {
   enrolled_students: UserOption[];
 }
 
+export interface AssignmentStage {
+  id: number;
+  assignment_id: number;
+  stage_type: string;
+  order_index: number;
+  enabled: boolean;
+}
+
+export interface AssignmentSubmission {
+  id: number;
+  assignment_id: number;
+  stage_id: number;
+  student_id: number;
+  content?: string;
+  submitted_at?: number;
+  is_final?: boolean;
+}
+
+export interface AssignmentGrade {
+  id: number;
+  submission_id: number;
+  score: number;
+  score_breakdown?: {
+    criteria: string;
+    score: number;
+    max_score: number;
+    feedback: string;
+  }[];
+  feedback?: string;
+  graded_at?: number;
+  graded_by: string;
+}
+
+export interface AssignmentProgress {
+  assignment: Assignment;
+  stages: AssignmentStage & {
+    submissions: AssignmentSubmission[];
+    grade: AssignmentGrade | null;
+  };
+}
+
 // TODO: total students
 // TODO: submissions
 // TODO: graded
@@ -57,18 +95,4 @@ export interface AssignmentSubmission {
   word_count: number;
   last_modified: string;
   assignment_id: number;
-}
-
-export interface TeacherGrade {
-  overallScore: number;
-  totalPoints: number;
-  criteriaScores: {
-    criteria: string;
-    score: number;
-    maxPoints: number;
-    feedback: string;
-  }[];
-  overallFeedback: string;
-  gradedBy: string;
-  gradedDate: string;
 }

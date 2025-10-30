@@ -17,8 +17,10 @@ import Card from 'components/display/Card';
 import Button from 'components/input/Button';
 import TextInput from 'components/input/TextInput';
 
+import useAlert from 'containers/common/AlertProvider/useAlert';
+
 type Props = {
-  essayContent: string;
+  getEssayContent: () => string;
 };
 
 interface DictionaryResult {
@@ -47,7 +49,9 @@ interface AutoGradeResult {
   overallFeedback: string;
 }
 
-const EssayEditorTools = ({ essayContent }: Props) => {
+const EssayEditorTools = ({ getEssayContent }: Props) => {
+  const { errorMsg } = useAlert();
+
   // Dictionary state
   const [dictionaryWord, setDictionaryWord] = useState('');
   const [dictionaryResult, setDictionaryResult] =
@@ -236,7 +240,12 @@ const EssayEditorTools = ({ essayContent }: Props) => {
   };
 
   const handleAutoGrade = () => {
-    if (!essayContent.trim()) return;
+    const essayContent = getEssayContent();
+
+    if (!essayContent.trim()) {
+      errorMsg('Essay is empty');
+      return;
+    }
 
     setIsAutoGrading(true);
 
@@ -489,7 +498,7 @@ const EssayEditorTools = ({ essayContent }: Props) => {
       >
         <Button
           className="w-full gap-2"
-          disabled={isAutoGrading || !essayContent.trim()}
+          disabled={isAutoGrading}
           onClick={handleAutoGrade}
           size="sm"
         >

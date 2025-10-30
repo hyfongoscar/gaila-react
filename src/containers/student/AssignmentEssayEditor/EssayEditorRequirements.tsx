@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import {
   AlertCircle,
@@ -13,18 +13,42 @@ import Badge from 'components/display/Badge';
 import Card from 'components/display/Card';
 import Divider from 'components/display/Divider';
 
-import type { Assignment, TeacherGrade } from 'types/assignment';
+import type { Assignment, AssignmentGrade } from 'types/assignment';
 
 type Props = {
-  teacherGrade: TeacherGrade | null;
+  grade: AssignmentGrade | null;
   assignment: Assignment;
 };
 
-const EssayEditorRequirements = ({ teacherGrade, assignment }: Props) => {
+const EssayEditorRequirements = ({ grade, assignment }: Props) => {
+  const overallMaxPoints = useMemo(() => {
+    if (assignment.rubrics) {
+      return assignment.rubrics?.reduce((acc, rubric) => {
+        return acc + rubric.points;
+      }, 0);
+    }
+    if (grade?.score_breakdown) {
+      return grade?.score_breakdown?.reduce((acc, rubric) => {
+        return acc + rubric.max_score;
+      }, 0);
+    }
+    return 0;
+  }, [assignment.rubrics, grade?.score_breakdown]);
+
+  const hasWordCountRequirement = useMemo(() => {
+    return (
+      assignment?.requirements?.min_word_count ||
+      assignment?.requirements?.max_word_count
+    );
+  }, [
+    assignment?.requirements?.max_word_count,
+    assignment?.requirements?.min_word_count,
+  ]);
+
   return (
     <div className="space-y-4">
       {/* Teacher Grade - Only show when graded */}
-      {!!teacherGrade && (
+      {!!grade && (
         <Card
           classes={{
             root: 'border-purple-200 bg-gradient-to-br from-purple-50 to-white !p-4',
@@ -42,24 +66,23 @@ const EssayEditorRequirements = ({ teacherGrade, assignment }: Props) => {
           <div className="text-center p-3 bg-white rounded-lg border-2 border-purple-200">
             <p className="text-xs text-muted-foreground mb-1">Final Score</p>
             <p className="text-3xl font-bold text-purple-600">
-              {teacherGrade.overallScore}
+              {grade.score}
               <span className="text-lg text-muted-foreground">
-                /{teacherGrade.totalPoints}
+                /{overallMaxPoints}
               </span>
             </p>
             <Badge className="mt-2 bg-purple-600 text-xs">
-              {Math.round(
-                (teacherGrade.overallScore / teacherGrade.totalPoints) * 100,
-              )}
-              %
+              {Math.round((grade.score / overallMaxPoints) * 100)}%
             </Badge>
           </div>
 
           {/* Criteria Breakdown */}
           <div className="max-h-[400px] overflow-auto">
             <div className="space-y-2 pr-4">
-              <h4 className="text-xs font-semibold">Score Breakdown</h4>
-              {teacherGrade.criteriaScores.map((criterion, idx) => (
+              {!!grade.score_breakdown && (
+                <h4 className="text-xs font-semibold">Score Breakdown</h4>
+              )}
+              {grade.score_breakdown?.map((criterion, idx) => (
                 <div
                   className="p-2 bg-white border rounded text-xs space-y-1.5"
                   key={idx}
@@ -67,7 +90,7 @@ const EssayEditorRequirements = ({ teacherGrade, assignment }: Props) => {
                   <div className="flex items-center justify-between">
                     <span className="font-medium">{criterion.criteria}</span>
                     <Badge className="text-xs" variant="outline">
-                      {criterion.score}/{criterion.maxPoints}
+                      {criterion.score}/{criterion.max_score}
                     </Badge>
                   </div>
                   <p className="text-muted-foreground leading-relaxed">
@@ -83,12 +106,12 @@ const EssayEditorRequirements = ({ teacherGrade, assignment }: Props) => {
                   Teacher Feedback
                 </h4>
                 <p className="text-muted-foreground leading-relaxed mb-2">
-                  {teacherGrade.overallFeedback}
+                  {grade.feedback}
                 </p>
                 <Divider className="my-2" />
                 <div className="flex flex-col gap-1 text-muted-foreground">
-                  <span>Graded by: {teacherGrade.gradedBy}</span>
-                  <span>{teacherGrade.gradedDate}</span>
+                  <span>Graded by: {grade.graded_by}</span>
+                  <span>{grade.graded_at}</span>
                 </div>
               </div>
             </div>
@@ -97,46 +120,50 @@ const EssayEditorRequirements = ({ teacherGrade, assignment }: Props) => {
       )}
 
       {/* Assignment Prompt */}
-      <Card
-        classes={{
-          children: 'space-y-3',
-          title: 'flex items-center gap-2 text-base',
-          root: '!p-4',
-        }}
-        title={
-          <>
-            <BookOpen className="h-4 w-4" />
-            Instructions
-          </>
-        }
-      >
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {assignment.instructions}
-        </p>
-      </Card>
+      {!!assignment.instructions && (
+        <Card
+          classes={{
+            children: 'space-y-3',
+            title: 'flex items-center gap-2 text-base',
+            root: '!p-4',
+          }}
+          title={
+            <>
+              <BookOpen className="h-4 w-4" />
+              Instructions
+            </>
+          }
+        >
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {assignment.instructions}
+          </p>
+        </Card>
+      )}
 
-      <Card
-        classes={{
-          children: 'space-y-3',
-          title: 'flex items-center gap-2 text-base',
-          root: '!p-4',
-        }}
-        title={
-          <>
-            <ClipboardList className="h-4 w-4" /> Requirements
-          </>
-        }
-      >
-        <div className="grid grid-cols-1 gap-3 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Word Count:</span>
-            <span>
-              {assignment.requirements?.min_word_count}-
-              {assignment.requirements?.max_word_count}
-            </span>
+      {hasWordCountRequirement && (
+        <Card
+          classes={{
+            children: 'space-y-3',
+            title: 'flex items-center gap-2 text-base',
+            root: '!p-4',
+          }}
+          title={
+            <>
+              <ClipboardList className="h-4 w-4" /> Requirements
+            </>
+          }
+        >
+          <div className="grid grid-cols-1 gap-3 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Word Count:</span>
+              <span>
+                {assignment.requirements?.min_word_count}-
+                {assignment.requirements?.max_word_count}
+              </span>
+            </div>
           </div>
-        </div>
-      </Card>
+        </Card>
+      )}
 
       {!!assignment.rubrics?.length && (
         <Card
