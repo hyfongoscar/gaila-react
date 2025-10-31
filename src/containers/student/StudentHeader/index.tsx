@@ -5,7 +5,6 @@ import {
   Bell,
   FileText,
   LogOut,
-  PenTool,
   Settings,
   TriangleAlert,
   User,
@@ -17,6 +16,7 @@ import Button from 'components/input/Button';
 import DropdownMenu from 'components/navigation/DropdownMenu';
 
 import useAuth from 'containers/auth/AuthProvider/useAuth';
+import Logo from 'containers/common/Logo';
 
 // FIXME: api
 const notifications = [
@@ -83,14 +83,7 @@ export function StudentHeader() {
     <header className="border-b bg-card sticky top-0 z-50">
       <div className="px-4 sm:px-6 py-4 max-w-[1800px] mx-auto">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 flex-shrink-0  w-[250px]">
-            <PenTool className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-            <h1 className="text-lg sm:text-2xl font-bold">GAILA</h1>
-            <span className="hidden sm:inline text-sm text-muted-foreground bg-secondary px-2 py-1 rounded-full">
-              For Students
-            </span>
-          </div>
-
+          <Logo />
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-4">
             <Button

@@ -9,12 +9,9 @@ import React, {
 import Box from '@mui/material/Box';
 import dayjs from 'dayjs';
 import { CheckCircle, FileText, Save } from 'lucide-react';
-import { useQuery } from 'react-query';
 
 import Badge from 'components/display/Badge';
 import Card from 'components/display/Card';
-import ErrorComponent from 'components/display/ErrorComponent';
-import Loading from 'components/display/Loading';
 import Button from 'components/input/Button';
 import Clickable from 'components/input/Clickable';
 import TextInput from 'components/input/TextInput';
@@ -25,11 +22,10 @@ import EssayEditorInput from 'containers/student/AssignmentEssayEditor/EssayEdit
 import EssayEditorRequirements from 'containers/student/AssignmentEssayEditor/EssayEditorRequirements';
 import EssayEditorTools from 'containers/student/AssignmentEssayEditor/EssayEditorTools';
 
-import { apiViewAssignmenProgress } from 'api/assignment';
-import tuple from 'utils/types/tuple';
+import type { AssignmentProgress } from 'types/assignment';
 
 interface EssayEditorProps {
-  assignmentId: number;
+  assignmentProgress: AssignmentProgress;
   currentStage: number;
 }
 
@@ -39,21 +35,12 @@ type WordCountStatus = {
 };
 
 export function AssignmentEssayEditor({
-  assignmentId,
+  assignmentProgress,
   currentStage,
 }: EssayEditorProps) {
-  const {
-    data: assignmentProgress,
-    isLoading,
-    error,
-  } = useQuery(
-    tuple([apiViewAssignmenProgress.queryKey, assignmentId]),
-    apiViewAssignmenProgress,
-  );
-
   const [assignment, teacherGrade, isGraded] = useMemo(() => {
-    const grade = assignmentProgress?.stages[currentStage]?.grade;
-    return [assignmentProgress?.assignment, grade, !!grade];
+    const grade = assignmentProgress.stages[currentStage]?.grade;
+    return [assignmentProgress.assignment, grade, !!grade];
   }, [assignmentProgress, currentStage]);
 
   const [title, setTitle] = useState('');
@@ -112,10 +99,7 @@ export function AssignmentEssayEditor({
   }, [essayContent, getWordCountStatus]);
 
   useEffect(() => {
-    if (!assignmentProgress) {
-      return;
-    }
-    const submission = assignmentProgress?.stages[currentStage]?.submissions[0];
+    const submission = assignmentProgress.stages[currentStage]?.submissions[0];
     setTitle(submission?.title || '');
     essayContent.current = submission?.essayContent || '';
     setWordCountStatus(getWordCountStatus(submission?.essayContent || ''));
@@ -150,16 +134,6 @@ export function AssignmentEssayEditor({
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [handleMouseMove, handleMouseUp]);
-
-  if (isLoading) {
-    return <Loading className="py-10" />;
-  }
-
-  if (!assignment || error) {
-    return <ErrorComponent error={error || 'No Assignment'} />;
-  }
-
-  console.log('rerender');
 
   return (
     <div className="space-y-6">

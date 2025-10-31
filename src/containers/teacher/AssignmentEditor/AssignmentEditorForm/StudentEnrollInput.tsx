@@ -18,9 +18,9 @@ import tuple from 'utils/types/tuple';
 type Props = {
   viewOnly?: boolean;
   enrolledClasses: ClassOption[];
-  setEnrolledClasses: React.Dispatch<React.SetStateAction<ClassOption[]>>;
+  setEnrolledClasses: (x: ClassOption[]) => void;
   enrolledStudents: UserOption[];
-  setEnrolledStudents: React.Dispatch<React.SetStateAction<UserOption[]>>;
+  setEnrolledStudents: (x: UserOption[]) => void;
 };
 
 const StudentEnrollInput = ({

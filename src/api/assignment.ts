@@ -4,6 +4,7 @@ import type {
   AssignmentDetails,
   AssignmentListingResponse,
   AssignmentProgress,
+  AssignmentStage,
   RubricItem,
 } from 'types/assignment';
 
@@ -42,7 +43,7 @@ apiViewAssignment.queryKey = '/api/assignment/view/id';
 export interface AssignmentCreatePayload {
   title: string;
   description?: string;
-  due_date?: number;
+  due_date?: number | null;
   type?: string;
   instructions?: string;
   requirements?: {
@@ -53,6 +54,7 @@ export interface AssignmentCreatePayload {
   tips?: string[];
   enrolled_class_ids?: number[];
   enrolled_student_ids?: number[];
+  stages: AssignmentStage[];
 }
 
 export const apiCreateAssignment = (

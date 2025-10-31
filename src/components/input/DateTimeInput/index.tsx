@@ -6,10 +6,12 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import clsx from 'clsx';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
+import { isNull, isUndefined } from 'lodash-es';
 
 interface Props {
   type: string;
   value?: number | null;
+  defaultValue?: number | null;
   onChange?: (value: number | null) => void;
   className?: string;
   size?: 'small' | 'medium';
@@ -19,13 +21,29 @@ const DateTimeInput = ({
   className,
   type,
   value: inputValue,
+  defaultValue: inputDefaultValue,
   onChange: inputOnChange,
   size = 'small',
 }: Props) => {
-  const value = useMemo(
-    () => (inputValue ? dayjs(inputValue) : null),
-    [inputValue],
-  );
+  const value = useMemo(() => {
+    if (isUndefined(inputValue)) {
+      return undefined;
+    }
+    if (isNull(inputValue)) {
+      return null;
+    }
+    return dayjs(inputValue);
+  }, [inputValue]);
+
+  const defaultValue = useMemo(() => {
+    if (isUndefined(inputDefaultValue)) {
+      return undefined;
+    }
+    if (isNull(inputDefaultValue)) {
+      return null;
+    }
+    return dayjs(inputDefaultValue);
+  }, [inputDefaultValue]);
 
   const onChange = useCallback(
     (value: Dayjs | null) => {
@@ -42,6 +60,7 @@ const DateTimeInput = ({
     return (
       <DatePicker
         className={clsx(['w-full', className])}
+        defaultValue={defaultValue}
         onChange={onChange}
         slotProps={{ textField: { size } }}
         value={value}
@@ -53,6 +72,7 @@ const DateTimeInput = ({
     return (
       <TimePicker
         className={clsx(['w-full', className])}
+        defaultValue={defaultValue}
         onChange={onChange}
         slotProps={{ textField: { size } }}
         value={value}
@@ -64,6 +84,7 @@ const DateTimeInput = ({
     return (
       <DateTimePicker
         className={clsx(['w-full', className])}
+        defaultValue={defaultValue}
         onChange={onChange}
         slotProps={{ textField: { size } }}
         value={value}

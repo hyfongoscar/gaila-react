@@ -1,13 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
-import {
-  BarChart3,
-  FileText,
-  LogOut,
-  PenTool,
-  User,
-  Users,
-} from 'lucide-react';
+import { BarChart3, FileText, LogOut, User, Users } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
@@ -15,6 +8,7 @@ import Button from 'components/input/Button';
 import DropdownMenu from 'components/navigation/DropdownMenu';
 
 import useAuth from 'containers/auth/AuthProvider/useAuth';
+import Logo from 'containers/common/Logo';
 
 type TeacherCurrentView = 'home' | 'assignments' | 'analytics';
 
@@ -70,14 +64,7 @@ export function TeacherHeader() {
     <header className="border-b bg-card sticky top-0 z-50">
       <div className="px-4 sm:px-6 py-4 max-w-[1800px] mx-auto">
         <div className="flex items-center justify-between gap-4 relative">
-          {/* Logo */}
-          <div className="flex items-center gap-2 flex-shrink-0 w-[250px]">
-            <PenTool className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-            <h1 className="text-lg sm:text-2xl font-bold">GAILA</h1>
-            <span className="hidden lg:inline text-sm text-muted-foreground bg-secondary px-2 py-1 rounded-full">
-              For Teachers
-            </span>
-          </div>
+          <Logo />
 
           {/* Centered Navigation */}
           <nav className="flex items-center gap-1 sm:gap-2">
