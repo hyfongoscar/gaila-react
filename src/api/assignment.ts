@@ -5,6 +5,7 @@ import type {
   AssignmentListingResponse,
   AssignmentProgress,
   AssignmentStage,
+  AssignmentSubmission,
   RubricItem,
 } from 'types/assignment';
 
@@ -54,7 +55,7 @@ export interface AssignmentCreatePayload {
   tips?: string[];
   enrolled_class_ids?: number[];
   enrolled_student_ids?: number[];
-  stages: AssignmentStage[];
+  stages: Omit<AssignmentStage, 'id'>[];
 }
 
 export const apiCreateAssignment = (
@@ -67,7 +68,7 @@ export const apiUpdateAssignment = (
 ): Promise<Assignment> =>
   callAPIHandler('post', '/api/assignment/update', { assignment }, true);
 
-export const apiViewAssignmenProgress = async ({
+export const apiViewAssignmentProgress = async ({
   queryKey,
 }: {
   queryKey: [string, number];
@@ -81,4 +82,16 @@ export const apiViewAssignmenProgress = async ({
   );
   return res;
 };
-apiViewAssignmenProgress.queryKey = '/api/assignment/view-progress/id';
+apiViewAssignmentProgress.queryKey = '/api/assignment/view-progress/id';
+
+type AssignmentSaveSubmissionPayload = {
+  assignment_id: number;
+  stage_id: number;
+  content: string;
+  is_final?: boolean;
+};
+
+export const apiSaveAssignmentSubmission = (
+  submission: AssignmentSaveSubmissionPayload,
+): Promise<AssignmentSubmission> =>
+  callAPIHandler('post', '/api/assignment/submit', { submission }, true);

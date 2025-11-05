@@ -6,17 +6,16 @@ import React, {
   useState,
 } from 'react';
 
-import Box from '@mui/material/Box';
 import dayjs from 'dayjs';
 import { CheckCircle, FileText, Save } from 'lucide-react';
 
 import Badge from 'components/display/Badge';
 import Card from 'components/display/Card';
 import Button from 'components/input/Button';
-import Clickable from 'components/input/Clickable';
 import TextInput from 'components/input/TextInput';
 import Tabs from 'components/navigation/Tabs';
 
+import ResizableSidebar from 'containers/common/ResizableSidebar';
 import EssayEditorAIChat from 'containers/student/AssignmentEssayEditor/EssayEditorAIChat';
 import EssayEditorInput from 'containers/student/AssignmentEssayEditor/EssayEditorInput';
 import EssayEditorRequirements from 'containers/student/AssignmentEssayEditor/EssayEditorRequirements';
@@ -26,7 +25,7 @@ import type { AssignmentProgress } from 'types/assignment';
 
 interface EssayEditorProps {
   assignmentProgress: AssignmentProgress;
-  currentStage: number;
+  currentStage: AssignmentProgress['stages'][number];
 }
 
 type WordCountStatus = {
@@ -39,7 +38,7 @@ export function AssignmentEssayEditor({
   currentStage,
 }: EssayEditorProps) {
   const [assignment, teacherGrade, isGraded] = useMemo(() => {
-    const grade = assignmentProgress.stages[currentStage]?.grade;
+    const grade = currentStage.grade;
     return [assignmentProgress.assignment, grade, !!grade];
   }, [assignmentProgress, currentStage]);
 
@@ -71,20 +70,27 @@ export function AssignmentEssayEditor({
         };
       }
 
-      if (wordCount < min) {
+      let wordCountDisplay = `${wordCount} /`;
+      if (!max) {
+        wordCountDisplay += ` ${min}+ words`;
+      } else if (!min) {
+        wordCountDisplay += ` ${max} words`;
+      }
+
+      if (!!min && wordCount < min) {
         return {
           color: 'text-orange-600',
-          text: `${wordCount} / ${min}-${max} words (${min - wordCount} more needed)`,
+          text: `${wordCountDisplay} (${min - wordCount} more needed)`,
         };
-      } else if (wordCount > max) {
+      } else if (!!max && wordCount > max) {
         return {
           color: 'text-red-600',
-          text: `${wordCount} / ${min}-${max} words (${wordCount - max} over limit)`,
+          text: `${wordCountDisplay} (${wordCount - max} over limit)`,
         };
       } else {
         return {
           color: 'text-green-600',
-          text: `${wordCount} / ${min}-${max} words (good!)`,
+          text: `${wordCountDisplay} (good!)`,
         };
       }
     },
@@ -99,41 +105,23 @@ export function AssignmentEssayEditor({
   }, [essayContent, getWordCountStatus]);
 
   useEffect(() => {
-    const submission = assignmentProgress.stages[currentStage]?.submissions[0];
-    setTitle(submission?.title || '');
-    essayContent.current = submission?.essayContent || '';
-    setWordCountStatus(getWordCountStatus(submission?.essayContent || ''));
-  }, [assignmentProgress, currentStage, getWordCountStatus]);
-
-  const [sidebarWidth, setSidebarWidth] = useState(350);
-  const isResizing = useRef(false);
-
-  const handleMouseDown = useCallback(() => {
-    isResizing.current = true;
-    document.body.style.cursor = 'col-resize';
-  }, []);
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isResizing.current) return;
-    const newWidth = window.innerWidth - e.clientX - 48;
-    if (newWidth > 250 && newWidth < 600) {
-      setSidebarWidth(newWidth);
+    const submission = currentStage.submissions[0];
+    if (!submission) {
+      setWordCountStatus(getWordCountStatus(''));
+      return;
     }
-  }, []);
 
-  const handleMouseUp = useCallback(() => {
-    isResizing.current = false;
-    document.body.style.cursor = 'default';
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [handleMouseMove, handleMouseUp]);
+    try {
+      const submissionContent = JSON.parse(submission.content || '{}');
+      setTitle(submissionContent?.title || '');
+      essayContent.current = submissionContent?.essayContent || '';
+      setWordCountStatus(
+        getWordCountStatus(submissionContent?.essayContent || ''),
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  }, [currentStage, getWordCountStatus]);
 
   return (
     <div className="space-y-6">
@@ -152,20 +140,17 @@ export function AssignmentEssayEditor({
           }
         >
           <p className="text-sm text-purple-800">
-            This essay has been graded by {teacherGrade.gradedBy} on{' '}
-            {teacherGrade.gradedDate}. You can view your grade in the
-            Requirements tab, but editing and tools are now disabled. You can
-            still use the AI Chat for learning purposes.
+            This essay has been graded by {teacherGrade.graded_by} on{' '}
+            {dayjs(teacherGrade.graded_at).format('DD MMM YYYY')}. You can view
+            your grade in the Requirements tab, but editing and tools are now
+            disabled. You can still use the AI Chat for learning purposes.
           </p>
         </Card>
       )}
 
-      <div className="relative flex h-full">
+      <ResizableSidebar>
         {/* Main Editor */}
-        <Box
-          className="space-y-6"
-          sx={{ width: `calc(100% - ${sidebarWidth}px)` }}
-        >
+        <div className="space-y-6">
           <Card
             action={
               <Button className="gap-2 w-full sm:w-auto" disabled={isGraded}>
@@ -174,7 +159,7 @@ export function AssignmentEssayEditor({
               </Button>
             }
             classes={{
-              title: 'flex  gap-4',
+              title: 'flex gap-4 mb-0',
             }}
             description={assignment.description}
             title={
@@ -226,43 +211,34 @@ export function AssignmentEssayEditor({
               updateWordCountStatus={updateWordCountStatus}
             />
           </Card>
-        </Box>
-
-        <Clickable
-          className="absolute flex justify-center w-8 !cursor-col-resize"
-          onMouseDown={handleMouseDown}
-        >
-          <div className="h-full w-[1px] !bg-gray-200" />
-        </Clickable>
+        </div>
 
         {/* Sidebar with Tabs */}
-        <Box className="space-y-6" sx={{ width: sidebarWidth }}>
-          <Tabs
-            tabs={[
-              {
-                key: 'requirements',
-                title: isGraded ? 'Grade' : 'Requirements',
-                content: (
-                  <EssayEditorRequirements
-                    assignment={assignment}
-                    grade={teacherGrade}
-                  />
-                ),
-              },
-              {
-                key: 'tools',
-                title: 'Tools',
-                content: <EssayEditorTools getEssayContent={getEssayContent} />,
-              },
-              {
-                key: 'chat',
-                title: 'AI Chat',
-                content: <EssayEditorAIChat />,
-              },
-            ]}
-          />
-        </Box>
-      </div>
+        <Tabs
+          tabs={[
+            {
+              key: 'overview',
+              title: isGraded ? 'Grade' : 'Overview',
+              content: (
+                <EssayEditorRequirements
+                  assignment={assignment}
+                  grade={teacherGrade}
+                />
+              ),
+            },
+            {
+              key: 'tools',
+              title: 'Tools',
+              content: <EssayEditorTools getEssayContent={getEssayContent} />,
+            },
+            {
+              key: 'chat',
+              title: 'AI Chat',
+              content: <EssayEditorAIChat />,
+            },
+          ]}
+        />
+      </ResizableSidebar>
     </div>
   );
 }

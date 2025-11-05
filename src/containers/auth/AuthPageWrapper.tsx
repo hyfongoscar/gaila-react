@@ -12,7 +12,7 @@ type Props = {
 };
 
 const AuthPageWrapper = ({ allowRoles, children }: Props) => {
-  const { isInitialized, isLoggedIn, role } = useAuth();
+  const { isInitialized, isLoaded, isLoggedIn, role } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,7 +37,7 @@ const AuthPageWrapper = ({ allowRoles, children }: Props) => {
     role,
   ]);
 
-  if (!isLoggedIn || !role) {
+  if (!isLoaded || !isLoggedIn || !role) {
     return null;
   }
 

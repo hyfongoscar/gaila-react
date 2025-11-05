@@ -1,6 +1,9 @@
 import React, { useCallback, useState } from 'react';
 
-import { Clock, Edit, FileText, Filter, Search, SortAsc } from 'lucide-react';
+import { Edit, FileText, Filter, Search, SortAsc } from 'lucide-react';
+import { useQuery } from 'react-query';
+import { useNavigate } from 'react-router';
+import { pathnames } from 'routes';
 
 import Badge from 'components/display/Badge';
 import Card from 'components/display/Card';
@@ -8,7 +11,9 @@ import Button from 'components/input/Button';
 import SelectInput from 'components/input/SelectInput';
 import TextInput from 'components/input/TextInput';
 
-import type { Assignment } from 'types/assignment';
+import { apiGetAssignments } from 'api/assignment';
+import type { AssignmentDetails } from 'types/assignment';
+import tuple from 'utils/types/tuple';
 
 const getStatusClass = (status: string) => {
   switch (status) {
@@ -27,92 +32,35 @@ const getStatusClass = (status: string) => {
 
 const getStatusText = (status: string) => {
   switch (status) {
-    case 'completed':
-      return 'Completed';
+    case 'upcoming':
+      return 'Upcoming';
     case 'in-progress':
       return 'In Progress';
-    case 'draft':
-      return 'Draft';
+    case 'submitted':
+      return 'Submitted';
     case 'graded':
       return 'Graded';
     default:
-      return 'Draft';
+      return 'Past-Due';
   }
 };
 
-// FIXME: Mock data for essays
-const essays: Assignment[] = [
-  // {
-  //   id: 1,
-  //   title: 'ABC College - Climate Change Impact Essay',
-  //   description:
-  //     'An argumentative essay about environmental issues and their global effects',
-  //   word_count: 850,
-  //   last_modified: '2 hours ago',
-  //   status: 'in-progress',
-  //   due_date: 0,
-  //   enrolled_classes: [],
-  //   enrolled_students: [],
-  // },
-  // {
-  //   id: 2,
-  //   title: 'Story Writing',
-  //   description: 'Character analysis and themes in the classic tragedy',
-  //   word_count: 1200,
-  //   last_modified: '1 day ago',
-  //   status: 'graded',
-  //   due_date: 0,
-  //   enrolled_classes: [],
-  //   enrolled_students: [],
-  // },
-  // {
-  //   id: 3,
-  //   title: 'World War II Historical Essay',
-  //   description: 'Causes and consequences of the Second World War',
-  //   word_count: 450,
-  //   last_modified: '3 days ago',
-  //   status: 'in-progress',
-  //   due_date: 0,
-  //   enrolled_classes: [],
-  //   enrolled_students: [],
-  // },
-  // {
-  //   id: 4,
-  //   title: 'The Geography of Urban Development',
-  //   description:
-  //     'Analysis of urbanization patterns and their environmental impact',
-  //   word_count: 920,
-  //   last_modified: '5 days ago',
-  //   status: 'in-progress',
-  //   due_date: 0,
-  //   enrolled_classes: [],
-  //   enrolled_students: [],
-  // },
-  // {
-  //   id: 5,
-  //   title: 'Political Philosophy in Modern Democracy',
-  //   description: 'Examining democratic principles and their implementation',
-  //   word_count: 300,
-  //   last_modified: '1 week ago',
-  //   status: 'in-progress',
-  //   due_date: 0,
-  //   enrolled_classes: [],
-  //   enrolled_students: [],
-  // },
-  // {
-  //   id: 6,
-  //   title: 'The Ethics of Artificial Intelligence',
-  //   description: 'Moral implications of AI development and deployment',
-  //   word_count: 1100,
-  //   last_modified: '2 weeks ago',
-  //   status: 'in-progress',
-  //   due_date: 0,
-  //   enrolled_classes: [],
-  //   enrolled_students: [],
-  // },
-];
+const getBadgeText = (type: AssignmentDetails['type']) => {
+  switch (type) {
+    case 'narrative':
+      return 'Narrative';
+    case 'expository':
+      return 'Expository';
+    case 'descriptive':
+      return 'Descriptive';
+    default:
+      return 'Argumentative';
+  }
+};
 
 export function StudentHome() {
+  const navigate = useNavigate();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [subjectFilter, setSubjectFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -124,9 +72,21 @@ export function StudentHome() {
     statusFilter !== 'all' ||
     sortBy !== 'modified';
 
-  const onEditEssay = useCallback((id: number, status: string) => {
-    console.log(id, status);
-  }, []);
+  const { data } = useQuery(
+    tuple([
+      apiGetAssignments.queryKey,
+      { page: 1, limit: 10, filter: searchTerm },
+    ]),
+    apiGetAssignments,
+  );
+  const essays = data?.value || [];
+
+  const onEditEssay = useCallback(
+    (id: number) => {
+      navigate(pathnames.assignmentEditSubmission(String(id)));
+    },
+    [navigate],
+  );
 
   const clearFilters = useCallback(() => {
     setSearchTerm('');
@@ -263,6 +223,7 @@ export function StudentHome() {
       <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {essays.map(essay => (
           <Card
+            badgeText={getBadgeText(essay.type)}
             classes={{
               root: 'hover:shadow-md transition-shadow',
               status: getStatusClass(essay.status),
@@ -271,7 +232,7 @@ export function StudentHome() {
             footer={
               <Button
                 className="flex-1 gap-2 text-sm"
-                onClick={() => onEditEssay(essay.id, essay.status)}
+                onClick={() => onEditEssay(essay.id)}
                 variant="outline"
               >
                 <Edit className="h-4 w-4 inline" />

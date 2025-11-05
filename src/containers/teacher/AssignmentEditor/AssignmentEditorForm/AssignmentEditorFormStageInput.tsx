@@ -5,11 +5,14 @@ import { isEmpty } from 'lodash-es';
 import CheckboxInput from 'components/input/CheckboxInput';
 import SwitchInput from 'components/input/SwitchInput';
 
-import { type AssignmentStage } from 'types/assignment';
+import type { AssignmentCreatePayload } from 'api/assignment';
+
+type AssignmentStageEditType = AssignmentCreatePayload['stages'][number];
 
 type Props = {
-  formDataValue: AssignmentStage[];
+  formDataValue: AssignmentStageEditType[];
   onFormDataChange: (field: string, value: any) => void;
+  isEditing: boolean;
 };
 
 const availableStages = [
@@ -41,22 +44,19 @@ const availableStages = [
   },
 ];
 
-const defaultStages: AssignmentStage[] = [
+const defaultStages: AssignmentStageEditType[] = [
   {
     stage_type: 'goal_setting',
-    order_index: 1,
     enabled: true,
     tools: [],
   },
   {
     stage_type: 'writing',
-    order_index: 2,
     enabled: true,
     tools: [],
   },
   {
     stage_type: 'reflection',
-    order_index: 3,
     enabled: true,
     tools: [],
   },
@@ -65,12 +65,21 @@ const defaultStages: AssignmentStage[] = [
 const AssignmentEditorFormStageInput = ({
   formDataValue,
   onFormDataChange,
+  isEditing,
 }: Props) => {
-  const [stages, setStages] = useState<AssignmentStage[]>(defaultStages);
+  const [stages, setStages] =
+    useState<AssignmentStageEditType[]>(defaultStages);
 
   useEffect(() => {
-    setStages(isEmpty(formDataValue) ? defaultStages : formDataValue);
-  }, [formDataValue]);
+    if (isEmpty(formDataValue)) {
+      setStages(defaultStages);
+      if (!isEditing) {
+        onFormDataChange('stages', defaultStages);
+      }
+    } else {
+      setStages(formDataValue);
+    }
+  }, [formDataValue, isEditing, onFormDataChange]);
 
   const onStageToggleEnable = useCallback(
     (index: number, value: boolean) => {
@@ -85,7 +94,14 @@ const AssignmentEditorFormStageInput = ({
   const onStageToggleTools = useCallback(
     (index: number, value: string[]) => {
       const newStages = [...stages];
-      newStages[index].tools = value;
+      const availableTools =
+        availableStages.find(
+          stage => stage.stage_type === stages[index].stage_type,
+        )?.tools || [];
+      newStages[index].tools = availableTools.map(tool => ({
+        key: tool.key,
+        enabled: value.includes(tool.key),
+      }));
       setStages(newStages);
       onFormDataChange('stages', newStages);
     },
@@ -118,7 +134,9 @@ const AssignmentEditorFormStageInput = ({
               disabled={!stages[index].enabled}
               onChange={value => onStageToggleTools(index, value)}
               options={stage.tools}
-              value={stages[index].tools}
+              value={stages[index].tools
+                .filter(tool => tool.enabled)
+                .map(tool => tool.key)}
             />
           </div>
         ))}

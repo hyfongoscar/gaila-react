@@ -46,16 +46,13 @@ export function StudentHeader() {
 
   const onViewChange = useCallback(
     (view: StudentCurrentView) => {
-      if (view === currentView) {
-        return;
-      }
       if (view === 'analytics') {
         navigate(pathnames.analytics());
         return;
       }
       navigate(pathnames.home());
     },
-    [currentView, navigate],
+    [navigate],
   );
 
   const getNotificationIcon = useCallback((type: string) => {

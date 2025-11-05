@@ -20,7 +20,7 @@ const AssignmentCreatePage = () => {
   return (
     <AuthPageWrapper allowRoles={['teacher', 'admin']}>
       <TeacherHeader />
-      <div className="p-6 max-w-5xl mx-auto">
+      <div className="p-6 max-w-full mx-auto mb-10">
         <Button className="gap-2 mb-4" onClick={onBack} variant="ghost">
           <ArrowLeft className="h-4 w-4" />
           Back to Assignments

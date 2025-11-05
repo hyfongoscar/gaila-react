@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { set } from 'lodash-es';
+import { isNumber, set } from 'lodash-es';
 import { Save } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router';
@@ -127,7 +127,7 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
   }, []);
 
   const handleSave = useCallback(() => {
-    if (!update) {
+    if (!isNumber(update)) {
       return;
     }
 
@@ -158,6 +158,7 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
       });
       return;
     }
+    console.log('hi');
     createAssignment(assignmentPayload);
   }, [
     assignmentId,
@@ -184,6 +185,7 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
       >
         <AssignmentEditorForm
           formData={formData}
+          isEditing={isEditing}
           key={update}
           onFormDataChange={onFormDataChange}
         />

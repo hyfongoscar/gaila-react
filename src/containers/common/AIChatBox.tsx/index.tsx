@@ -25,11 +25,19 @@ interface ChatMessage {
 
 type Props = {
   chatName?: string;
+  description?: string;
   firstMessage?: string;
   suggestedPrompts?: { icon: any; text: string; category: string }[];
+  placeholder?: string;
 };
 
-const AIChatBox = ({ chatName, firstMessage, suggestedPrompts }: Props) => {
+const AIChatBox = ({
+  chatName,
+  description,
+  firstMessage,
+  suggestedPrompts,
+  placeholder,
+}: Props) => {
   // Chat state
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(
     firstMessage
@@ -126,6 +134,7 @@ const AIChatBox = ({ chatName, firstMessage, suggestedPrompts }: Props) => {
         title: 'flex items-center gap-2 text-base',
         children: 'flex flex-col flex-1 p-0 overflow-hidden',
       }}
+      description={description}
       title={
         <>
           <Bot className="h-4 w-4 text-primary" />
@@ -221,7 +230,7 @@ const AIChatBox = ({ chatName, firstMessage, suggestedPrompts }: Props) => {
                 handleSendMessage(chatInput);
               }
             }}
-            placeholder="Ask anything..."
+            placeholder={placeholder || 'Ask anything...'}
             value={chatInput}
           />
           <Button

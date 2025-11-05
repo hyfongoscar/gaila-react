@@ -14,6 +14,7 @@ type Props = {
   children: React.ReactNode;
   classes?: {
     root?: string;
+    header?: string;
     title?: string;
     description?: string;
     badge?: string;
@@ -51,7 +52,10 @@ function Card({
     >
       {hasHeader && (
         <div
-          className="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+          className={clsx(
+            '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',
+            classes?.header,
+          )}
           data-slot="card-header"
         >
           {(!!badgeText || !!status) && (

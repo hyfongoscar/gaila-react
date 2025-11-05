@@ -21,6 +21,30 @@ type Props = {
 };
 
 const EssayEditorRequirements = ({ grade, assignment }: Props) => {
+  const wordCountDisplay = useMemo(() => {
+    let display = '';
+    if (assignment.requirements?.min_word_count) {
+      display += assignment?.requirements?.min_word_count;
+    }
+    if (
+      assignment.requirements?.min_word_count &&
+      assignment?.requirements?.max_word_count
+    ) {
+      display += ' - ';
+    } else if (assignment?.requirements?.max_word_count) {
+      display += '<';
+    } else if (assignment?.requirements?.min_word_count) {
+      display = '>' + display;
+    }
+    if (assignment.requirements?.max_word_count) {
+      display += assignment?.requirements?.max_word_count;
+    }
+    return display;
+  }, [
+    assignment.requirements?.max_word_count,
+    assignment.requirements?.min_word_count,
+  ]);
+
   const overallMaxPoints = useMemo(() => {
     if (assignment.rubrics) {
       return assignment.rubrics?.reduce((acc, rubric) => {
@@ -156,10 +180,7 @@ const EssayEditorRequirements = ({ grade, assignment }: Props) => {
           <div className="grid grid-cols-1 gap-3 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Word Count:</span>
-              <span>
-                {assignment.requirements?.min_word_count}-
-                {assignment.requirements?.max_word_count}
-              </span>
+              <span>{wordCountDisplay}</span>
             </div>
           </div>
         </Card>

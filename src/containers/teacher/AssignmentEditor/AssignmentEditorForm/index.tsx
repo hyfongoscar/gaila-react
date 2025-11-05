@@ -19,9 +19,14 @@ import type { UserOption } from 'types/user';
 type Props = {
   formData: RefObject<AssignmentFormData>;
   onFormDataChange: (field: string, value: any) => void;
+  isEditing: boolean;
 };
 
-const AssignmentEditorForm = ({ formData, onFormDataChange }: Props) => {
+const AssignmentEditorForm = ({
+  formData,
+  onFormDataChange,
+  isEditing,
+}: Props) => {
   const [enrolledClasses, setEnrolledClasses] = useState<ClassOption[]>([]);
   const [enrolledStudents, setEnrolledStudents] = useState<UserOption[]>([]);
 
@@ -174,6 +179,7 @@ const AssignmentEditorForm = ({ formData, onFormDataChange }: Props) => {
 
       <AssignmentEditorFormStageInput
         formDataValue={formData.current.stages}
+        isEditing={isEditing}
         onFormDataChange={onFormDataChange}
       />
 

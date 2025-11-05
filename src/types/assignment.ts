@@ -40,18 +40,19 @@ export interface AssignmentDetails extends Assignment {
 }
 
 export interface AssignmentStage {
+  id: number;
   stage_type: string;
-  order_index: number;
   enabled: boolean;
-  tools: string[];
+  tools: { key: string; enabled: boolean }[];
 }
 
 export interface AssignmentProgress {
   assignment: Assignment;
-  stages: AssignmentStage & {
+  stages: (AssignmentStage & {
     submissions: AssignmentSubmission[];
     grade: AssignmentGrade | null;
-  };
+  })[];
+  current_stage: number;
 }
 
 export interface AssignmentSubmission {
