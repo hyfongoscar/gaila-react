@@ -59,25 +59,25 @@ const AssignmentSubmissionSwitcher = ({ assignmentId }: Props) => {
       );
     }
 
+    // if (currentStage.stage_type === 'goal_setting') {
+    //   return (
+    //     <AssignmentGoalEditor
+    //       assignmentProgress={assignmentProgress}
+    //       currentStage={currentStage}
+    //     />
+    //   );
+    // }
+
+    // if (currentStage.stage_type === 'writing') {
+    //   return (
+    //     <AssignmentEssayEditor
+    //       assignmentProgress={assignmentProgress}
+    //       currentStage={currentStage}
+    //     />
+    //   );
+    // }
+
     if (currentStage.stage_type === 'goal_setting') {
-      return (
-        <AssignmentGoalEditor
-          assignmentProgress={assignmentProgress}
-          currentStage={currentStage}
-        />
-      );
-    }
-
-    if (currentStage.stage_type === 'writing') {
-      return (
-        <AssignmentEssayEditor
-          assignmentProgress={assignmentProgress}
-          currentStage={currentStage}
-        />
-      );
-    }
-
-    if (currentStage.stage_type === 'reflection') {
       return (
         <AssignmentReflectionEditor assignmentProgress={assignmentProgress} />
       );

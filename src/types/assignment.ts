@@ -49,7 +49,7 @@ export interface AssignmentStage {
 export interface AssignmentProgress {
   assignment: Assignment;
   stages: (AssignmentStage & {
-    submissions: AssignmentSubmission[];
+    submission: AssignmentSubmission | null;
     grade: AssignmentGrade | null;
   })[];
   current_stage: number;

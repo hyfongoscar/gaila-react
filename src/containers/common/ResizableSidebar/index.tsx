@@ -15,6 +15,7 @@ type Props = {
   initWidth?: number;
   minWidth?: number;
   maxWidth?: number;
+  reverse?: boolean;
 };
 
 const ResizableSidebar = ({
@@ -22,6 +23,7 @@ const ResizableSidebar = ({
   initWidth = 350,
   minWidth = 250,
   maxWidth = 600,
+  reverse,
 }: Props) => {
   const [sidebarWidth, setSidebarWidth] = useState(initWidth);
   const isResizing = useRef(false);
@@ -34,12 +36,14 @@ const ResizableSidebar = ({
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (!isResizing.current) return;
-      const newWidth = window.innerWidth - e.clientX - 48;
+      const newWidth = reverse
+        ? e.clientX - 32
+        : window.innerWidth - e.clientX - 48;
       if (newWidth > minWidth && newWidth < maxWidth) {
         setSidebarWidth(newWidth);
       }
     },
-    [maxWidth, minWidth],
+    [maxWidth, minWidth, reverse],
   );
 
   const handleMouseUp = useCallback(() => {
@@ -62,14 +66,26 @@ const ResizableSidebar = ({
 
   return (
     <div className="relative flex h-full">
-      <Box sx={{ width: `calc(100% - ${sidebarWidth}px)` }}>{children[0]}</Box>
+      <Box
+        sx={{
+          width: reverse ? sidebarWidth : `calc(100% - ${sidebarWidth}px)`,
+        }}
+      >
+        {children[0]}
+      </Box>
       <Clickable
         className="absolute flex justify-center w-8 !cursor-col-resize"
         onMouseDown={handleMouseDown}
       >
         <div className="h-full w-[1px] !bg-gray-200" />
       </Clickable>
-      <Box sx={{ width: sidebarWidth }}>{children[1]}</Box>
+      <Box
+        sx={{
+          width: reverse ? `calc(100% - ${sidebarWidth}px)` : sidebarWidth,
+        }}
+      >
+        {children[1]}
+      </Box>
     </div>
   );
 };

@@ -105,7 +105,7 @@ export function AssignmentEssayEditor({
   }, [essayContent, getWordCountStatus]);
 
   useEffect(() => {
-    const submission = currentStage.submissions[0];
+    const submission = currentStage.submission;
     if (!submission) {
       setWordCountStatus(getWordCountStatus(''));
       return;
