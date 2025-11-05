@@ -19,18 +19,11 @@ import TextInput from 'components/input/TextInput';
 
 import ResizableSidebar from 'containers/common/ResizableSidebar';
 
-import type { AssignmentProgress } from 'types/assignment';
+import type { AssignmentGoal, AssignmentProgress } from 'types/assignment';
 
 type Props = {
   assignmentProgress: AssignmentProgress;
 };
-
-interface Goal {
-  id: string;
-  text: string;
-  category: 'writing' | 'ai' | 'tools' | 'general';
-  completed?: boolean;
-}
 
 const REFLECTION_QUESTIONS = [
   {
@@ -69,7 +62,7 @@ const AssignmentReflectionEditor = ({ assignmentProgress }: Props) => {
     if (!goalSettingStage?.submission) {
       return [];
     }
-    return JSON.parse(goalSettingStage.submission.content || '[]') as Goal[];
+    return goalSettingStage.submission.content as AssignmentGoal[];
   }, [assignmentProgress.stages]);
 
   const handleReflectionChange = (questionId: number, value: string) => {
@@ -95,7 +88,10 @@ const AssignmentReflectionEditor = ({ assignmentProgress }: Props) => {
     [reflections],
   );
 
-  const completedGoals = goals.filter(g => g.completed).length;
+  const completedGoals = goals.reduce(
+    (acc, g) => acc + g.goals.filter(g => g.completed).length,
+    0,
+  );
   const goalCompletionRate =
     goals.length > 0 ? (completedGoals / goals.length) * 100 : 0;
 
@@ -142,27 +138,34 @@ const AssignmentReflectionEditor = ({ assignmentProgress }: Props) => {
           <Divider />
 
           <div className="space-y-3">
-            {goals.map(goal => (
-              <div className="flex items-start gap-2" key={goal.id}>
-                {goal.completed ? (
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                ) : (
-                  <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                )}
-                <div className="flex-1">
-                  <p
-                    className={
-                      goal.completed
-                        ? 'text-foreground'
-                        : 'text-muted-foreground'
-                    }
+            {goals.map(group => (
+              <div className="flex items-start gap-2" key={group.category}>
+                <Badge className="mt-1 text-xs" variant="outline">
+                  {group.category}
+                </Badge>
+                {group.goals.map((goal, goalIndex) => (
+                  <div
+                    className="flex items-start gap-2"
+                    key={`${group.category}-${goalIndex}`}
                   >
-                    {goal.text}
-                  </p>
-                  <Badge className="mt-1 text-xs" variant="outline">
-                    {goal.category}
-                  </Badge>
-                </div>
+                    {goal.completed ? (
+                      <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    ) : (
+                      <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                    )}
+                    <div className="flex-1">
+                      <p
+                        className={
+                          goal.completed
+                            ? 'text-foreground'
+                            : 'text-muted-foreground'
+                        }
+                      >
+                        {goal.text}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
             ))}
           </div>

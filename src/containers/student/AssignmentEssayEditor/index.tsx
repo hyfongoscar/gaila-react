@@ -1,244 +1,53 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React from 'react';
 
-import dayjs from 'dayjs';
-import { CheckCircle, FileText, Save } from 'lucide-react';
+import { BarChart3, PenTool } from 'lucide-react';
 
-import Badge from 'components/display/Badge';
-import Card from 'components/display/Card';
-import Button from 'components/input/Button';
-import TextInput from 'components/input/TextInput';
 import Tabs from 'components/navigation/Tabs';
 
-import ResizableSidebar from 'containers/common/ResizableSidebar';
-import EssayEditorAIChat from 'containers/student/AssignmentEssayEditor/EssayEditorAIChat';
-import EssayEditorInput from 'containers/student/AssignmentEssayEditor/EssayEditorInput';
-import EssayEditorRequirements from 'containers/student/AssignmentEssayEditor/EssayEditorRequirements';
-import EssayEditorTools from 'containers/student/AssignmentEssayEditor/EssayEditorTools';
+import AssignmentEssayEditorMain from 'containers/student/AssignmentEssayEditor/AssignmentEssayEditorMain';
 
 import type { AssignmentProgress } from 'types/assignment';
 
-interface EssayEditorProps {
+type Props = {
   assignmentProgress: AssignmentProgress;
   currentStage: AssignmentProgress['stages'][number];
-}
-
-type WordCountStatus = {
-  color: string;
-  text: string;
 };
 
-export function AssignmentEssayEditor({
-  assignmentProgress,
-  currentStage,
-}: EssayEditorProps) {
-  const [assignment, teacherGrade, isGraded] = useMemo(() => {
-    const grade = currentStage.grade;
-    return [assignmentProgress.assignment, grade, !!grade];
-  }, [assignmentProgress, currentStage]);
-
-  const [title, setTitle] = useState('');
-  const essayContent = useRef('');
-  const [wordCountStatus, setWordCountStatus] = useState<WordCountStatus>({
-    color: '',
-    text: '',
-  });
-
-  const getEssayContent = useCallback(() => {
-    return essayContent.current;
-  }, []);
-
-  const getWordCountStatus = useCallback(
-    (essayContent: string) => {
-      const wordCount = essayContent
-        .trim()
-        .split(/\s+/)
-        .filter(word => word.length > 0).length;
-
-      const min = assignment?.requirements?.min_word_count || 0;
-      const max = assignment?.requirements?.max_word_count || 0;
-
-      if (!min && !max) {
-        return {
-          color: 'text-gray-600',
-          text: `${wordCount} word${wordCount === 1 ? '' : 's'}`,
-        };
-      }
-
-      let wordCountDisplay = `${wordCount} /`;
-      if (!max) {
-        wordCountDisplay += ` ${min}+ words`;
-      } else if (!min) {
-        wordCountDisplay += ` ${max} words`;
-      }
-
-      if (!!min && wordCount < min) {
-        return {
-          color: 'text-orange-600',
-          text: `${wordCountDisplay} (${min - wordCount} more needed)`,
-        };
-      } else if (!!max && wordCount > max) {
-        return {
-          color: 'text-red-600',
-          text: `${wordCountDisplay} (${wordCount - max} over limit)`,
-        };
-      } else {
-        return {
-          color: 'text-green-600',
-          text: `${wordCountDisplay} (good!)`,
-        };
-      }
-    },
-    [
-      assignment?.requirements?.max_word_count,
-      assignment?.requirements?.min_word_count,
-    ],
-  );
-
-  const updateWordCountStatus = useCallback(() => {
-    setWordCountStatus(getWordCountStatus(essayContent.current));
-  }, [essayContent, getWordCountStatus]);
-
-  useEffect(() => {
-    const submission = currentStage.submission;
-    if (!submission) {
-      setWordCountStatus(getWordCountStatus(''));
-      return;
-    }
-
-    try {
-      const submissionContent = JSON.parse(submission.content || '{}');
-      setTitle(submissionContent?.title || '');
-      essayContent.current = submissionContent?.essayContent || '';
-      setWordCountStatus(
-        getWordCountStatus(submissionContent?.essayContent || ''),
-      );
-    } catch (e) {
-      console.error(e);
-    }
-  }, [currentStage, getWordCountStatus]);
-
+const AssignmentEssayEditor = ({ assignmentProgress, currentStage }: Props) => {
   return (
-    <div className="space-y-6">
-      {/* Graded Status Alert */}
-      {isGraded && teacherGrade && (
-        <Card
-          className="border-purple-200 bg-purple-50"
-          classes={{
-            title: 'flex items-center gap-2 text-base text-purple-900',
-          }}
-          title={
-            <>
-              <CheckCircle className="h-5 w-5" />
-              Essay Graded
-            </>
-          }
-        >
-          <p className="text-sm text-purple-800">
-            This essay has been graded by {teacherGrade.graded_by} on{' '}
-            {dayjs(teacherGrade.graded_at).format('DD MMM YYYY')}. You can view
-            your grade in the Requirements tab, but editing and tools are now
-            disabled. You can still use the AI Chat for learning purposes.
-          </p>
-        </Card>
-      )}
-
-      <ResizableSidebar>
-        {/* Main Editor */}
-        <div className="space-y-6">
-          <Card
-            action={
-              <Button className="gap-2 w-full sm:w-auto" disabled={isGraded}>
-                <Save className="h-4 w-4" />
-                Save
-              </Button>
-            }
-            classes={{
-              title: 'flex gap-4 mb-0',
-            }}
-            description={assignment.description}
-            title={
-              <>
-                <FileText className="h-5 w-5" />
-                {assignment.title}
-              </>
-            }
-          >
-            <TextInput
-              className="text-base sm:text-lg font-semibold !mb-4"
-              disabled={isGraded}
-              label="Essay Title"
-              onBlur={updateWordCountStatus}
-              onChange={e => setTitle(e.target.value)}
-              value={title}
-            />
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-              <Badge
-                className={`px-2 py-1 text-xs sm:text-sm ${wordCountStatus.color}`}
-                variant="outline"
-              >
-                {wordCountStatus.text}
-              </Badge>
-
-              {!!assignment.due_date && (
-                <Badge
-                  className="px-2 py-1 text-xs sm:text-sm"
-                  variant="outline"
-                >
-                  Due: {dayjs(assignment.due_date).format('MMM D, YYYY')}
-                </Badge>
-              )}
+    <Tabs
+      classes={{
+        panel: 'mt-4',
+        tab: '!h-10',
+        indicator: '!h-8',
+      }}
+      tabs={[
+        {
+          key: 'editor',
+          title: (
+            <div className="flex items-center gap-2">
+              <PenTool className="h-4 w-4" /> Essay Editor
             </div>
-          </Card>
-
-          <Card
-            classes={{ description: 'text-xs text-purple-600' }}
-            description={
-              isGraded
-                ? 'This essay has been graded and can no longer be edited.'
-                : null
-            }
-            title="Essay Content"
-          >
-            <EssayEditorInput
-              essayContent={essayContent}
-              isGraded={isGraded}
-              updateWordCountStatus={updateWordCountStatus}
+          ),
+          content: (
+            <AssignmentEssayEditorMain
+              assignmentProgress={assignmentProgress}
+              currentStage={currentStage}
             />
-          </Card>
-        </div>
-
-        {/* Sidebar with Tabs */}
-        <Tabs
-          tabs={[
-            {
-              key: 'overview',
-              title: isGraded ? 'Grade' : 'Overview',
-              content: (
-                <EssayEditorRequirements
-                  assignment={assignment}
-                  grade={teacherGrade}
-                />
-              ),
-            },
-            {
-              key: 'tools',
-              title: 'Tools',
-              content: <EssayEditorTools getEssayContent={getEssayContent} />,
-            },
-            {
-              key: 'chat',
-              title: 'AI Chat',
-              content: <EssayEditorAIChat />,
-            },
-          ]}
-        />
-      </ResizableSidebar>
-    </div>
+          ),
+        },
+        {
+          key: 'analytics',
+          title: (
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" /> Analytics
+            </div>
+          ),
+          content: <></>,
+        },
+      ]}
+    />
   );
-}
+};
+
+export default AssignmentEssayEditor;

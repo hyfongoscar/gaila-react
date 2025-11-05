@@ -55,12 +55,26 @@ export interface AssignmentProgress {
   current_stage: number;
 }
 
+export interface AssignmentGoal {
+  category: string;
+  goals: {
+    text: string;
+    completed?: boolean;
+  }[];
+}
+
+export interface AssignmentEssayContent {
+  title: string;
+  content: string;
+  goals: AssignmentGoal[];
+}
+
 export interface AssignmentSubmission {
   id: number;
   assignment_id: number;
   stage_id: number;
   student_id: number;
-  content?: string;
+  content: AssignmentGoal[] | AssignmentEssayContent | string;
   submitted_at?: number;
   is_final?: boolean;
 }

@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
-import { ArrowRight, Lightbulb, Save, Target } from 'lucide-react';
+import { ArrowRight, Lightbulb, Plus, Save, Target, X } from 'lucide-react';
 import { useMutation, useQueryClient } from 'react-query';
 
 import Card from 'components/display/Card';
@@ -15,17 +15,13 @@ import {
   apiSaveAssignmentSubmission,
   apiViewAssignmentProgress,
 } from 'api/assignment';
-import type { AssignmentProgress } from 'types/assignment';
+import type { AssignmentGoal, AssignmentProgress } from 'types/assignment';
+import isObjEmpty from 'utils/helper/isObjEmpty';
 
 type Props = {
   assignmentProgress: AssignmentProgress;
   currentStage: AssignmentProgress['stages'][number];
 };
-
-interface Goal {
-  text: string;
-  category: string;
-}
 
 const GOAL_QUESTIONS = [
   {
@@ -56,6 +52,11 @@ const GOAL_QUESTIONS = [
   },
 ];
 
+const defaultResponses = GOAL_QUESTIONS.reduce(
+  (acc, q) => ({ ...acc, [q.category]: [''] }),
+  {},
+);
+
 const AssignmentGoalEditor = ({ assignmentProgress, currentStage }: Props) => {
   const queryClient = useQueryClient();
   const { alertMsg, successMsg, errorMsg } = useAlert();
@@ -73,24 +74,44 @@ const AssignmentGoalEditor = ({ assignmentProgress, currentStage }: Props) => {
     onError: errorMsg,
   });
 
-  const [responses, setResponses] = useState<{ [category: string]: string }>(
-    {},
+  const [responses, setResponses] = useState<{ [category: string]: string[] }>(
+    defaultResponses,
   );
 
-  const handleResponseChange = (category: string, value: string) => {
+  const handleAddGoal = useCallback((category: string) => {
     setResponses(prev => ({
       ...prev,
-      [category]: value,
+      [category]: (prev[category] || []).concat(''),
     }));
-  };
+  }, []);
+
+  const handleRemoveGoal = useCallback((category: string, index: number) => {
+    console.log(index);
+    setResponses(prev => ({
+      ...prev,
+      [category]: prev[category].filter((_, i) => i !== index),
+    }));
+  }, []);
+
+  const handleChangeText = useCallback(
+    (category: string, index: number, value: string) => {
+      setResponses(prev => ({
+        ...prev,
+        [category]: prev[category].map((s, i) => (i === index ? value : s)),
+      }));
+    },
+    [],
+  );
 
   const handleSubmit = useCallback(
     (isFinal: boolean) => {
-      const goals: Goal[] = GOAL_QUESTIONS.filter(q =>
-        responses[q.category]?.trim(),
+      const goals: AssignmentGoal[] = GOAL_QUESTIONS.filter(
+        q => !isObjEmpty(responses[q.category]),
       ).map(q => ({
-        text: responses[q.category].trim(),
         category: q.category,
+        goals: responses[q.category].filter(Boolean).map(goal => ({
+          text: goal,
+        })),
       }));
 
       if (goals.length === 0) {
@@ -98,7 +119,6 @@ const AssignmentGoalEditor = ({ assignmentProgress, currentStage }: Props) => {
         return;
       }
 
-      // TODO: revisit goal structure first
       saveSubmission({
         assignment_id: assignmentProgress.assignment.id,
         stage_id: currentStage.id,
@@ -114,6 +134,22 @@ const AssignmentGoalEditor = ({ assignmentProgress, currentStage }: Props) => {
       saveSubmission,
     ],
   );
+
+  useEffect(() => {
+    if (currentStage.submission?.content) {
+      const goals = currentStage.submission.content as AssignmentGoal[];
+      setResponses({
+        ...defaultResponses,
+        ...goals.reduce(
+          (acc, goal) => ({
+            ...acc,
+            [goal.category]: goal.goals.map(g => g.text),
+          }),
+          {},
+        ),
+      });
+    }
+  }, [currentStage]);
 
   return (
     <>
@@ -146,24 +182,59 @@ const AssignmentGoalEditor = ({ assignmentProgress, currentStage }: Props) => {
               </>
             }
           >
-            {GOAL_QUESTIONS.map((question, index) => (
+            {GOAL_QUESTIONS.map((question, questionIndex) => (
               <div className="space-y-2" key={question.category}>
-                <label className="flex items-start gap-2">
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex-shrink-0 mt-0.5">
-                    {index + 1}
-                  </span>
-                  <span>{question.question}</span>
-                </label>
-                <TextInput
-                  className="resize-none"
-                  multiline
-                  onChange={e =>
-                    handleResponseChange(question.category, e.target.value)
-                  }
-                  placeholder={question.placeholder}
-                  rows={3}
-                  value={responses[question.category] || ''}
-                />
+                <div className="flex items-center justify-between">
+                  <label className="flex items-start gap-2">
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex-shrink-0 mt-0.5">
+                      {questionIndex + 1}
+                    </span>
+                    <span>{question.question}</span>
+                  </label>
+                  <Button
+                    className="gap-2"
+                    onClick={() => handleAddGoal(question.category)}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Goal
+                  </Button>
+                </div>
+                <div className="space-y-4">
+                  {responses[question.category].map((s, goalIndex) => (
+                    <div
+                      className="flex gap-2 items-start"
+                      key={`${question.category}-${goalIndex}`}
+                    >
+                      <TextInput
+                        className="resize-none"
+                        onChange={e =>
+                          handleChangeText(
+                            question.category,
+                            goalIndex,
+                            e.target.value,
+                          )
+                        }
+                        placeholder={
+                          goalIndex === 0 ? question.placeholder : ''
+                        }
+                        rows={3}
+                        value={s}
+                      />
+                      <Button
+                        disabled={responses[question.category].length === 1}
+                        onClick={() =>
+                          handleRemoveGoal(question.category, goalIndex)
+                        }
+                        size="icon"
+                        variant="ghost"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </Card>

@@ -1,26 +1,34 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import {
   AlertCircle,
   BookOpen,
   CheckCircle,
+  Circle,
   ClipboardList,
   GraduationCap,
   Star,
+  Target,
 } from 'lucide-react';
 
 import Badge from 'components/display/Badge';
 import Card from 'components/display/Card';
 import Divider from 'components/display/Divider';
 
-import type { Assignment, AssignmentGrade } from 'types/assignment';
+import type {
+  Assignment,
+  AssignmentGoal,
+  AssignmentGrade,
+} from 'types/assignment';
 
 type Props = {
   grade: AssignmentGrade | null;
   assignment: Assignment;
+  goals: AssignmentGoal[];
+  setGoals: (goals: AssignmentGoal[]) => void;
 };
 
-const EssayEditorRequirements = ({ grade, assignment }: Props) => {
+const EssayEditorOverview = ({ grade, assignment, goals, setGoals }: Props) => {
   const wordCountDisplay = useMemo(() => {
     let display = '';
     if (assignment.requirements?.min_word_count) {
@@ -68,6 +76,30 @@ const EssayEditorRequirements = ({ grade, assignment }: Props) => {
     assignment?.requirements?.max_word_count,
     assignment?.requirements?.min_word_count,
   ]);
+
+  const handleGoalToggle = useCallback(
+    (category: string, index: number) => {
+      const newGoals = goals.map(g => {
+        if (g.category === category) {
+          return {
+            ...g,
+            goals: g.goals.map((g, i) => {
+              if (i === index) {
+                return {
+                  ...g,
+                  completed: !g.completed,
+                };
+              }
+              return g;
+            }),
+          };
+        }
+        return g;
+      });
+      setGoals(newGoals);
+    },
+    [goals, setGoals],
+  );
 
   return (
     <div className="space-y-4">
@@ -142,7 +174,60 @@ const EssayEditorRequirements = ({ grade, assignment }: Props) => {
           </div>
         </Card>
       )}
-
+      <Card
+        classes={{
+          title: 'flex items-center gap-2 text-base -mb-2',
+          description: 'text-xs',
+          header: 'mb-2',
+          children: 'space-y-3',
+        }}
+        description="Track your writing goals for this essay"
+        title={
+          <>
+            <Target className="h-4 w-4" />
+            Your Goals
+          </>
+        }
+      >
+        {goals.map(group => (
+          <div key={group.category}>
+            <Badge className="mt-1 text-xs" variant="outline">
+              {group.category}
+            </Badge>
+            {group.goals.map((goal, index) => (
+              <div
+                className="flex items-start gap-2 cursor-pointer hover:bg-muted/50 p-2 rounded transition-colors"
+                key={`${group.category}-${index}`}
+                onClick={() => handleGoalToggle(group.category, index)}
+              >
+                {goal.completed ? (
+                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                ) : (
+                  <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                )}
+                <div className="flex-1">
+                  <p
+                    className={`text-sm ${goal.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}
+                  >
+                    {goal.text}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+        <Divider />
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>Progress</span>
+          <span>
+            {goals.reduce(
+              (acc, g) => acc + g.goals.filter(goal => goal.completed).length,
+              0,
+            )}{' '}
+            / {goals.length} completed
+          </span>
+        </div>
+      </Card>
       {/* Assignment Prompt */}
       {!!assignment.instructions && (
         <Card
@@ -251,4 +336,4 @@ const EssayEditorRequirements = ({ grade, assignment }: Props) => {
   );
 };
 
-export default EssayEditorRequirements;
+export default EssayEditorOverview;

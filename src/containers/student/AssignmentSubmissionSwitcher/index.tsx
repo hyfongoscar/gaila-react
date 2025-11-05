@@ -8,7 +8,7 @@ import { useQuery } from 'react-query';
 import ErrorComponent from 'components/display/ErrorComponent';
 import Loading from 'components/display/Loading';
 
-import { AssignmentEssayEditor } from 'containers/student/AssignmentEssayEditor';
+import AssignmentEssayEditor from 'containers/student/AssignmentEssayEditor';
 import AssignmentGoalEditor from 'containers/student/AssignmentGoalEditor';
 import AssignmentReflectionEditor from 'containers/student/AssignmentReflectionEditor';
 
@@ -59,25 +59,25 @@ const AssignmentSubmissionSwitcher = ({ assignmentId }: Props) => {
       );
     }
 
-    // if (currentStage.stage_type === 'goal_setting') {
-    //   return (
-    //     <AssignmentGoalEditor
-    //       assignmentProgress={assignmentProgress}
-    //       currentStage={currentStage}
-    //     />
-    //   );
-    // }
-
-    // if (currentStage.stage_type === 'writing') {
-    //   return (
-    //     <AssignmentEssayEditor
-    //       assignmentProgress={assignmentProgress}
-    //       currentStage={currentStage}
-    //     />
-    //   );
-    // }
-
     if (currentStage.stage_type === 'goal_setting') {
+      return (
+        <AssignmentGoalEditor
+          assignmentProgress={assignmentProgress}
+          currentStage={currentStage}
+        />
+      );
+    }
+
+    if (currentStage.stage_type === 'writing') {
+      return (
+        <AssignmentEssayEditor
+          assignmentProgress={assignmentProgress}
+          currentStage={currentStage}
+        />
+      );
+    }
+
+    if (currentStage.stage_type === 'reflection') {
       return (
         <AssignmentReflectionEditor assignmentProgress={assignmentProgress} />
       );
@@ -109,21 +109,27 @@ const AssignmentSubmissionSwitcher = ({ assignmentId }: Props) => {
 
   return (
     <>
-      <Stepper
-        activeStep={stepperActiveStep}
-        alternativeLabel
-        className="bg-gray-100 -m-6 py-4 mb-4"
-      >
-        {assignmentProgress.stages
-          .filter(s => s.enabled)
-          .map(stage => (
-            <Step key={stage.stage_type}>
-              <StepLabel sx={{ '& .MuiStepLabel-label': { marginTop: '8px' } }}>
-                {getStageStepLabel(stage)}
-              </StepLabel>
-            </Step>
-          ))}
-      </Stepper>
+      <div className="bg-gray-100 -m-6 py-4 mb-4">
+        <Stepper
+          activeStep={stepperActiveStep}
+          alternativeLabel
+          className="max-w-2xl mx-auto"
+        >
+          {assignmentProgress.stages
+            .filter(s => s.enabled)
+            .map(stage => (
+              <Step key={stage.stage_type}>
+                <StepLabel
+                  sx={{
+                    '& .MuiStepLabel-label': { marginTop: '6px !important' },
+                  }}
+                >
+                  {getStageStepLabel(stage)}
+                </StepLabel>
+              </Step>
+            ))}
+        </Stepper>
+      </div>
       {ele}
     </>
   );
