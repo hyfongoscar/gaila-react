@@ -6,12 +6,14 @@ type Props = {
   isGraded: boolean;
   essayContent: RefObject<string>;
   updateWordCountStatus: () => void;
+  handleSave: (isFinal: boolean, isManual: boolean) => void;
 };
 
 const EssayEditorInput = ({
   isGraded,
   essayContent,
   updateWordCountStatus,
+  handleSave,
 }: Props) => {
   const onChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -26,6 +28,7 @@ const EssayEditorInput = ({
       defaultValue={essayContent.current}
       disabled={isGraded}
       multiline
+      onBlur={() => handleSave(false, false)}
       onChange={onChange}
       placeholder="Start writing your essay here..."
       sx={{

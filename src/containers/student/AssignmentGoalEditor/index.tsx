@@ -62,14 +62,16 @@ const AssignmentGoalEditor = ({ assignmentProgress, currentStage }: Props) => {
   const { alertMsg, successMsg, errorMsg } = useAlert();
 
   const { mutate: saveSubmission } = useMutation(apiSaveAssignmentSubmission, {
-    onSuccess: async res => {
+    onSuccess: async (res, req) => {
       if (res.is_final) {
         await queryClient.invalidateQueries([
           apiViewAssignmentProgress.queryKey,
         ]);
         return;
       }
-      successMsg('Goals draft saved.');
+      if (req.is_manual) {
+        successMsg('Goals draft saved.');
+      }
     },
     onError: errorMsg,
   });
@@ -104,7 +106,7 @@ const AssignmentGoalEditor = ({ assignmentProgress, currentStage }: Props) => {
   );
 
   const handleSubmit = useCallback(
-    (isFinal: boolean) => {
+    (isFinal: boolean, isManual: boolean) => {
       const goals: AssignmentGoal[] = GOAL_QUESTIONS.filter(
         q => !isObjEmpty(responses[q.category]),
       ).map(q => ({
@@ -114,7 +116,7 @@ const AssignmentGoalEditor = ({ assignmentProgress, currentStage }: Props) => {
         })),
       }));
 
-      if (goals.length === 0) {
+      if (isFinal && goals.length === 0) {
         alertMsg('Please answer at least one question to set your goals.');
         return;
       }
@@ -124,6 +126,7 @@ const AssignmentGoalEditor = ({ assignmentProgress, currentStage }: Props) => {
         stage_id: currentStage.id,
         content: JSON.stringify(goals),
         is_final: isFinal,
+        is_manual: isManual,
       });
     },
     [
@@ -209,6 +212,7 @@ const AssignmentGoalEditor = ({ assignmentProgress, currentStage }: Props) => {
                     >
                       <TextInput
                         className="resize-none"
+                        onBlur={() => handleSubmit(false, false)}
                         onChange={e =>
                           handleChangeText(
                             question.category,
@@ -243,7 +247,7 @@ const AssignmentGoalEditor = ({ assignmentProgress, currentStage }: Props) => {
           <div className="flex justify-end gap-4">
             <Button
               className="gap-2"
-              onClick={() => handleSubmit(false)}
+              onClick={() => handleSubmit(false, true)}
               size="lg"
               variant="secondary"
             >
@@ -252,7 +256,7 @@ const AssignmentGoalEditor = ({ assignmentProgress, currentStage }: Props) => {
             </Button>
             <Button
               className="gap-2"
-              onClick={() => handleSubmit(true)}
+              onClick={() => handleSubmit(true, true)}
               size="lg"
             >
               Submit and Continue

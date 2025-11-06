@@ -71,14 +71,16 @@ const AssignmentReflectionEditor = ({
   const { alertMsg, successMsg, errorMsg } = useAlert();
 
   const { mutate: saveSubmission } = useMutation(apiSaveAssignmentSubmission, {
-    onSuccess: async res => {
+    onSuccess: async (res, req) => {
       if (res.is_final) {
         await queryClient.invalidateQueries([
           apiViewAssignmentProgress.queryKey,
         ]);
         return;
       }
-      successMsg('Reflection draft saved.');
+      if (req.is_manual) {
+        successMsg('Reflection draft saved.');
+      }
     },
     onError: errorMsg,
   });
@@ -105,12 +107,12 @@ const AssignmentReflectionEditor = ({
   };
 
   const handleSubmit = useCallback(
-    (isFinal: boolean) => {
+    (isFinal: boolean, isManual: boolean) => {
       const answeredCount = Object.values(reflections).filter(r =>
         r?.trim(),
       ).length;
 
-      if (answeredCount === 0) {
+      if (isFinal && answeredCount === 0) {
         alertMsg(
           'Please answer at least one reflection question before submitting.',
         );
@@ -120,8 +122,9 @@ const AssignmentReflectionEditor = ({
       saveSubmission({
         assignment_id: assignmentProgress.assignment.id,
         stage_id: currentStage.id,
-        is_final: isFinal,
         content: JSON.stringify(reflections),
+        is_final: isFinal,
+        is_manual: isManual,
       });
     },
     [
@@ -251,6 +254,7 @@ const AssignmentReflectionEditor = ({
                 <TextInput
                   className="resize-none"
                   multiline
+                  onBlur={() => handleSubmit(false, false)}
                   onChange={e =>
                     handleReflectionChange(question.id, e.target.value)
                   }
@@ -266,7 +270,7 @@ const AssignmentReflectionEditor = ({
           <div className="flex justify-end gap-4">
             <Button
               className="gap-2"
-              onClick={() => handleSubmit(false)}
+              onClick={() => handleSubmit(false, true)}
               size="lg"
               variant="secondary"
             >
@@ -275,7 +279,7 @@ const AssignmentReflectionEditor = ({
             </Button>
             <Button
               className="gap-2"
-              onClick={() => handleSubmit(true)}
+              onClick={() => handleSubmit(true, true)}
               size="lg"
             >
               Submit

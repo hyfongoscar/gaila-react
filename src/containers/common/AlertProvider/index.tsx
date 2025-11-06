@@ -14,7 +14,7 @@ import getErrorMessage from 'utils/response/error';
 import { type AlertOption, Provider } from './context';
 
 const defaultOption: Partial<AlertOption> = {
-  autoHideDuration: 5000,
+  autoHideDuration: 3000,
   anchorOrigin: {
     vertical: 'top',
     horizontal: 'center',
@@ -26,6 +26,7 @@ function AlertProvider({ children }: { children: ReactNode }) {
 
   const [message, setMessage] = useState<ReactNode>(null);
   const [options, setOptions] = useState<AlertOption>({});
+  const [closeTimer, setCloseTimer] = useState<NodeJS.Timeout | null>(null);
 
   const handleClose = useCallback(() => {
     setOpen(false);
@@ -38,13 +39,25 @@ function AlertProvider({ children }: { children: ReactNode }) {
     (message: ReactNode, opt: AlertOption = {}) => {
       setMessage(message);
       setOpen(true);
+      if (closeTimer) {
+        clearTimeout(closeTimer);
+        setCloseTimer(null);
+      }
       setOptions({
         ...defaultOption,
         type: 'info',
         ...opt,
       });
+
+      if (opt.autoHideDuration) {
+        setCloseTimer(
+          setTimeout(() => {
+            handleClose();
+          }, opt.autoHideDuration),
+        );
+      }
     },
-    [],
+    [closeTimer, handleClose],
   );
 
   const handleNewSuccess = useCallback(
@@ -97,6 +110,14 @@ function AlertProvider({ children }: { children: ReactNode }) {
         autoHideDuration={options.autoHideDuration}
         onClose={handleClose}
         open={open}
+        slotProps={{
+          clickAwayListener: {
+            onClickAway: event => {
+              // @ts-expect-error: mui
+              event.defaultMuiPrevented = true;
+            },
+          },
+        }}
       >
         <Alert severity={options.type} variant="filled">
           {message}

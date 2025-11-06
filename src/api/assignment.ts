@@ -88,7 +88,8 @@ type AssignmentSaveSubmissionPayload = {
   assignment_id: number;
   stage_id: number;
   content: string;
-  is_final?: boolean;
+  is_final: boolean;
+  is_manual: boolean;
 };
 
 export const apiSaveAssignmentSubmission = (

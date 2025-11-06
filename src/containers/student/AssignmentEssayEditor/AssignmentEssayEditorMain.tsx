@@ -52,14 +52,16 @@ function AssignmentEssayEditorMain({
   const { alertMsg, successMsg, errorMsg } = useAlert();
 
   const { mutate: saveSubmission } = useMutation(apiSaveAssignmentSubmission, {
-    onSuccess: async res => {
+    onSuccess: async (res, req) => {
       if (res.is_final) {
         await queryClient.invalidateQueries([
           apiViewAssignmentProgress.queryKey,
         ]);
         return;
       }
-      successMsg('Essay draft saved.');
+      if (req.is_manual) {
+        successMsg('Essay draft saved.');
+      }
     },
     onError: errorMsg,
   });
@@ -160,7 +162,7 @@ function AssignmentEssayEditorMain({
   }, [assignmentProgress.stages, currentStage, getWordCountStatus]);
 
   const handleSave = useCallback(
-    (isFinal: boolean) => {
+    (isFinal: boolean, isManual: boolean) => {
       if (isFinal) {
         // Check word count
         if (
@@ -199,6 +201,7 @@ function AssignmentEssayEditorMain({
           goals,
         }),
         is_final: isFinal,
+        is_manual: isManual,
       });
     },
     [
@@ -210,6 +213,24 @@ function AssignmentEssayEditorMain({
       saveSubmission,
       title,
     ],
+  );
+
+  const onChangeGoals = useCallback(
+    (newGoals: AssignmentGoal[]) => {
+      setGoals(newGoals);
+      saveSubmission({
+        assignment_id: assignmentProgress.assignment.id,
+        stage_id: currentStage.id,
+        content: JSON.stringify({
+          title: title,
+          content: essayContent.current,
+          goals: newGoals,
+        }),
+        is_final: false,
+        is_manual: false,
+      });
+    },
+    [assignmentProgress.assignment.id, currentStage.id, saveSubmission, title],
   );
 
   return (
@@ -261,7 +282,7 @@ function AssignmentEssayEditorMain({
                 <Button
                   className="gap-2 w-full sm:w-auto"
                   disabled={readonly}
-                  onClick={() => handleSave(false)}
+                  onClick={() => handleSave(false, true)}
                   variant="secondary"
                 >
                   <Save className="h-4 w-4" />
@@ -270,7 +291,7 @@ function AssignmentEssayEditorMain({
                 <Button
                   className="gap-2 w-full sm:w-auto"
                   disabled={readonly}
-                  onClick={() => handleSave(true)}
+                  onClick={() => handleSave(true, true)}
                 >
                   Submit
                   <ArrowRight className="h-4 w-4" />
@@ -292,7 +313,7 @@ function AssignmentEssayEditorMain({
               className="text-base sm:text-lg font-semibold !mb-4"
               disabled={readonly}
               label="Essay Title"
-              onBlur={updateWordCountStatus}
+              onBlur={() => handleSave(false, false)}
               onChange={e => setTitle(e.target.value)}
               value={title}
             />
@@ -333,6 +354,7 @@ function AssignmentEssayEditorMain({
           >
             <EssayEditorInput
               essayContent={essayContent}
+              handleSave={handleSave}
               isGraded={readonly}
               updateWordCountStatus={updateWordCountStatus}
             />
@@ -350,8 +372,8 @@ function AssignmentEssayEditorMain({
                   assignment={assignment}
                   goals={goals}
                   grade={teacherGrade}
+                  onChangeGoals={onChangeGoals}
                   readonly={readonly}
-                  setGoals={setGoals}
                 />
               ),
             },

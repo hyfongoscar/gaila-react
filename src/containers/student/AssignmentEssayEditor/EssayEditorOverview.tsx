@@ -26,7 +26,7 @@ type Props = {
   grade: AssignmentGrade | null;
   assignment: Assignment;
   goals: AssignmentGoal[];
-  setGoals: (goals: AssignmentGoal[]) => void;
+  onChangeGoals: (goals: AssignmentGoal[]) => void;
   readonly: boolean;
 };
 
@@ -34,7 +34,7 @@ const EssayEditorOverview = ({
   grade,
   assignment,
   goals,
-  setGoals,
+  onChangeGoals,
   readonly,
 }: Props) => {
   const wordCountDisplay = useMemo(() => {
@@ -86,7 +86,7 @@ const EssayEditorOverview = ({
   ]);
 
   const handleGoalToggle = useCallback(
-    (category: string, index: number) => {
+    async (category: string, index: number) => {
       const newGoals = goals.map(g => {
         if (g.category === category) {
           return {
@@ -104,9 +104,9 @@ const EssayEditorOverview = ({
         }
         return g;
       });
-      setGoals(newGoals);
+      onChangeGoals(newGoals);
     },
-    [goals, setGoals],
+    [goals, onChangeGoals],
   );
 
   return (
