@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   ArrowRight,
@@ -9,6 +9,7 @@ import {
   Save,
   Target,
 } from 'lucide-react';
+import { useMutation, useQueryClient } from 'react-query';
 
 import Badge from 'components/display/Badge';
 import Card from 'components/display/Card';
@@ -17,12 +18,22 @@ import LinearProgress from 'components/display/Progress/LinearProgress';
 import Button from 'components/input/Button';
 import TextInput from 'components/input/TextInput';
 
+import useAlert from 'containers/common/AlertProvider/useAlert';
 import ResizableSidebar from 'containers/common/ResizableSidebar';
 
-import type { AssignmentGoal, AssignmentProgress } from 'types/assignment';
+import {
+  apiSaveAssignmentSubmission,
+  apiViewAssignmentProgress,
+} from 'api/assignment';
+import type {
+  AssignmentEssayContent,
+  AssignmentProgress,
+  AssignmentReflectionContent,
+} from 'types/assignment';
 
 type Props = {
   assignmentProgress: AssignmentProgress;
+  currentStage: AssignmentProgress['stages'][number];
 };
 
 const REFLECTION_QUESTIONS = [
@@ -52,17 +63,38 @@ const REFLECTION_QUESTIONS = [
   },
 ];
 
-const AssignmentReflectionEditor = ({ assignmentProgress }: Props) => {
+const AssignmentReflectionEditor = ({
+  assignmentProgress,
+  currentStage,
+}: Props) => {
+  const queryClient = useQueryClient();
+  const { alertMsg, successMsg, errorMsg } = useAlert();
+
+  const { mutate: saveSubmission } = useMutation(apiSaveAssignmentSubmission, {
+    onSuccess: async res => {
+      if (res.is_final) {
+        await queryClient.invalidateQueries([
+          apiViewAssignmentProgress.queryKey,
+        ]);
+        return;
+      }
+      successMsg('Reflection draft saved.');
+    },
+    onError: errorMsg,
+  });
+
   const [reflections, setReflections] = useState<{ [key: number]: string }>({});
 
   const goals = useMemo(() => {
     const goalSettingStage = assignmentProgress.stages.find(
-      stage => stage.stage_type === 'goal_setting',
+      stage => stage.stage_type === 'writing',
     );
     if (!goalSettingStage?.submission) {
       return [];
     }
-    return goalSettingStage.submission.content as AssignmentGoal[];
+    const content = goalSettingStage.submission
+      .content as AssignmentEssayContent;
+    return content.goals;
   }, [assignmentProgress.stages]);
 
   const handleReflectionChange = (questionId: number, value: string) => {
@@ -79,13 +111,26 @@ const AssignmentReflectionEditor = ({ assignmentProgress }: Props) => {
       ).length;
 
       if (answeredCount === 0) {
-        alert(
+        alertMsg(
           'Please answer at least one reflection question before submitting.',
         );
         return;
       }
+
+      saveSubmission({
+        assignment_id: assignmentProgress.assignment.id,
+        stage_id: currentStage.id,
+        is_final: isFinal,
+        content: JSON.stringify(reflections),
+      });
     },
-    [reflections],
+    [
+      alertMsg,
+      assignmentProgress.assignment.id,
+      currentStage.id,
+      reflections,
+      saveSubmission,
+    ],
   );
 
   const completedGoals = goals.reduce(
@@ -94,6 +139,14 @@ const AssignmentReflectionEditor = ({ assignmentProgress }: Props) => {
   );
   const goalCompletionRate =
     goals.length > 0 ? (completedGoals / goals.length) * 100 : 0;
+
+  useEffect(() => {
+    if (currentStage.submission?.content) {
+      setReflections(
+        currentStage.submission.content as AssignmentReflectionContent,
+      );
+    }
+  }, [currentStage.submission]);
 
   return (
     <>

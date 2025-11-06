@@ -53,6 +53,7 @@ export interface AssignmentProgress {
     grade: AssignmentGrade | null;
   })[];
   current_stage: number;
+  is_finished: boolean;
 }
 
 export interface AssignmentGoal {
@@ -69,12 +70,19 @@ export interface AssignmentEssayContent {
   goals: AssignmentGoal[];
 }
 
+export interface AssignmentReflectionContent {
+  [key: number]: string;
+}
+
 export interface AssignmentSubmission {
   id: number;
   assignment_id: number;
   stage_id: number;
   student_id: number;
-  content: AssignmentGoal[] | AssignmentEssayContent | string;
+  content:
+    | AssignmentGoal[]
+    | AssignmentEssayContent
+    | AssignmentReflectionContent;
   submitted_at?: number;
   is_final?: boolean;
 }

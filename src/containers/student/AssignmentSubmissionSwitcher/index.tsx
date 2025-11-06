@@ -79,7 +79,10 @@ const AssignmentSubmissionSwitcher = ({ assignmentId }: Props) => {
 
     if (currentStage.stage_type === 'reflection') {
       return (
-        <AssignmentReflectionEditor assignmentProgress={assignmentProgress} />
+        <AssignmentReflectionEditor
+          assignmentProgress={assignmentProgress}
+          currentStage={currentStage}
+        />
       );
     }
 

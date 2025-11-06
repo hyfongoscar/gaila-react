@@ -6,6 +6,7 @@ import React, {
   useState,
 } from 'react';
 
+import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { ArrowRight, CheckCircle, FileText, Save } from 'lucide-react';
 import { useMutation, useQueryClient } from 'react-query';
@@ -67,6 +68,8 @@ function AssignmentEssayEditorMain({
     const grade = currentStage.grade;
     return [assignmentProgress.assignment, grade, !!grade];
   }, [assignmentProgress, currentStage]);
+
+  const readonly = isGraded || assignmentProgress.is_finished;
 
   const [title, setTitle] = useState('');
   const essayContent = useRef('');
@@ -212,11 +215,18 @@ function AssignmentEssayEditorMain({
   return (
     <div className="space-y-6">
       {/* Graded Status Alert */}
-      {isGraded && teacherGrade && (
+      {readonly && (
         <Card
-          className="border-purple-200 bg-purple-50"
+          className={
+            teacherGrade
+              ? 'border-purple-200 bg-purple-50'
+              : 'border-green-200 bg-green-50'
+          }
           classes={{
-            title: 'flex items-center gap-2 text-base text-purple-900',
+            title: clsx(
+              'flex items-center gap-2 text-base',
+              teacherGrade ? 'text-purple-800' : 'text-green-800',
+            ),
           }}
           title={
             <>
@@ -225,12 +235,20 @@ function AssignmentEssayEditorMain({
             </>
           }
         >
-          <p className="text-sm text-purple-800">
-            This essay has been graded by {teacherGrade.graded_by} on{' '}
-            {dayjs(teacherGrade.graded_at).format('DD MMM YYYY')}. You can view
-            your grade in the Requirements tab, but editing and tools are now
-            disabled. You can still use the AI Chat for learning purposes.
-          </p>
+          {teacherGrade ? (
+            <p className="text-sm text-purple-800">
+              This essay has been graded by {teacherGrade.graded_by} on{' '}
+              {dayjs(teacherGrade.graded_at).format('DD MMM YYYY')}. You can
+              view your grade in the Requirements tab, but editing and tools are
+              now disabled. You can still use the AI Chat for learning purposes.
+            </p>
+          ) : (
+            <p className="text-sm text-green-800">
+              You have already submitted your essay. Your teacher will grade it
+              soon. While you wait, you can review your essay and use the AI
+              Chat for learning purposes.
+            </p>
+          )}
         </Card>
       )}
 
@@ -242,7 +260,7 @@ function AssignmentEssayEditorMain({
               <div className="flex gap-2">
                 <Button
                   className="gap-2 w-full sm:w-auto"
-                  disabled={isGraded}
+                  disabled={readonly}
                   onClick={() => handleSave(false)}
                   variant="secondary"
                 >
@@ -251,7 +269,7 @@ function AssignmentEssayEditorMain({
                 </Button>
                 <Button
                   className="gap-2 w-full sm:w-auto"
-                  disabled={isGraded}
+                  disabled={readonly}
                   onClick={() => handleSave(true)}
                 >
                   Submit
@@ -272,7 +290,7 @@ function AssignmentEssayEditorMain({
           >
             <TextInput
               className="text-base sm:text-lg font-semibold !mb-4"
-              disabled={isGraded}
+              disabled={readonly}
               label="Essay Title"
               onBlur={updateWordCountStatus}
               onChange={e => setTitle(e.target.value)}
@@ -298,17 +316,24 @@ function AssignmentEssayEditorMain({
           </Card>
 
           <Card
-            classes={{ description: 'text-xs text-purple-600' }}
+            classes={{
+              description: clsx(
+                'text-xs',
+                teacherGrade ? '!text-purple-600' : '!text-green-600',
+              ),
+            }}
             description={
-              isGraded
+              teacherGrade
                 ? 'This essay has been graded and can no longer be edited.'
-                : null
+                : readonly
+                  ? 'You have submitted your essay.'
+                  : null
             }
             title="Essay Content"
           >
             <EssayEditorInput
               essayContent={essayContent}
-              isGraded={isGraded}
+              isGraded={readonly}
               updateWordCountStatus={updateWordCountStatus}
             />
           </Card>
@@ -319,12 +344,13 @@ function AssignmentEssayEditorMain({
           tabs={[
             {
               key: 'overview',
-              title: isGraded ? 'Grade' : 'Overview',
+              title: readonly ? 'Grade' : 'Overview',
               content: (
                 <EssayEditorOverview
                   assignment={assignment}
                   goals={goals}
                   grade={teacherGrade}
+                  readonly={readonly}
                   setGoals={setGoals}
                 />
               ),

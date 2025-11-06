@@ -14,6 +14,7 @@ import {
 import Badge from 'components/display/Badge';
 import Card from 'components/display/Card';
 import Divider from 'components/display/Divider';
+import Clickable from 'components/input/Clickable';
 
 import type {
   Assignment,
@@ -26,9 +27,16 @@ type Props = {
   assignment: Assignment;
   goals: AssignmentGoal[];
   setGoals: (goals: AssignmentGoal[]) => void;
+  readonly: boolean;
 };
 
-const EssayEditorOverview = ({ grade, assignment, goals, setGoals }: Props) => {
+const EssayEditorOverview = ({
+  grade,
+  assignment,
+  goals,
+  setGoals,
+  readonly,
+}: Props) => {
   const wordCountDisplay = useMemo(() => {
     let display = '';
     if (assignment.requirements?.min_word_count) {
@@ -174,60 +182,65 @@ const EssayEditorOverview = ({ grade, assignment, goals, setGoals }: Props) => {
           </div>
         </Card>
       )}
-      <Card
-        classes={{
-          title: 'flex items-center gap-2 text-base -mb-2',
-          description: 'text-xs',
-          header: 'mb-2',
-          children: 'space-y-3',
-        }}
-        description="Track your writing goals for this essay"
-        title={
-          <>
-            <Target className="h-4 w-4" />
-            Your Goals
-          </>
-        }
-      >
-        {goals.map(group => (
-          <div key={group.category}>
-            <Badge className="mt-1 text-xs" variant="outline">
-              {group.category}
-            </Badge>
-            {group.goals.map((goal, index) => (
-              <div
-                className="flex items-start gap-2 cursor-pointer hover:bg-muted/50 p-2 rounded transition-colors"
-                key={`${group.category}-${index}`}
-                onClick={() => handleGoalToggle(group.category, index)}
-              >
-                {goal.completed ? (
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                ) : (
-                  <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                )}
-                <div className="flex-1">
-                  <p
-                    className={`text-sm ${goal.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}
-                  >
-                    {goal.text}
-                  </p>
-                </div>
-              </div>
-            ))}
+
+      {!!goals.length && (
+        <Card
+          classes={{
+            title: 'flex items-center gap-2 text-base -mb-2',
+            description: 'text-xs',
+            header: 'mb-2',
+            children: 'space-y-3',
+          }}
+          description="Track your writing goals for this essay"
+          title={
+            <>
+              <Target className="h-4 w-4" />
+              Your Goals
+            </>
+          }
+        >
+          {goals.map(group => (
+            <div key={group.category}>
+              <Badge className="mt-1 text-xs" variant="outline">
+                {group.category}
+              </Badge>
+              {group.goals.map((goal, index) => (
+                <Clickable
+                  className="flex items-start gap-2 cursor-pointer hover:bg-muted/50 p-2 rounded transition-colors"
+                  disabled={readonly}
+                  key={`${group.category}-${index}`}
+                  onClick={() => handleGoalToggle(group.category, index)}
+                >
+                  {goal.completed ? (
+                    <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  ) : (
+                    <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                  )}
+                  <div className="flex-1">
+                    <p
+                      className={`text-sm ${goal.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}
+                    >
+                      {goal.text}
+                    </p>
+                  </div>
+                </Clickable>
+              ))}
+            </div>
+          ))}
+          <Divider />
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>Progress</span>
+            <span>
+              {goals.reduce(
+                (acc, g) => acc + g.goals.filter(goal => goal.completed).length,
+                0,
+              )}{' '}
+              / {goals.length} completed
+            </span>
           </div>
-        ))}
-        <Divider />
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>Progress</span>
-          <span>
-            {goals.reduce(
-              (acc, g) => acc + g.goals.filter(goal => goal.completed).length,
-              0,
-            )}{' '}
-            / {goals.length} completed
-          </span>
-        </div>
-      </Card>
+        </Card>
+      )}
+
       {/* Assignment Prompt */}
       {!!assignment.instructions && (
         <Card

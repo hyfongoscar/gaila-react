@@ -8,7 +8,7 @@ export function TeacherHome() {
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
       <ClassListing />
-      <ClassStatistics />
+      {/* <ClassStatistics /> */}
       <SubmissionListing />
     </div>
   );
