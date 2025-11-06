@@ -16,7 +16,7 @@ export interface AuthProviderPropsType {
 export type LoginActionParams = Omit<AuthProviderPropsType, 'isLoggedIn'>;
 export interface AuthProviderType extends AuthProviderPropsType {
   loginAction: (auth: LoginActionParams) => Promise<void>;
-  logoutAction: () => Promise<void>;
+  logoutAction: (redirect?: string) => Promise<void>;
   isLoaded: boolean;
   isInitialized: boolean;
 }

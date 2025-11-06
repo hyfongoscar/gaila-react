@@ -6,7 +6,7 @@ import TeacherHeader from 'containers/teacher/TeacherHeader';
 
 const AssignmentsPage = () => {
   return (
-    <AuthPageWrapper allowRoles={['teacher', 'admin']}>
+    <AuthPageWrapper isTeacherPage>
       <TeacherHeader />
       <TeacherAssignments />
     </AuthPageWrapper>

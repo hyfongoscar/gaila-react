@@ -16,7 +16,7 @@ const AssignmentSubmitPage = () => {
     isString(id) && isNumber(parseInt(id, 10)) ? parseInt(id, 10) : undefined;
 
   return (
-    <AuthPageWrapper allowRoles={['student']}>
+    <AuthPageWrapper isStudentPage>
       <StudentHeader />
       <div className="p-6 max-w-full mx-auto">
         {isNumber(assignmentId) ? (

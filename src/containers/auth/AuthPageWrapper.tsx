@@ -1,38 +1,42 @@
 import React, { useEffect } from 'react';
 
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
-import type { Role } from 'containers/auth/AuthProvider/context';
+import redirectToLoginPage from 'containers/auth/AuthProvider/redirectToLoginPage';
 import useAuth from 'containers/auth/AuthProvider/useAuth';
 
 type Props = {
-  allowRoles?: Role[];
   children: React.ReactNode;
+  isTeacherPage?: boolean;
+  isStudentPage?: boolean;
 };
 
-const AuthPageWrapper = ({ allowRoles, children }: Props) => {
+const AuthPageWrapper = ({ isTeacherPage, isStudentPage, children }: Props) => {
   const { isInitialized, isLoaded, isLoggedIn, role } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
-    if (!isInitialized) {
+    if (!isInitialized || !isLoaded) {
       return;
     }
     if (!isLoggedIn || !role) {
-      navigate(pathnames.login(location.pathname), { replace: true });
+      redirectToLoginPage(false, 'private');
       return;
     }
-    if (allowRoles && !allowRoles.includes(role)) {
+    if (
+      (isTeacherPage && role === 'student') ||
+      (isStudentPage && ['teacher', 'admin'].includes(role))
+    ) {
       navigate(pathnames.home(), { replace: true });
       return;
     }
   }, [
-    allowRoles,
     isInitialized,
+    isLoaded,
     isLoggedIn,
-    location.pathname,
+    isStudentPage,
+    isTeacherPage,
     navigate,
     role,
   ]);

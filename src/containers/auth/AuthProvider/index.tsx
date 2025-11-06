@@ -52,19 +52,14 @@ function AuthProvider({ children }: Props) {
   useEffect(() => {
     if (!isLoaded || !initAuth.current) return;
     initAuth.current = false;
-    if (auth.isLoggedIn && auth.token) {
-      if (
-        [pathnames.home(), pathnames.login()].indexOf(location.pathname) !== -1
-      ) {
-        // Redirect users to dashboard home
-        navigate(pathnames.home());
-      }
-      // Do not redirect as the link is already valid
-    } else {
-      // No user
-      // No redirecting here to login page, should be handled by Private route
+    if (
+      auth.isLoggedIn &&
+      auth.token &&
+      location.pathname === pathnames.login()
+    ) {
+      // Redirect users to dashboard home
+      navigate(pathnames.home());
     }
-    // Mark as initialized
     setIsInitialized(true);
   }, [auth.isLoggedIn, auth.token, isLoaded, location.pathname, navigate]);
 

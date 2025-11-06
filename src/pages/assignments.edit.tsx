@@ -24,7 +24,7 @@ const AssignmentEditPage = () => {
   }, [navigate]);
 
   return (
-    <AuthPageWrapper allowRoles={['teacher', 'admin']}>
+    <AuthPageWrapper isTeacherPage>
       <TeacherHeader />
       <div className="p-6 max-w-full mx-auto">
         <Button className="gap-2 mb-4" onClick={onBack} variant="ghost">

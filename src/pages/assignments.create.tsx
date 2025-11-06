@@ -18,7 +18,7 @@ const AssignmentCreatePage = () => {
   }, [navigate]);
 
   return (
-    <AuthPageWrapper allowRoles={['teacher', 'admin']}>
+    <AuthPageWrapper isTeacherPage>
       <TeacherHeader />
       <div className="p-6 max-w-full mx-auto mb-10">
         <Button className="gap-2 mb-4" onClick={onBack} variant="ghost">
