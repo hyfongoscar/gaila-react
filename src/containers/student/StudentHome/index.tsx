@@ -63,13 +63,13 @@ export function StudentHome() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [subjectFilter, setSubjectFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('');
   const [sortBy, setSortBy] = useState('modified');
 
   const hasFilter =
     searchTerm ||
     subjectFilter !== 'all' ||
-    statusFilter !== 'all' ||
+    statusFilter !== '' ||
     sortBy !== 'modified';
 
   const { data } = useQuery(
@@ -91,7 +91,7 @@ export function StudentHome() {
   const clearFilters = useCallback(() => {
     setSearchTerm('');
     setSubjectFilter('all');
-    setStatusFilter('all');
+    setStatusFilter('');
     setSortBy('modified');
   }, []);
 
@@ -188,7 +188,7 @@ export function StudentHome() {
 
         {(searchTerm ||
           subjectFilter !== 'all' ||
-          statusFilter !== 'all' ||
+          statusFilter !== '' ||
           sortBy !== 'modified') && (
           <div className="mt-4 space-y-2">
             <p className="text-sm text-muted-foreground">
@@ -205,7 +205,7 @@ export function StudentHome() {
                   Subject: {subjectFilter}
                 </Badge>
               )}
-              {statusFilter !== 'all' && (
+              {statusFilter !== '' && (
                 <Badge className="text-xs" variant="secondary">
                   Status: {getStatusText(statusFilter)}
                 </Badge>

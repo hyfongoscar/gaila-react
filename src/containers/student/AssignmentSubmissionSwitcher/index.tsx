@@ -11,6 +11,7 @@ import Loading from 'components/display/Loading';
 import AssignmentEssayEditor from 'containers/student/AssignmentEssayEditor';
 import AssignmentGoalEditor from 'containers/student/AssignmentGoalEditor';
 import AssignmentReflectionEditor from 'containers/student/AssignmentReflectionEditor';
+import usePageTracking from 'containers/student/AssignmentSubmissionSwitcher/usePageTracking';
 
 import { apiViewAssignmentProgress } from 'api/assignment';
 import type { AssignmentStage } from 'types/assignment';
@@ -42,6 +43,8 @@ const AssignmentSubmissionSwitcher = ({ assignmentId }: Props) => {
     tuple([apiViewAssignmentProgress.queryKey, assignmentId]),
     apiViewAssignmentProgress,
   );
+
+  usePageTracking(assignmentProgress);
 
   const ele = useMemo(() => {
     if (!assignmentProgress) {

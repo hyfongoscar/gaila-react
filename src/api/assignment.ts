@@ -33,8 +33,8 @@ export const apiViewAssignment = async ({
   const [, assignmentId] = queryKey;
   const res = await callAPIHandler<AssignmentDetails>(
     'get',
-    `/api/assignment/view/${assignmentId}`,
-    {},
+    `/api/assignment/view`,
+    { id: assignmentId },
     true,
   );
   return res;
@@ -76,8 +76,8 @@ export const apiViewAssignmentProgress = async ({
   const [, assignmentId] = queryKey;
   const res = await callAPIHandler<AssignmentProgress>(
     'get',
-    `/api/assignment/view-progress/${assignmentId}`,
-    {},
+    `/api/assignment/view-progress`,
+    { id: assignmentId },
     true,
   );
   return res;
