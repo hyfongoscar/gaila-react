@@ -16,7 +16,6 @@ export interface Assignment {
   };
   rubrics?: RubricItem[];
   stages: AssignmentStage[];
-  status: 'upcoming' | 'in-progress' | 'submitted' | 'graded' | 'past-due';
 }
 
 export interface RubricItem {
@@ -32,6 +31,7 @@ export type AssignmentListingResponse = ListingResponse<
 export interface StudentAssignmentListingItem extends Assignment {
   word_count: number;
   last_modified: string;
+  status: 'upcoming' | 'in-progress' | 'submitted' | 'graded' | 'past-due';
 }
 
 export interface AssignmentDetails extends Assignment {
@@ -111,4 +111,5 @@ export interface TeacherAssignmentListingItem extends Assignment {
   submitted: number;
   graded: number;
   avgScore: number | null;
+  status: 'upcoming' | 'active' | 'past-due';
 }

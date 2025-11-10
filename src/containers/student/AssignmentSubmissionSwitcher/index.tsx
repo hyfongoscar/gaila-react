@@ -1,8 +1,5 @@
 import React, { useMemo } from 'react';
 
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Stepper from '@mui/material/Stepper';
 import { useQuery } from 'react-query';
 
 import ErrorComponent from 'components/display/ErrorComponent';
@@ -14,24 +11,10 @@ import AssignmentReflectionEditor from 'containers/student/AssignmentReflectionE
 import usePageTracking from 'containers/student/AssignmentSubmissionSwitcher/usePageTracking';
 
 import { apiViewAssignmentProgress } from 'api/assignment';
-import type { AssignmentStage } from 'types/assignment';
 import tuple from 'utils/types/tuple';
 
 type Props = {
   assignmentId: number;
-};
-
-const getStageStepLabel = (stage: AssignmentStage) => {
-  switch (stage.stage_type) {
-    case 'goal_setting':
-      return 'Goal Setting';
-    case 'writing':
-      return 'Writing';
-    case 'reflection':
-      return 'Reflection';
-    default:
-      return '';
-  }
 };
 
 const AssignmentSubmissionSwitcher = ({ assignmentId }: Props) => {
@@ -107,38 +90,7 @@ const AssignmentSubmissionSwitcher = ({ assignmentId }: Props) => {
     );
   }
 
-  const inactiveStages = assignmentProgress.stages.filter(s => !s.enabled);
-  const stepperActiveStep = Math.max(
-    assignmentProgress.current_stage - inactiveStages.length,
-    0,
-  );
-
-  return (
-    <>
-      <div className="bg-gray-100 -m-6 py-4 mb-4">
-        <Stepper
-          activeStep={stepperActiveStep}
-          alternativeLabel
-          className="max-w-2xl mx-auto"
-        >
-          {assignmentProgress.stages
-            .filter(s => s.enabled)
-            .map(stage => (
-              <Step key={stage.stage_type}>
-                <StepLabel
-                  sx={{
-                    '& .MuiStepLabel-label': { marginTop: '6px !important' },
-                  }}
-                >
-                  {getStageStepLabel(stage)}
-                </StepLabel>
-              </Step>
-            ))}
-        </Stepper>
-      </div>
-      {ele}
-    </>
-  );
+  return <>{ele}</>;
 };
 
 export default AssignmentSubmissionSwitcher;

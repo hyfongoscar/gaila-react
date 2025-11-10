@@ -28,13 +28,13 @@ export function StudentHome() {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('due-date');
+  const [sortBy, setSortBy] = useState('due_date');
 
   const hasFilter =
     searchTerm ||
     typeFilter !== 'all' ||
     statusFilter !== 'all' ||
-    sortBy !== 'due-date';
+    sortBy !== 'due_date';
 
   const onEditEssay = useCallback(
     (id: number) => {
@@ -47,7 +47,7 @@ export function StudentHome() {
     setSearchTerm('');
     setTypeFilter('all');
     setStatusFilter('all');
-    setSortBy('due-date');
+    setSortBy('due_date');
   }, []);
 
   return (
@@ -81,26 +81,27 @@ export function StudentHome() {
 
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <SelectInput
+            emptyOption="All types"
+            label="Essay types"
+            onChange={setTypeFilter}
+            options={[
+              { value: 'argumentative', label: 'Argumentative' },
+              { value: 'narrative', label: 'Narrative' },
+              { value: 'expository', label: 'Expository' },
+              { value: 'descriptive', label: 'Descriptive' },
+            ]}
+            value={typeFilter}
+          />
+          <SelectInput
             emptyOption="All statuses"
             label="Statuses"
             onChange={setStatusFilter}
             options={[
-              {
-                label: 'Draft',
-                value: 'draft',
-              },
-              {
-                label: 'In Progress',
-                value: 'in-progress',
-              },
-              {
-                label: 'Completed',
-                value: 'completed',
-              },
-              {
-                label: 'Graded',
-                value: 'graded',
-              },
+              { label: 'Upcoming', value: 'upcoming' },
+              { label: 'In Progress', value: 'in-progress' },
+              { label: 'Completed', value: 'completed' },
+              { label: 'Graded', value: 'graded' },
+              { label: 'Past Due', value: 'past-due' },
             ]}
             value={statusFilter}
           />
@@ -108,26 +109,10 @@ export function StudentHome() {
             label="Sort by"
             onChange={setSortBy}
             options={[
-              {
-                label: 'Due Date',
-                value: 'due-date',
-              },
-              {
-                label: 'Title',
-                value: 'title',
-              },
-              {
-                label: 'Subject',
-                value: 'subject',
-              },
-              {
-                label: 'Word Count',
-                value: 'wordCount',
-              },
-              {
-                label: 'Status',
-                value: 'status',
-              },
+              { label: 'Due Date', value: 'due_date' },
+              { label: 'Title', value: 'title' },
+              { label: 'Subject', value: 'subject' },
+              { label: 'Status', value: 'status' },
             ]}
             value={sortBy}
           />
@@ -145,7 +130,7 @@ export function StudentHome() {
         {(searchTerm ||
           typeFilter !== 'all' ||
           statusFilter !== 'all' ||
-          sortBy !== 'due-date') && (
+          sortBy !== 'due_date') && (
           <div className="mt-4 space-y-2">
             <div className="flex flex-wrap gap-2">
               {searchTerm && (
@@ -155,7 +140,7 @@ export function StudentHome() {
               )}
               {typeFilter !== '' && (
                 <Badge className="text-xs" variant="secondary">
-                  Subject: {typeFilter}
+                  Type: {typeFilter}
                 </Badge>
               )}
               {statusFilter !== '' && (
@@ -163,7 +148,7 @@ export function StudentHome() {
                   Status: {getStatusText(statusFilter)}
                 </Badge>
               )}
-              {sortBy !== 'due-date' && (
+              {sortBy !== 'due_date' && (
                 <Badge className="text-xs" variant="secondary">
                   Sort: {sortBy}
                 </Badge>
@@ -177,7 +162,7 @@ export function StudentHome() {
         <InfiniteList
           emptyPlaceholder={
             hasFilter ? (
-              <div className="text-center py-12">
+              <div className="text-center py-12 col-span-3">
                 <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">
                   No essays match your filters
@@ -186,7 +171,7 @@ export function StudentHome() {
                   Try adjusting your search terms or filters to find your essays
                 </p>
                 <Button
-                  className="gap-2"
+                  className="gap-2 inline-flex"
                   onClick={clearFilters}
                   variant="outline"
                 >
@@ -195,7 +180,7 @@ export function StudentHome() {
                 </Button>
               </div>
             ) : (
-              <div className="text-center py-12">
+              <div className="text-center py-12 col-span-3">
                 <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">
                   You are not assigned any essays yet
@@ -211,8 +196,8 @@ export function StudentHome() {
               limit: 10,
               filter: {
                 search: searchTerm,
-                subject: typeFilter,
-                status: statusFilter,
+                type: typeFilter === 'all' ? undefined : typeFilter,
+                status: statusFilter === 'all' ? undefined : statusFilter,
               },
               sort: sortBy,
             },

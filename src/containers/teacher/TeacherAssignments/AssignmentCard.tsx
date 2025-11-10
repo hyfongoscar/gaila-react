@@ -19,8 +19,7 @@ const AssignmentCard = ({ assignment }: Props) => {
   const navigate = useNavigate();
 
   const getStatusBadge = (status: TeacherAssignmentListingItem['status']) => {
-    if (status === 'in-progress')
-      return <Badge variant="primary">In Progress</Badge>;
+    if (status === 'active') return <Badge variant="primary">Active</Badge>;
     if (status === 'upcoming')
       return <Badge variant="secondary">Upcoming</Badge>;
     return <Badge variant="outline">Past Due</Badge>;

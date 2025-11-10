@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 
 import { ArrowLeft } from 'lucide-react';
+import { useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
@@ -10,12 +11,16 @@ import AuthPageWrapper from 'containers/auth/AuthPageWrapper';
 import AssignmentEditor from 'containers/teacher/AssignmentEditor';
 import TeacherHeader from 'containers/teacher/TeacherHeader';
 
+import { apiGetGptLogs } from 'api/gpt';
+
 const AssignmentCreatePage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const onBack = useCallback(() => {
+  const onBack = useCallback(async () => {
+    await queryClient.invalidateQueries([apiGetGptLogs.queryKey]);
     navigate(pathnames.assignments());
-  }, [navigate]);
+  }, [navigate, queryClient]);
 
   return (
     <AuthPageWrapper isTeacherPage>

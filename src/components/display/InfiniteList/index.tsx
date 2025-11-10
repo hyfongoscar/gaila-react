@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
+import { LoaderCircle } from 'lucide-react';
 import type { UseQueryOptions } from 'react-query';
 
 import ErrorComponent from 'components/display/ErrorComponent';
@@ -33,7 +34,7 @@ const InfiniteList = <
 }: Props<TData, TParam>) => {
   const endDiv = useRef<HTMLDivElement>(null);
 
-  const { data, endReached, setPages, setPageLimit, error } =
+  const { data, isLoading, endReached, setPages, setPageLimit, error } =
     useInfiniteListing<TData['value'][0]>({
       queryFn,
       queryKey: queryKey,
@@ -63,13 +64,14 @@ const InfiniteList = <
     return <ErrorComponent error={error} />;
   }
 
-  if (!data.length && endReached) {
+  if (!data.length && !isLoading && endReached) {
     return emptyPlaceholder;
   }
 
   return (
     <>
       {data?.map(renderItem)}
+      {isLoading && <LoaderCircle className="animate-spin" />}
       {!!data.length && !endReached && <div ref={endDiv} />}
     </>
   );
