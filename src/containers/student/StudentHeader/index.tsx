@@ -17,6 +17,7 @@ import DropdownMenu from 'components/navigation/DropdownMenu';
 
 import useAuth from 'containers/auth/AuthProvider/useAuth';
 import Logo from 'containers/common/Logo';
+import AssignmentSubmissionStepper from 'containers/student/AssignmentSubmissionSwitcher/AssignmentSubmissionStepper';
 
 // FIXME: api
 const notifications = [
@@ -82,24 +83,30 @@ export function StudentHeader() {
         <div className="flex items-center justify-between">
           <Logo />
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-4">
-            <Button
-              className="gap-2 w-full sm:w-auto justify-start"
-              onClick={() => onViewChange('home')}
-              variant={currentView === 'home' ? 'default' : 'ghost'}
-            >
-              <FileText className="h-4 w-4" />
-              My Assignments
-            </Button>
-            <Button
-              className="gap-2 w-full sm:w-auto justify-start"
-              onClick={() => onViewChange('analytics')}
-              variant={currentView === 'analytics' ? 'default' : 'ghost'}
-            >
-              <BarChart3 className="h-4 w-4" />
-              Dashboard
-            </Button>
-          </nav>
+          {location.pathname.startsWith(
+            pathnames.assignmentEditSubmission(''),
+          ) ? (
+            <AssignmentSubmissionStepper />
+          ) : (
+            <nav className="flex items-center gap-4">
+              <Button
+                className="gap-2 w-full sm:w-auto justify-start"
+                onClick={() => onViewChange('home')}
+                variant={currentView === 'home' ? 'default' : 'ghost'}
+              >
+                <FileText className="h-4 w-4" />
+                My Assignments
+              </Button>
+              <Button
+                className="gap-2 w-full sm:w-auto justify-start"
+                onClick={() => onViewChange('analytics')}
+                variant={currentView === 'analytics' ? 'default' : 'ghost'}
+              >
+                <BarChart3 className="h-4 w-4" />
+                Dashboard
+              </Button>
+            </nav>
+          )}
 
           <div className="flex-shrink-0 w-[250px] flex gap-4 justify-end">
             <DropdownMenu

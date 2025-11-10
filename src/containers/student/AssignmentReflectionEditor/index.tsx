@@ -1,32 +1,29 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import {
   ArrowRight,
   CheckCircle,
-  Circle,
   FileCheck,
   MessageSquare,
   Save,
-  Target,
 } from 'lucide-react';
 import { useMutation, useQueryClient } from 'react-query';
 
-import Badge from 'components/display/Badge';
 import Card from 'components/display/Card';
-import Divider from 'components/display/Divider';
-import LinearProgress from 'components/display/Progress/LinearProgress';
 import Button from 'components/input/Button';
 import TextInput from 'components/input/TextInput';
+import Tabs from 'components/navigation/Tabs';
 
+import AIChatBox from 'containers/common/AIChatBox.tsx';
 import useAlert from 'containers/common/AlertProvider/useAlert';
 import ResizableSidebar from 'containers/common/ResizableSidebar';
+import AssignmentReflectionStatistics from 'containers/student/AssignmentReflectionEditor/AssignmentReflectionStatistics';
 
 import {
   apiSaveAssignmentSubmission,
   apiViewAssignmentProgress,
 } from 'api/assignment';
 import type {
-  AssignmentEssayContent,
   AssignmentProgress,
   AssignmentReflectionContent,
 } from 'types/assignment';
@@ -87,18 +84,6 @@ const AssignmentReflectionEditor = ({
 
   const [reflections, setReflections] = useState<{ [key: number]: string }>({});
 
-  const goals = useMemo(() => {
-    const goalSettingStage = assignmentProgress.stages.find(
-      stage => stage.stage_type === 'writing',
-    );
-    if (!goalSettingStage?.submission) {
-      return [];
-    }
-    const content = goalSettingStage.submission
-      .content as AssignmentEssayContent;
-    return content.goals;
-  }, [assignmentProgress.stages]);
-
   const handleReflectionChange = (questionId: number, value: string) => {
     setReflections(prev => ({
       ...prev,
@@ -136,12 +121,9 @@ const AssignmentReflectionEditor = ({
     ],
   );
 
-  const completedGoals = goals.reduce(
-    (acc, g) => acc + g.goals.filter(g => g.completed).length,
-    0,
+  const generalChatTool = currentStage.tools.find(
+    tool => tool.key === 'reflection_general',
   );
-  const goalCompletionRate =
-    goals.length > 0 ? (completedGoals / goals.length) * 100 : 0;
 
   useEffect(() => {
     if (currentStage.submission?.content) {
@@ -160,73 +142,12 @@ const AssignmentReflectionEditor = ({
           Essay Reflection
         </h1>
         <p className="text-muted-foreground">
-          Great work on completing{' '}
-          <span className="text-foreground">
-            {assignmentProgress.assignment.title}
-          </span>
-          ! Let&apos;s reflect on your writing process.
+          Great work on completing {assignmentProgress.assignment.title}!
+          Let&apos;s reflect on your writing process.
         </p>
       </div>
 
-      <ResizableSidebar initWidth={500} maxWidth={800} minWidth={400} reverse>
-        {/* Goal Achievement */}
-        <Card
-          classes={{
-            title: 'flex items-center gap-2',
-            children: 'space-y-4',
-          }}
-          description={`You achieved ${completedGoals} out of ${goals.length} goals`}
-          title={
-            <>
-              <Target className="h-5 w-5" />
-              Goal Achievement
-            </>
-          }
-        >
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Completion Rate</span>
-              <span>{Math.round(goalCompletionRate)}%</span>
-            </div>
-            <LinearProgress value={goalCompletionRate} variant="determinate" />
-          </div>
-
-          <Divider />
-
-          <div className="space-y-3">
-            {goals.map(group => (
-              <div className="flex items-start gap-2" key={group.category}>
-                <Badge className="mt-1 text-xs" variant="outline">
-                  {group.category}
-                </Badge>
-                {group.goals.map((goal, goalIndex) => (
-                  <div
-                    className="flex items-start gap-2"
-                    key={`${group.category}-${goalIndex}`}
-                  >
-                    {goal.completed ? (
-                      <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    ) : (
-                      <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                    )}
-                    <div className="flex-1">
-                      <p
-                        className={
-                          goal.completed
-                            ? 'text-foreground'
-                            : 'text-muted-foreground'
-                        }
-                      >
-                        {goal.text}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </Card>
-
+      <ResizableSidebar initWidth={500} maxWidth={800} minWidth={400}>
         <div className="space-y-6">
           {/* Reflection Questions */}
           <Card
@@ -287,6 +208,37 @@ const AssignmentReflectionEditor = ({
             </Button>
           </div>
         </div>
+
+        <Tabs
+          tabs={[
+            {
+              key: 'statistics',
+              title: 'Statistics',
+              content: (
+                <AssignmentReflectionStatistics
+                  assignmentProgress={assignmentProgress}
+                />
+              ),
+            },
+            ...(generalChatTool
+              ? [
+                  {
+                    key: 'chat',
+                    title: 'AI Chat',
+                    content: (
+                      <AIChatBox
+                        chatName="Reflection Assistant"
+                        description="Ask me anything about reflecting on writing goals"
+                        firstMessage="Hello! I'm your Reflection Assistant. I'm here to help you think deeply about your writing process. Feel free to ask me questions about writing evaluations, best writing practices, and ways to improve for your next essay."
+                        placeholder="Ask about reflections..."
+                        toolId={generalChatTool.id}
+                      />
+                    ),
+                  },
+                ]
+              : []),
+          ]}
+        />
       </ResizableSidebar>
 
       <Card
