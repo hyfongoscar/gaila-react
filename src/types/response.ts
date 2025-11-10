@@ -1,8 +1,8 @@
-export interface ListingResponse {
+export interface ListingResponse<T = ViewResponse> {
   count: number;
   page: number;
   limit: number;
-  value: ViewResponse[];
+  value: T[];
 }
 
 export interface ViewResponse {

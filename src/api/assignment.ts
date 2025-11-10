@@ -4,7 +4,6 @@ import type {
   AssignmentDetails,
   AssignmentListingResponse,
   AssignmentProgress,
-  AssignmentStage,
   AssignmentSubmission,
   RubricItem,
 } from 'types/assignment';
@@ -12,13 +11,26 @@ import type {
 export const apiGetAssignments = async ({
   queryKey,
 }: {
-  queryKey: [string, { page: number; limit: number; filter: string }];
+  queryKey: [
+    string,
+    {
+      page: number;
+      limit: number;
+      filter: {
+        search?: string;
+        subject?: string;
+        status?: string;
+      };
+      sort?: string;
+      sort_order?: 'asc' | 'desc';
+    },
+  ];
 }) => {
-  const [, { page, limit, filter }] = queryKey;
+  const [, { page, limit, filter, sort, sort_order }] = queryKey;
   const res = await callAPIHandler<AssignmentListingResponse>(
     'get',
     '/api/assignment/listing',
-    { page, limit, filter },
+    { page, limit, filter: JSON.stringify(filter), sort, sort_order },
     true,
   );
   return res;
@@ -55,7 +67,11 @@ export interface AssignmentCreatePayload {
   tips?: string[];
   enrolled_class_ids?: number[];
   enrolled_student_ids?: number[];
-  stages: Omit<AssignmentStage, 'id'>[];
+  stages: {
+    stage_type: string;
+    enabled: boolean;
+    tools: { key: string; enabled: boolean }[];
+  }[];
 }
 
 export const apiCreateAssignment = (

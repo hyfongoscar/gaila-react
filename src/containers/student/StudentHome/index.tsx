@@ -1,85 +1,40 @@
 import React, { useCallback, useState } from 'react';
 
-import { Edit, FileText, Filter, Search, SortAsc } from 'lucide-react';
-import { useQuery } from 'react-query';
+import dayjs from 'dayjs';
+import { Clock, Edit, FileText, Filter, Search, SortAsc } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
 import Badge from 'components/display/Badge';
 import Card from 'components/display/Card';
+import InfiniteList from 'components/display/InfiniteList';
 import Button from 'components/input/Button';
 import SelectInput from 'components/input/SelectInput';
 import TextInput from 'components/input/TextInput';
 
+import {
+  getBadgeText,
+  getStatusClass,
+  getStatusText,
+  getWordRequirementText,
+} from 'containers/student/StudentHome/utils';
+
 import { apiGetAssignments } from 'api/assignment';
-import type { AssignmentDetails } from 'types/assignment';
 import tuple from 'utils/types/tuple';
-
-const getStatusClass = (status: string) => {
-  switch (status) {
-    case 'completed':
-      return 'bg-green-100 text-green-800';
-    case 'in-progress':
-      return 'bg-blue-100 text-blue-800';
-    case 'draft':
-      return 'bg-gray-100 text-gray-800';
-    case 'graded':
-      return 'bg-purple-100 text-purple-800';
-    default:
-      return 'bg-gray-100 text-gray-800';
-  }
-};
-
-const getStatusText = (status: string) => {
-  switch (status) {
-    case 'upcoming':
-      return 'Upcoming';
-    case 'in-progress':
-      return 'In Progress';
-    case 'submitted':
-      return 'Submitted';
-    case 'graded':
-      return 'Graded';
-    default:
-      return 'Past-Due';
-  }
-};
-
-const getBadgeText = (type: AssignmentDetails['type']) => {
-  switch (type) {
-    case 'narrative':
-      return 'Narrative';
-    case 'expository':
-      return 'Expository';
-    case 'descriptive':
-      return 'Descriptive';
-    default:
-      return 'Argumentative';
-  }
-};
 
 export function StudentHome() {
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [subjectFilter, setSubjectFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [sortBy, setSortBy] = useState('modified');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('due-date');
 
   const hasFilter =
     searchTerm ||
-    subjectFilter !== 'all' ||
-    statusFilter !== '' ||
-    sortBy !== 'modified';
-
-  const { data } = useQuery(
-    tuple([
-      apiGetAssignments.queryKey,
-      { page: 1, limit: 10, filter: searchTerm },
-    ]),
-    apiGetAssignments,
-  );
-  const essays = data?.value || [];
+    typeFilter !== 'all' ||
+    statusFilter !== 'all' ||
+    sortBy !== 'due-date';
 
   const onEditEssay = useCallback(
     (id: number) => {
@@ -90,9 +45,9 @@ export function StudentHome() {
 
   const clearFilters = useCallback(() => {
     setSearchTerm('');
-    setSubjectFilter('all');
-    setStatusFilter('');
-    setSortBy('modified');
+    setTypeFilter('all');
+    setStatusFilter('all');
+    setSortBy('due-date');
   }, []);
 
   return (
@@ -126,7 +81,8 @@ export function StudentHome() {
 
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <SelectInput
-            emptyOption="All Statuses"
+            emptyOption="All statuses"
+            label="Statuses"
             onChange={setStatusFilter}
             options={[
               {
@@ -149,12 +105,12 @@ export function StudentHome() {
             value={statusFilter}
           />
           <SelectInput
-            emptyOption="Sort by"
+            label="Sort by"
             onChange={setSortBy}
             options={[
               {
-                label: 'Last Modified',
-                value: 'modified',
+                label: 'Due Date',
+                value: 'due-date',
               },
               {
                 label: 'Title',
@@ -187,22 +143,19 @@ export function StudentHome() {
         </div>
 
         {(searchTerm ||
-          subjectFilter !== 'all' ||
-          statusFilter !== '' ||
-          sortBy !== 'modified') && (
+          typeFilter !== 'all' ||
+          statusFilter !== 'all' ||
+          sortBy !== 'due-date') && (
           <div className="mt-4 space-y-2">
-            <p className="text-sm text-muted-foreground">
-              Showing {essays.length} of {essays.length} essays
-            </p>
             <div className="flex flex-wrap gap-2">
               {searchTerm && (
                 <Badge className="text-xs" variant="secondary">
                   Search: &quot;{searchTerm}&quot;
                 </Badge>
               )}
-              {subjectFilter !== 'all' && (
+              {typeFilter !== '' && (
                 <Badge className="text-xs" variant="secondary">
-                  Subject: {subjectFilter}
+                  Subject: {typeFilter}
                 </Badge>
               )}
               {statusFilter !== '' && (
@@ -210,7 +163,7 @@ export function StudentHome() {
                   Status: {getStatusText(statusFilter)}
                 </Badge>
               )}
-              {sortBy !== 'modified' && (
+              {sortBy !== 'due-date' && (
                 <Badge className="text-xs" variant="secondary">
                   Sort: {sortBy}
                 </Badge>
@@ -221,67 +174,85 @@ export function StudentHome() {
       </Card>
 
       <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {essays.map(essay => (
-          <Card
-            badgeText={getBadgeText(essay.type)}
-            classes={{
-              root: 'hover:shadow-md transition-shadow',
-              status: getStatusClass(essay.status),
-            }}
-            description={essay.description}
-            footer={
-              <Button
-                className="flex-1 gap-2 text-sm"
-                onClick={() => onEditEssay(essay.id)}
-                variant="outline"
-              >
-                <Edit className="h-4 w-4 inline" />
-                {essay.status === 'graded' ? 'View' : 'Edit'}
-              </Button>
-            }
-            key={essay.id}
-            status={getStatusText(essay.status)}
-            title={essay.title}
-          >
-            {/* <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
-                {essay.word_count} words
+        <InfiniteList
+          emptyPlaceholder={
+            hasFilter ? (
+              <div className="text-center py-12">
+                <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">
+                  No essays match your filters
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Try adjusting your search terms or filters to find your essays
+                </p>
+                <Button
+                  className="gap-2"
+                  onClick={clearFilters}
+                  variant="outline"
+                >
+                  <SortAsc className="h-4 w-4" />
+                  Clear All Filters
+                </Button>
               </div>
-              <div className="flex items-center gap-1">
-                <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-                {essay.last_modified}
+            ) : (
+              <div className="text-center py-12">
+                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">
+                  You are not assigned any essays yet
+                </h3>
               </div>
-            </div> */}
-            Test
-          </Card>
-        ))}
+            )
+          }
+          queryFn={apiGetAssignments}
+          queryKey={tuple([
+            apiGetAssignments.queryKey,
+            {
+              page: 1,
+              limit: 10,
+              filter: {
+                search: searchTerm,
+                subject: typeFilter,
+                status: statusFilter,
+              },
+              sort: sortBy,
+            },
+          ])}
+          renderItem={assignment => (
+            <Card
+              badgeText={getBadgeText(assignment.type)}
+              classes={{
+                root: 'hover:shadow-md transition-shadow',
+                status: getStatusClass(assignment.status),
+              }}
+              description={assignment.description}
+              footer={
+                <Button
+                  className="flex-1 gap-2 text-sm"
+                  onClick={() => onEditEssay(assignment.id)}
+                  variant="outline"
+                >
+                  <Edit className="h-4 w-4 inline" />
+                  {assignment.status === 'graded' ? 'View' : 'Edit'}
+                </Button>
+              }
+              key={assignment.id}
+              status={getStatusText(assignment.status)}
+              title={assignment.title}
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+                  {getWordRequirementText(assignment)}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                  Due: {dayjs(assignment.due_date).format('MMM D, YYYY')}
+                </div>
+              </div>
+            </Card>
+          )}
+        />
       </div>
-
-      {essays.length === 0 && !hasFilter && (
-        <div className="text-center py-12">
-          <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">
-            You are not assigned any essays yet
-          </h3>
-        </div>
-      )}
-
-      {essays.length === 0 && hasFilter && (
-        <div className="text-center py-12">
-          <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">
-            No essays match your filters
-          </h3>
-          <p className="text-muted-foreground mb-4">
-            Try adjusting your search terms or filters to find your essays
-          </p>
-          <Button className="gap-2" onClick={clearFilters} variant="outline">
-            <SortAsc className="h-4 w-4" />
-            Clear All Filters
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

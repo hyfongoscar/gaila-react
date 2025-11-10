@@ -40,7 +40,7 @@ export function SelectInput<T extends string | number>({
         {...props}
       >
         {emptyOption && (
-          <MenuItem aria-label="None" value="">
+          <MenuItem aria-label="None" value="all">
             {typeof emptyOption === 'string' ? emptyOption : ''}
           </MenuItem>
         )}

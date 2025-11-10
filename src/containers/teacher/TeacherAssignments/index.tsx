@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from 'react';
 
 import { Plus, Search } from 'lucide-react';
-import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router';
 import { pathnames } from 'routes';
 
+import InfiniteList from 'components/display/InfiniteList';
 import Button from 'components/input/Button';
 import TextInput from 'components/input/TextInput';
 import { Pagination } from 'components/navigation/Pagination';
@@ -13,20 +13,11 @@ import AssignmentCard from 'containers/teacher/TeacherAssignments/AssignmentCard
 
 import { apiGetAssignments } from 'api/assignment';
 import type { TeacherAssignmentListingItem } from 'types/assignment';
-import tuple from 'utils/types/tuple';
 
 export function TeacherAssignments() {
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
-
-  const { data } = useQuery(
-    tuple([
-      apiGetAssignments.queryKey,
-      { page: 1, limit: 10, filter: searchQuery },
-    ]),
-    apiGetAssignments,
-  );
 
   const onCreateAssignment = useCallback(() => {
     navigate(pathnames.assignmentCreate());
@@ -58,12 +49,19 @@ export function TeacherAssignments() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {data?.value.map(assignment => (
-          <AssignmentCard
-            assignment={assignment as TeacherAssignmentListingItem}
-            key={assignment.id}
-          />
-        ))}
+        <InfiniteList
+          queryFn={apiGetAssignments}
+          queryKey={[
+            apiGetAssignments.queryKey,
+            { page: 1, limit: 10, filter: { search: searchQuery } },
+          ]}
+          renderItem={assignment => (
+            <AssignmentCard
+              assignment={assignment as TeacherAssignmentListingItem}
+              key={assignment.id}
+            />
+          )}
+        />
       </div>
       <Pagination />
     </div>
