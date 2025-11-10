@@ -21,6 +21,7 @@ type Props = {
     label: string;
     disabled?: boolean;
     required?: boolean;
+    labelOnly?: boolean;
   }[];
   includeAll?: boolean;
 };
@@ -90,22 +91,26 @@ const CheckboxInput = ({
           label="Select All"
         />
       )}
-      {options.map(option => (
-        <FormControlLabel
-          control={
-            <CustomCheckbox
-              checked={finalValue.includes(option.key)}
-              disabled={disabled || option.disabled}
-              onChange={e => onCheckboxChange(option.key, e.target.checked)}
-              required={option.required}
-            />
-          }
-          disabled={option.disabled}
-          key={option.key}
-          label={option.label}
-          sx={includeAll ? { ml: 2 } : {}}
-        />
-      ))}
+      {options.map(option =>
+        option.labelOnly ? (
+          <div key={option.key}>{option.label}</div>
+        ) : (
+          <FormControlLabel
+            control={
+              <CustomCheckbox
+                checked={finalValue.includes(option.key)}
+                disabled={disabled || option.disabled}
+                onChange={e => onCheckboxChange(option.key, e.target.checked)}
+                required={option.required}
+              />
+            }
+            disabled={option.disabled}
+            key={option.key}
+            label={option.label}
+            sx={includeAll ? { ml: 2 } : {}}
+          />
+        ),
+      )}
     </FormGroup>
   );
 };

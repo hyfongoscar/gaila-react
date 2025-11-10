@@ -19,28 +19,23 @@ const availableStages = [
   {
     stage_type: 'goal_setting',
     label: 'Goal Setting',
-    tools: [
-      { key: 'ideation', label: 'Ideation Chatbot' },
-      { key: 'dictionary', label: 'Dictionary Chatbot' },
-    ],
+    tools: [{ key: 'goal_general', label: 'General Chatbot' }],
   },
   {
     stage_type: 'writing',
     label: 'Writing',
     tools: [
+      { key: 'ideation', label: 'Ideation Chatbot (Outline)' },
+      { key: 'autograde', label: 'AI Auto Grading (Revise)' },
       { key: 'grammar', label: 'Grammar Chatbot' },
       { key: 'dictionary', label: 'Dictionary Chatbot' },
-      { key: 'autograde', label: 'AI Auto Grading' },
-      { key: 'general', label: 'General Chatbot' },
+      { key: 'writing_general', label: 'General Chatbot' },
     ],
   },
   {
     stage_type: 'reflection',
     label: 'Reflection',
-    tools: [
-      { key: 'ideation', label: 'Ideation Chatbot' },
-      { key: 'dictionary', label: 'Dictionary Chatbot' },
-    ],
+    tools: [{ key: 'reflection_general', label: 'General Chatbot' }],
   },
 ];
 

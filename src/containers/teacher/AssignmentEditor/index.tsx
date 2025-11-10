@@ -19,6 +19,7 @@ import AssignmentEditorForm from 'containers/teacher/AssignmentEditor/Assignment
 import {
   type AssignmentCreatePayload,
   apiCreateAssignment,
+  apiGetAssignments,
   apiUpdateAssignment,
   apiViewAssignment,
 } from 'api/assignment';
@@ -74,8 +75,9 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
 
   const { mutate: createAssignment, isLoading: createAssignmentLoading } =
     useMutation(apiCreateAssignment, {
-      onSuccess: res => {
+      onSuccess: async res => {
         successMsg('Assignment created successfully');
+        await queryClient.invalidateQueries([apiGetAssignments.queryKey]);
         navigate(pathnames.assignmentEditDetails(String(res.id)));
       },
       onError: error => {
@@ -208,7 +210,10 @@ function AssignmentEditor({ assignmentId, onBack }: AssignmentCreatorProps) {
         </div>
       </Card>
       <div className="col-span-2 h-fit sticky top-[80px]">
-        <AIChatBox firstMessage="Hi! I'm your AI writing assistant. I can help you polish topics and rubrics for your assignment. What would you like help with?" />
+        <AIChatBox
+          firstMessage="Hi! I'm your AI writing assistant. I can help you polish topics and rubrics for your assignment. What would you like help with?"
+          toolId={1}
+        />
       </div>
     </div>
   );

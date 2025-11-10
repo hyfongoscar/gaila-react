@@ -61,6 +61,10 @@ const AssignmentGoalEditor = ({ assignmentProgress, currentStage }: Props) => {
   const queryClient = useQueryClient();
   const { alertMsg, successMsg, errorMsg } = useAlert();
 
+  const generalChatTool = currentStage.tools.find(
+    tool => tool.key === 'goal_general',
+  );
+
   const { mutate: saveSubmission } = useMutation(apiSaveAssignmentSubmission, {
     onSuccess: async (res, req) => {
       if (res.is_final) {
@@ -265,14 +269,17 @@ const AssignmentGoalEditor = ({ assignmentProgress, currentStage }: Props) => {
           </div>
         </div>
 
-        <div className="col-span-2 h-fit sticky top-[80px]">
-          <AIChatBox
-            chatName="Goal Setting Assistant"
-            description="Ask me anything about setting effective writing goals"
-            firstMessage="Hi! I'm here to help you set effective writing goals. Feel free to ask me questions about setting goals, writing strategies, or how to use AI tools effectively in your essay writing process."
-            placeholder="Ask about goal setting strategies..."
-          />
-        </div>
+        {!!generalChatTool && (
+          <div className="h-fit sticky top-[80px]">
+            <AIChatBox
+              chatName="Goal Setting Assistant"
+              description="Ask me anything about setting effective writing goals"
+              firstMessage="Hi! I'm here to help you set effective writing goals. Feel free to ask me questions about setting goals, writing strategies, or how to use AI tools effectively in your essay writing process."
+              placeholder="Ask about goal setting strategies..."
+              toolId={generalChatTool.id}
+            />
+          </div>
+        )}
       </ResizableSidebar>
     </>
   );

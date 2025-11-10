@@ -72,6 +72,9 @@ function AssignmentEssayEditorMain({
   }, [assignmentProgress, currentStage]);
 
   const readonly = isGraded || assignmentProgress.is_finished;
+  const generalChatTool = currentStage.tools.find(
+    tool => tool.key === 'writing_general',
+  );
 
   const [title, setTitle] = useState('');
   const essayContent = useRef('');
@@ -382,11 +385,15 @@ function AssignmentEssayEditorMain({
               title: 'Tools',
               content: <EssayEditorTools getEssayContent={getEssayContent} />,
             },
-            {
-              key: 'chat',
-              title: 'AI Chat',
-              content: <EssayEditorAIChat />,
-            },
+            ...(generalChatTool
+              ? [
+                  {
+                    key: 'chat',
+                    title: 'AI Chat',
+                    content: <EssayEditorAIChat toolId={generalChatTool.id} />,
+                  },
+                ]
+              : []),
           ]}
         />
       </ResizableSidebar>

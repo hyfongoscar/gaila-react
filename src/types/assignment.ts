@@ -25,9 +25,9 @@ export interface RubricItem {
   points: number;
 }
 
-export interface AssignmentListingResponse extends ListingResponse {
-  value: (StudentAssignmentListingItem | TeacherAssignmentListingItem)[];
-}
+export type AssignmentListingResponse = ListingResponse<
+  StudentAssignmentListingItem | TeacherAssignmentListingItem
+>;
 
 export interface StudentAssignmentListingItem extends Assignment {
   word_count: number;
@@ -43,7 +43,7 @@ export interface AssignmentStage {
   id: number;
   stage_type: string;
   enabled: boolean;
-  tools: { key: string; enabled: boolean }[];
+  tools: { id: number; key: string; enabled: boolean }[];
 }
 
 export interface AssignmentProgress {
