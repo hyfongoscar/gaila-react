@@ -82,7 +82,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   {children}
                 </AlertProvider>
               </LocalizationProvider>
-              ;
             </ThemeProvider>
           </AuthProvider>
         </QueryClientProvider>

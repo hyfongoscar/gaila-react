@@ -25,13 +25,16 @@ import tuple from 'utils/types/tuple';
 export function StudentHome() {
   const navigate = useNavigate();
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchInputTimer, setSearchInputTimer] = useState<NodeJS.Timeout>();
+
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState('due_date');
 
   const hasFilter =
-    searchTerm ||
+    !!searchQuery ||
     typeFilter !== 'all' ||
     statusFilter !== 'all' ||
     sortBy !== 'due_date';
@@ -44,11 +47,29 @@ export function StudentHome() {
   );
 
   const clearFilters = useCallback(() => {
-    setSearchTerm('');
+    setSearchInput('');
+    setSearchQuery('');
+    setSearchInputTimer(undefined);
     setTypeFilter('all');
     setStatusFilter('all');
     setSortBy('due_date');
   }, []);
+
+  const onTextFilterChange = useCallback(
+    (value: string) => {
+      setSearchInput(value);
+      if (searchInputTimer) {
+        clearTimeout(searchInputTimer);
+      }
+
+      setSearchInputTimer(
+        setTimeout(() => {
+          setSearchQuery(value);
+        }, 500),
+      );
+    },
+    [searchInputTimer],
+  );
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
@@ -75,8 +96,8 @@ export function StudentHome() {
           className="pl-10"
           icon={<Search className="h-4 w-4 text-muted-foreground" />}
           label="Search"
-          onChange={e => setSearchTerm(e.target.value)}
-          value={searchTerm}
+          onChange={e => onTextFilterChange(e.target.value)}
+          value={searchInput}
         />
 
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -127,15 +148,12 @@ export function StudentHome() {
           </Button>
         </div>
 
-        {(searchTerm ||
-          typeFilter !== 'all' ||
-          statusFilter !== 'all' ||
-          sortBy !== 'due_date') && (
+        {hasFilter && (
           <div className="mt-4 space-y-2">
             <div className="flex flex-wrap gap-2">
-              {searchTerm && (
+              {searchQuery && (
                 <Badge className="text-xs" variant="secondary">
-                  Search: &quot;{searchTerm}&quot;
+                  Search: &quot;{searchQuery}&quot;
                 </Badge>
               )}
               {typeFilter !== '' && (
@@ -165,10 +183,11 @@ export function StudentHome() {
               <div className="text-center py-12 col-span-3">
                 <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">
-                  No essays match your filters
+                  No assignments match your filters
                 </h3>
                 <p className="text-muted-foreground mb-4">
-                  Try adjusting your search terms or filters to find your essays
+                  Try adjusting your search terms or filters to find your
+                  assignments
                 </p>
                 <Button
                   className="gap-2 inline-flex"
@@ -182,9 +201,9 @@ export function StudentHome() {
             ) : (
               <div className="text-center py-12 col-span-3">
                 <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  You are not assigned any essays yet
-                </h3>
+                <div className="text-lg mb-2">
+                  You are not assigned any assignments yet
+                </div>
               </div>
             )
           }
@@ -195,7 +214,7 @@ export function StudentHome() {
               page: 1,
               limit: 10,
               filter: {
-                search: searchTerm,
+                search: searchQuery,
                 type: typeFilter === 'all' ? undefined : typeFilter,
                 status: statusFilter === 'all' ? undefined : statusFilter,
               },
