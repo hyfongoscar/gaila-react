@@ -144,7 +144,7 @@ function AssignmentDetails({ assignmentId }: ViewAssignmentProps) {
         )}
       </Card>
 
-      <AssignmentSubmissionListing />
+      <AssignmentSubmissionListing assignmentId={assignmentId} />
     </div>
   );
 }

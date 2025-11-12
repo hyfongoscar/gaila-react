@@ -4,6 +4,7 @@ import type {
   AssignmentDetails,
   AssignmentListingResponse,
   AssignmentProgress,
+  AssignmentRecentSubmissionListingItem,
   AssignmentSubmission,
   AssignmentSubmissionListingItem,
   RubricItem,
@@ -135,3 +136,23 @@ export const apiGetSubmisssionListing = async ({
   return res;
 };
 apiGetSubmisssionListing.queryKey = '/api/submission/listing';
+
+export const apiGetSubmisssionRecentListing = async ({
+  queryKey,
+}: {
+  queryKey: [
+    string,
+    {
+      page: number;
+      limit: number;
+      filter: string;
+    },
+  ];
+}) => {
+  const [, queryParams] = queryKey;
+  const res = await callAPIHandler<
+    ListingResponse<AssignmentRecentSubmissionListingItem>
+  >('get', `/api/submission/listing-recent`, queryParams, true);
+  return res;
+};
+apiGetSubmisssionRecentListing.queryKey = '/api/submission/listing-recent';

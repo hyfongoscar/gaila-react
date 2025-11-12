@@ -9,12 +9,21 @@ import { pathnames } from 'routes';
 
 import Badge from 'components/display/Badge';
 import Card from 'components/display/Card';
+import ErrorComponent from 'components/display/ErrorComponent';
+import Loading from 'components/display/Loading';
 import Table from 'components/display/Table';
 import Button from 'components/input/Button';
 import TextInput from 'components/input/TextInput';
 
-import { apiGetSubmisssionListing } from 'api/assignment';
-import type { AssignmentSubmissionListingItem } from 'types/assignment';
+import {
+  apiGetSubmisssionListing,
+  apiGetSubmisssionRecentListing,
+} from 'api/assignment';
+import type {
+  AssignmentRecentSubmissionListingItem,
+  AssignmentSubmissionListingItem,
+} from 'types/assignment';
+import type { ListingResponse } from 'types/response';
 import getStageTypeLabel from 'utils/helper/getStageTypeLabel';
 import getUserName from 'utils/helper/getUserName';
 import tuple from 'utils/types/tuple';
@@ -26,7 +35,12 @@ const getStatusBadge = (submission: AssignmentSubmissionListingItem) => {
   return <Badge variant="secondary">Draft</Badge>;
 };
 
-const AssignmentSubmissionListing = () => {
+type Props = {
+  assignmentId?: number;
+  isRecent?: boolean;
+};
+
+const AssignmentSubmissionListing = ({ assignmentId, isRecent }: Props) => {
   const navigate = useNavigate();
 
   const [searchValue, setSearchValue] = useState('');
@@ -35,14 +49,31 @@ const AssignmentSubmissionListing = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  const { data } = useQuery(
-    tuple([
-      apiGetSubmisssionListing.queryKey,
-      { assignment_id: 1, page, limit, filter: searchQuery },
-    ]),
-    apiGetSubmisssionListing,
+  const [queryKey, queryFn] = useMemo(() => {
+    if (isRecent) {
+      return [
+        tuple([
+          apiGetSubmisssionRecentListing.queryKey,
+          { page, limit, filter: searchQuery },
+        ]),
+        apiGetSubmisssionRecentListing,
+      ];
+    }
+    return [
+      tuple([
+        apiGetSubmisssionListing.queryKey,
+        { assignment_id: assignmentId, page, limit, filter: searchQuery },
+      ]),
+      apiGetSubmisssionListing,
+    ];
+  }, [assignmentId, isRecent, limit, page, searchQuery]);
+
+  const { data, isLoading, error } = useQuery(
+    queryKey,
+    queryFn as (
+      context: any,
+    ) => Promise<ListingResponse<AssignmentSubmissionListingItem>>,
   );
-  const submissions = data?.value;
 
   const handleSearchChange = useCallback(
     (value: string) => {
@@ -69,11 +100,17 @@ const AssignmentSubmissionListing = () => {
   );
 
   const submissionRows = useMemo(() => {
-    if (!submissions?.length) {
+    if (!data?.value.length) {
       return [];
     }
-    return submissions.map(submission => ({
+    return data.value.map(submission => ({
       id: submission.id,
+      ...(isRecent
+        ? {
+            assignment: (submission as AssignmentRecentSubmissionListingItem)
+              .title,
+          }
+        : {}),
       name: getUserName(submission.student),
       stage: getStageTypeLabel(submission.stage),
       status: getStatusBadge(submission),
@@ -93,7 +130,7 @@ const AssignmentSubmissionListing = () => {
         </Button>
       ),
     }));
-  }, [submissions, onViewSubmission]);
+  }, [data, isRecent, onViewSubmission]);
 
   return (
     <>
@@ -137,7 +174,7 @@ const AssignmentSubmissionListing = () => {
       <Card
         title={
           <div className="flex items-center justify-between">
-            <div>Student Submissions</div>
+            <div>{isRecent ? 'Recent Submissions' : 'Student Submissions'}</div>
             <div className="relative w-64">
               <TextInput
                 className="pl-9"
@@ -150,23 +187,30 @@ const AssignmentSubmissionListing = () => {
           </div>
         }
       >
-        <Table
-          className="min-h-[300px]"
-          columns={[
-            { key: 'name', title: 'Student' },
-            { key: 'stage', title: 'Writing Stage' },
-            { key: 'status', title: 'Status' },
-            { key: 'submitted_at', title: 'Submitted Date' },
-            { key: 'grade', title: 'Grade' },
-            { key: 'action', title: 'Action', align: 'right' },
-          ]}
-          count={submissionRows.length}
-          limit={limit}
-          onPageChange={page => setPage(page + 1)}
-          onRowsPerPageChange={setLimit}
-          page={page - 1}
-          rows={submissionRows.slice((page - 1) * limit, page * limit)}
-        />
+        {isLoading ? (
+          <Loading />
+        ) : data ? (
+          <Table
+            className="min-h-[300px]"
+            columns={[
+              ...(isRecent ? [{ key: 'assignment', title: 'Assignment' }] : []),
+              { key: 'name', title: 'Student' },
+              { key: 'stage', title: 'Writing Stage' },
+              { key: 'status', title: 'Status' },
+              { key: 'submitted_at', title: 'Submitted Date' },
+              { key: 'grade', title: 'Grade' },
+              { key: 'action', title: 'Action', align: 'right' },
+            ]}
+            count={data?.count || 0}
+            limit={limit}
+            onPageChange={page => setPage(page + 1)}
+            onRowsPerPageChange={setLimit}
+            page={page - 1}
+            rows={submissionRows.slice((page - 1) * limit, page * limit)}
+          />
+        ) : (
+          <ErrorComponent error={error || 'Failed to fetch submissions.'} />
+        )}
       </Card>
     </>
   );
