@@ -17,10 +17,10 @@ export const apiGetClasses = async ({
 };
 apiGetClasses.queryKey = '/api/class/listing';
 
-export const apiGetClassValue = async ({
+export const apiGetClassDetail = async ({
   queryKey,
 }: {
-  queryKey: [string, { id: string }];
+  queryKey: [string, { id: number }];
 }) => {
   const [, { id }] = queryKey;
   const res = await callAPIHandler<Class>(
@@ -31,4 +31,4 @@ export const apiGetClassValue = async ({
   );
   return res;
 };
-apiGetClassValue.queryKey = '/api/class/view';
+apiGetClassDetail.queryKey = '/api/class/view';

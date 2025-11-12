@@ -6,6 +6,7 @@ export interface Assignment {
   id: number;
   title: string;
   description?: string;
+  start_date?: number | null;
   due_date?: number | null;
   type?: string;
   instructions?: string;
@@ -85,6 +86,24 @@ export interface AssignmentSubmission {
     | AssignmentReflectionContent;
   submitted_at?: number;
   is_final?: boolean;
+}
+
+export interface AssignmentSubmissionListingItem {
+  id: number;
+  assignment_id: number;
+  submitted_at?: number;
+  is_final?: boolean;
+  score?: number;
+  stage: {
+    id: number;
+    stage_type: string;
+  };
+  student: {
+    id: number;
+    username: string;
+    first_name?: string;
+    last_name?: string;
+  };
 }
 
 export interface AssignmentGrade {

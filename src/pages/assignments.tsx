@@ -1,14 +1,14 @@
 import React from 'react';
 
 import AuthPageWrapper from 'containers/auth/AuthPageWrapper';
-import TeacherAssignments from 'containers/teacher/TeacherAssignments';
+import TeacherAssignmentListing from 'containers/teacher/TeacherAssignmentListing';
 import TeacherHeader from 'containers/teacher/TeacherHeader';
 
 const AssignmentsPage = () => {
   return (
     <AuthPageWrapper isTeacherPage>
       <TeacherHeader />
-      <TeacherAssignments />
+      <TeacherAssignmentListing />
     </AuthPageWrapper>
   );
 };

@@ -2,6 +2,8 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { Eye, Search } from 'lucide-react';
 import { useQuery } from 'react-query';
+import { useNavigate } from 'react-router';
+import { pathnames } from 'routes';
 
 import Table from 'components/display/Table';
 import Button from 'components/input/Button';
@@ -11,6 +13,8 @@ import { apiGetClasses } from 'api/class';
 import tuple from 'utils/types/tuple';
 
 const ClassListing = () => {
+  const navigate = useNavigate();
+
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
@@ -30,19 +34,31 @@ const ClassListing = () => {
     setPage(1);
   }, []);
 
+  const onClickClass = useCallback(
+    (id: number) => {
+      navigate(pathnames.classDetails(String(id)));
+    },
+    [navigate],
+  );
+
   const rows = useMemo(() => {
     if (!data?.value) return [];
     return data.value.map(classItem => ({
       ...classItem,
       action: (
         // TODO: class view page
-        <Button className="inline-flex gap-1" size="sm" variant="ghost">
+        <Button
+          className="inline-flex gap-1"
+          onClick={() => onClickClass(classItem.id)}
+          size="sm"
+          variant="ghost"
+        >
           <Eye className="h-3 w-3" />
           View
         </Button>
       ),
     }));
-  }, [data?.value]);
+  }, [data?.value, onClickClass]);
 
   return (
     <>
@@ -72,7 +88,7 @@ const ClassListing = () => {
         ]}
         count={data?.count}
         limit={limit}
-        onPageChange={setPage}
+        onPageChange={page => setPage(page + 1)}
         onRowsPerPageChange={handleLimitChange}
         page={page - 1}
         placeholder="You don't have any classes yet"

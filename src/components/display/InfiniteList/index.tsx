@@ -4,6 +4,7 @@ import { LoaderCircle } from 'lucide-react';
 import type { UseQueryOptions } from 'react-query';
 
 import ErrorComponent from 'components/display/ErrorComponent';
+import Loading from 'components/display/Loading';
 
 import type { ListingResponse } from 'types/response';
 
@@ -71,7 +72,7 @@ const InfiniteList = <
   return (
     <>
       {data?.map(renderItem)}
-      {isLoading && <LoaderCircle className="animate-spin" />}
+      {isLoading && <Loading />}
       {!!data.length && !endReached && <div ref={endDiv} />}
     </>
   );

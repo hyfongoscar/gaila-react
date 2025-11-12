@@ -19,9 +19,9 @@ type Props = {
     [key: string]: any;
   }[];
   page: number;
-  limit: number;
+  onPageChange: (newPage: number) => void;
+  limit?: number;
   count?: number;
-  onPageChange?: (newPage: number) => void;
   onRowsPerPageChange?: (newRowsPerPage: number) => void;
   placeholder?: string;
   className?: string;
@@ -30,9 +30,9 @@ type Props = {
 export default function Table({
   columns,
   rows,
-  page,
-  limit,
+  limit = 5,
   count,
+  page,
   onPageChange,
   onRowsPerPageChange,
   placeholder,
@@ -104,6 +104,14 @@ export default function Table({
           page={page}
           rowsPerPage={limit}
           rowsPerPageOptions={[5, 10, 25]}
+          sx={
+            onRowsPerPageChange
+              ? {}
+              : {
+                  '& .MuiTablePagination-selectLabel': { display: 'none' },
+                  '& .MuiTablePagination-select': { display: 'none' },
+                }
+          }
         />
       )}
     </>

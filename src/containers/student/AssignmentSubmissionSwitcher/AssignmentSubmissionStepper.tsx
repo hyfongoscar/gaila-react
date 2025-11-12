@@ -8,21 +8,8 @@ import { useQuery } from 'react-query';
 import { useParams } from 'react-router';
 
 import { apiViewAssignmentProgress } from 'api/assignment';
-import type { AssignmentStage } from 'types/assignment';
+import getStageTypeLabel from 'utils/helper/getStageTypeLabel';
 import tuple from 'utils/types/tuple';
-
-const getStageStepLabel = (stage: AssignmentStage) => {
-  switch (stage.stage_type) {
-    case 'goal_setting':
-      return 'Goal Setting';
-    case 'writing':
-      return 'Writing';
-    case 'reflection':
-      return 'Reflection';
-    default:
-      return '';
-  }
-};
 
 const AssignmentSubmissionStepper = () => {
   const { id } = useParams();
@@ -53,7 +40,7 @@ const AssignmentSubmissionStepper = () => {
         .filter(s => s.enabled)
         .map(stage => (
           <Step key={stage.stage_type}>
-            <StepLabel>{getStageStepLabel(stage)}</StepLabel>
+            <StepLabel>{getStageTypeLabel(stage)}</StepLabel>
           </Step>
         ))}
     </Stepper>

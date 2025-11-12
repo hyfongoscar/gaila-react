@@ -11,8 +11,10 @@ export const pathnames = {
   analytics: () => '/analytics',
   assignments: () => '/assignments',
   assignmentCreate: () => '/assignments/create',
+  assignmentView: (id: string) => `/assignments/view/${id}`,
   assignmentEditDetails: (id: string) => `/assignments/edit/${id}`,
   assignmentEditSubmission: (id: string) => `/assignments/submit/${id}`,
+  classDetails: (id: string) => `/class/${id}`,
   style: () => '/style',
 };
 
@@ -21,11 +23,13 @@ export default [
   route(pathnames.login(), 'pages/login.tsx'),
   route(pathnames.analytics(), 'pages/analytics.tsx'),
   route(pathnames.assignments(), 'pages/assignments.tsx'),
+  route(pathnames.assignmentView(':id'), 'pages/assignments.view.tsx'),
   route(pathnames.assignmentCreate(), 'pages/assignments.create.tsx'),
   route(pathnames.assignmentEditDetails(':id'), 'pages/assignments.edit.tsx'),
   route(
     pathnames.assignmentEditSubmission(':id'),
     'pages/assignments.submit.tsx',
   ),
+  route(pathnames.classDetails(':id'), 'pages/class.tsx'),
   route(pathnames.style(), 'pages/style.tsx'),
 ] satisfies RouteConfig;

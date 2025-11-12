@@ -51,7 +51,7 @@ const SubmissionListing = () => {
       ...submission,
       status: getStatusBadge(submission.status),
       grade: submission.grade ? `${submission.grade}%` : '-',
-      actions: (
+      action: (
         <Button className="inline-flex gap-1" size="sm" variant="ghost">
           <Eye className="h-3 w-3" />
           {submission.status === 'graded' ? 'View' : 'Grade'}
@@ -84,11 +84,11 @@ const SubmissionListing = () => {
           { key: 'status', title: 'Status' },
           { key: 'wordCount', title: 'Words', align: 'right' },
           { key: 'grade', title: 'Grade', align: 'right' },
-          { key: 'actions', title: 'Actions', align: 'right' },
+          { key: 'action', title: 'Action', align: 'right' },
         ]}
         count={data?.count}
         limit={limit}
-        onPageChange={setPage}
+        onPageChange={page => setPage(page + 1)}
         onRowsPerPageChange={handleLimitChange}
         page={page - 1}
         rows={rows}

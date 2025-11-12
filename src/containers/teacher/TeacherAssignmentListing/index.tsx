@@ -8,12 +8,12 @@ import InfiniteList from 'components/display/InfiniteList';
 import Button from 'components/input/Button';
 import TextInput from 'components/input/TextInput';
 
-import AssignmentCard from 'containers/teacher/TeacherAssignments/AssignmentCard';
+import AssignmentCard from 'containers/teacher/TeacherAssignmentListing/AssignmentCard';
 
 import { apiGetAssignments } from 'api/assignment';
 import type { TeacherAssignmentListingItem } from 'types/assignment';
 
-export function TeacherAssignments() {
+export function TeacherAssignmentListing() {
   const navigate = useNavigate();
 
   const [searchInput, setSearchInput] = useState('');
@@ -111,4 +111,4 @@ export function TeacherAssignments() {
     </div>
   );
 }
-export default TeacherAssignments;
+export default TeacherAssignmentListing;

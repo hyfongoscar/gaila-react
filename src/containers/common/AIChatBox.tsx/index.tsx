@@ -7,6 +7,7 @@ import { useMutation } from 'react-query';
 import Card from 'components/display/Card';
 import ErrorMessage from 'components/display/ErrorMessage';
 import useInfiniteListing from 'components/display/InfiniteList/useInfiniteListing';
+import Loading from 'components/display/Loading';
 import Button from 'components/input/Button';
 import TextInput from 'components/input/TextInput';
 
@@ -160,7 +161,7 @@ const AIChatBox = ({
         className="flex-1 overflow-y-auto px-4 py-3 space-y-4"
         ref={chatScrollRef}
       >
-        {isLoading && <LoaderCircle className="animate-spin mx-auto" />}
+        {isLoading && <Loading />}
         {data.reverse().map(renderGptLog)}
         {newChatMessages.map(renderChatMessage)}
         {isTyping && <LoadingMessage />}

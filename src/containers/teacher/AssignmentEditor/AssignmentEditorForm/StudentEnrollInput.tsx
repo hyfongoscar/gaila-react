@@ -13,6 +13,7 @@ import Button from 'components/input/Button';
 import { apiGetClassOptions, apiGetStudentOptions } from 'api/user';
 import type { ClassOption } from 'types/class';
 import type { UserOption } from 'types/user';
+import getUserName from 'utils/helper/getUserName';
 import tuple from 'utils/types/tuple';
 
 type Props = {
@@ -79,13 +80,6 @@ const StudentEnrollInput = ({
     },
     [enrolledStudents, setEnrolledStudents],
   );
-
-  const getStudentName = useCallback((student: UserOption) => {
-    if (student.first_name && student.last_name) {
-      return `${student.first_name} ${student.last_name}`;
-    }
-    return student.username;
-  }, []);
 
   const totalStudents = useMemo(() => {
     const classStudentsCount = enrolledClasses.reduce((acc, enrolledClass) => {
@@ -229,12 +223,12 @@ const StudentEnrollInput = ({
                         disabled={isStudentAdded}
                         key={student.id}
                         onSelect={() => handleAddStudent(student)}
-                        value={getStudentName(student)}
+                        value={getUserName(student)}
                       >
                         <div className="flex items-center gap-2">
                           {isStudentAdded && <Check className="h-4 w-4" />}
                           <div>
-                            <p className="text-sm">{getStudentName(student)}</p>
+                            <p className="text-sm">{getUserName(student)}</p>
                           </div>
                         </div>
                       </CommandItem>
@@ -298,7 +292,7 @@ const StudentEnrollInput = ({
                   >
                     <div>
                       <p className="text-sm font-medium">
-                        {getStudentName(student)}
+                        {getUserName(student)}
                       </p>
                     </div>
                     {!viewOnly && (

@@ -3,10 +3,29 @@ import type { ListingResponse } from 'types/response';
 export interface Class {
   id: number;
   name: string;
-  num_students: number;
   description?: string;
   start_at?: number;
   end_at?: number;
+  students: {
+    id: number;
+    username: string;
+    first_name?: string;
+    last_name?: string;
+  }[];
+  teachers: {
+    id: number;
+    username: string;
+    first_name?: string;
+    last_name?: string;
+  }[];
+  assignments: {
+    id: number;
+    title: string;
+    description?: string;
+    start_date?: number;
+    due_date?: number;
+    type?: string;
+  }[];
 }
 
 export interface ClassListingResponse extends ListingResponse {

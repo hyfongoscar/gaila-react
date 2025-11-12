@@ -29,7 +29,12 @@ const AssignmentCard = ({ assignment }: Props) => {
     return Math.round((submitted / total) * 100);
   };
 
-  const onViewAssignment = useCallback((id: number) => {}, []);
+  const onViewAssignment = useCallback(
+    (id: number) => {
+      navigate(pathnames.assignmentView(String(id)));
+    },
+    [navigate],
+  );
   const onEditAssignment = useCallback(
     (id: number) => {
       navigate(pathnames.assignmentEditDetails(String(id)));

@@ -5,8 +5,10 @@ import type {
   AssignmentListingResponse,
   AssignmentProgress,
   AssignmentSubmission,
+  AssignmentSubmissionListingItem,
   RubricItem,
 } from 'types/assignment';
+import type { ListingResponse } from 'types/response';
 
 export const apiGetAssignments = async ({
   queryKey,
@@ -111,4 +113,25 @@ type AssignmentSaveSubmissionPayload = {
 export const apiSaveAssignmentSubmission = (
   submission: AssignmentSaveSubmissionPayload,
 ): Promise<AssignmentSubmission> =>
-  callAPIHandler('post', '/api/assignment/submit', { submission }, true);
+  callAPIHandler('post', '/api/submission/submit', { submission }, true);
+
+export const apiGetSubmisssionListing = async ({
+  queryKey,
+}: {
+  queryKey: [
+    string,
+    {
+      assignment_id: number;
+      page: number;
+      limit: number;
+      filter: string;
+    },
+  ];
+}) => {
+  const [, queryParams] = queryKey;
+  const res = await callAPIHandler<
+    ListingResponse<AssignmentSubmissionListingItem>
+  >('get', `/api/submission/listing`, queryParams, true);
+  return res;
+};
+apiGetSubmisssionListing.queryKey = '/api/submission/listing';
